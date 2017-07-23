@@ -32,7 +32,8 @@ MOUNT_MINIHOLES_DIAMETER = 1.7
 
 # Mount
 MOUNT_THICK = 8
-MOUNT_HEIGHT = 10
+MOUNT_TO_FLOOR = 5
+WHEEL_DIAMETER = 20
 
 # Axis
 AXIS_INTERNAL_DIAMETER = 3
@@ -50,7 +51,8 @@ axis_to_axis = pinion_reference_diameter + gear_reference_diameter
 
 # Basic mount structure
 mount_width = axis_to_axis + AXIS_EXTERNAL_DIAMETER
-mount = cadquery.Workplane('XY').box(mount_width, MOUNT_HEIGHT, MOUNT_THICK)
+mount_height = WHEEL_DIAMETER - MOUNT_TO_FLOOR * 2
+mount = cadquery.Workplane('XY').box(mount_width, mount_height, MOUNT_THICK)
 
 # Axis
 mount = mount.faces('<Z').workplane()\
@@ -70,10 +72,10 @@ mount = mount.faces('<Z').workplane().cboreHole(
 
 # Base
 mount = mount.faces('<X').workplane()\
-    .center((MOUNT_HEIGHT - BASE_THICK) / 2, 0)\
+    .center((mount_height - BASE_THICK) / 2, 0)\
     .rect(BASE_THICK, MOUNT_THICK).extrude(MOUNT_THICK)
 mount = mount.faces('>X').workplane()\
-    .center(-(MOUNT_HEIGHT - BASE_THICK) / 2, 0)\
+    .center(-(mount_height - BASE_THICK) / 2, 0)\
     .rect(BASE_THICK, MOUNT_THICK).extrude(MOUNT_THICK)
 screw_position = (mount_width + MOUNT_THICK) / 2
 mount = mount.faces('<Y').workplane()\
