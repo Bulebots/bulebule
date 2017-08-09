@@ -1,0 +1,8 @@
+.opencm3/
+*~
+*.d
+*.elf
+*.map
+*.o
+*.stylecheck
+*.swp
