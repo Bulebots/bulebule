@@ -19,6 +19,7 @@ How can I build it?
 
    locomotion.rst
    brain.rst
+   configuration.rst
 
 
 Indices and tables
