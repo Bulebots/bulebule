@@ -5,10 +5,10 @@ Locomotion
 **********
 
 
-.. index:: motors
+.. index:: motors, encoders
 
-Motors
-======
+Motors and encoders
+===================
 
 The motors are a pair of `Faulhaber 1524B009SR`_, which have the following
 basic characteristics (at 22ºC and nominal voltage):
@@ -30,21 +30,12 @@ With the following rated values for continuous operation:
 Name                  Value  Unit
 ====================  =====  ======
 Rated torque          2.9    mm
-Rated current         0.38   mm
+Rated current         0.38   A
 Rated speed           4500   V
 ====================  =====  ======
 
-
-.. index:: encoders
-
-Encoders
-========
-
-Each motor has also an integrated `IE2-512 encoder`_. This is an incremental,
-two-channel magnetic encoder with 512 lines per revolution. Requires a 5 V
-supply voltage and outputs two digital square waves that can be used for the
-indication and control of both shaft velocity and direction of rotation as
-well as for positioning.
+The motors have attached `IE2-512 quadrature encoders`_, with 512 lines per
+revolution.
 
 
 .. index:: gears, tires
@@ -120,8 +111,8 @@ References
 
 .. _`Faulhaber 1524B009SR`:
   https://fmcc.faulhaber.com/resources/img/EN_1524_SR_DFF.PDF
-.. _`IE2-512 encoder`:
-  https://fmcc.faulhaber.com/resources/img/EN_IE2-1024_DFF.PDF
+.. _`IE2-512 quadrature encoders`:
+  https://athena-robots.readthedocs.io/en/latest/ie2-1024_encoder_family.html
 .. _`MR63ZZ`:
    http://www.rcbearings.com/products/mr63zz-3-x-6-x-2-5-bearing.html
 .. _`Slot.it PT18`:
