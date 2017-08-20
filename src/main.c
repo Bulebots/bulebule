@@ -33,6 +33,7 @@ static void setup_clock(void)
 
 	/* Encoders */
 	rcc_periph_clock_enable(RCC_TIM1);
+	rcc_periph_clock_enable(RCC_TIM3);
 	rcc_periph_clock_enable(RCC_TIM4);
 }
 
@@ -66,6 +67,50 @@ static void setup_usart(void)
 	usart_set_mode(USART3, USART_MODE_TX);
 
 	usart_enable(USART3);
+}
+
+
+/**
+ * @brief Setup PWM for the motor drivers.
+ *
+ * TIM3 is used to generate both PWM signals (left and right motor):
+ *
+ * - Edge-aligned, up-counting timer.
+ * - Prescale to increment timer counter at 24 MHz.
+ * - Set PWM frequency to 24 kHz.
+ * - Configure channels 3 and 4 as output GPIOs.
+ * - Set output compare mode to PWM1 (output is active when the counter is
+ *   less than the compare register contents and inactive otherwise.
+ * - Reset output compare value (set it to 0).
+ * - Enable channels 3 and 4 outputs.
+ * - Enable counter for TIM3.
+ *
+ * @see Reference manual (RM0008) "TIMx functional description" and in
+ * particular "PWM mode" section.
+ */
+static void setup_pwm(void)
+{
+	timer_set_mode(TIM3, TIM_CR1_CKD_CK_INT,
+		       TIM_CR1_CMS_EDGE, TIM_CR1_DIR_UP);
+
+	timer_set_prescaler(TIM3, 3);
+	timer_set_repetition_counter(TIM3, 0);
+	timer_enable_preload(TIM3);
+	timer_continuous_mode(TIM3);
+	timer_set_period(TIM3, 1000);
+
+	gpio_set_mode(GPIOB, GPIO_MODE_OUTPUT_50_MHZ,
+		      GPIO_CNF_OUTPUT_ALTFN_PUSHPULL,
+		      GPIO_TIM3_CH3 | GPIO_TIM3_CH4);
+
+	timer_set_oc_mode(TIM3, TIM_OC3, TIM_OCM_PWM1);
+	timer_set_oc_mode(TIM3, TIM_OC4, TIM_OCM_PWM1);
+	timer_set_oc_value(TIM3, TIM_OC3, 0);
+	timer_set_oc_value(TIM3, TIM_OC4, 0);
+	timer_enable_oc_output(TIM3, TIM_OC3);
+	timer_enable_oc_output(TIM3, TIM_OC4);
+
+	timer_enable_counter(TIM3);
 }
 
 
@@ -158,6 +203,7 @@ int main(void)
 	setup_gpio();
 	setup_usart();
 	setup_encoders();
+	setup_pwm();
 	setup_systick();
 
 	while(1) {

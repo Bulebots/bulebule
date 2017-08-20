@@ -47,6 +47,8 @@ Pin   Function   Connected to
 ====  =========  ==============================
 PA8   TIM1_CH1   Left motor encoder, channel A
 PA9   TIM1_CH2   Left motor encoder, channel B
+PB0   TIM3_CH3   Left motor PWM
+PB1   TIM3_CH4   Right motor PWM
 PB6   TIM4_CH1   Right motor encoder, channel B
 PB7   TIM4_CH2   Right motor encoder, channel A
 PB10  USART3_TX  Bluetooth RX
