@@ -48,6 +48,12 @@ static void setup_gpio(void)
 	gpio_set_mode(GPIOC, GPIO_MODE_OUTPUT_50_MHZ,
 		      GPIO_CNF_OUTPUT_PUSHPULL, GPIO13);
 	gpio_clear(GPIOC, GPIO13);
+
+	/* Motor driver */
+	gpio_set_mode(GPIOB, GPIO_MODE_OUTPUT_50_MHZ,
+		      GPIO_CNF_OUTPUT_PUSHPULL,
+		      GPIO12 | GPIO13 | GPIO14 | GPIO15 );
+	gpio_clear(GPIOB, GPIO12 | GPIO13 | GPIO14 | GPIO15);
 }
 
 
@@ -195,10 +201,70 @@ int _write(int file, char *ptr, int len)
 
 
 /**
+ * @brief Set left motor power.
+ *
+ * Power is set modulating the PWM signal sent to the motor driver.
+ *
+ * @param[in] power Power value from 0 to 1000.
+ */
+static void power_left(uint32_t power)
+{
+	timer_set_oc_value(TIM3, TIM_OC3, power);
+}
+
+
+/**
+ * @brief Set right motor power.
+ *
+ * Power is set modulating the PWM signal sent to the motor driver.
+ *
+ * @param[in] power Power value from 0 to 1000.
+ */
+static void power_right(uint32_t power)
+{
+	timer_set_oc_value(TIM3, TIM_OC4, power);
+}
+
+
+/**
+ * @brief Set driving direction to forward in both motors.
+ */
+static void drive_forward()
+{
+	gpio_clear(GPIOB, GPIO13 | GPIO15);
+	gpio_set(GPIOB, GPIO12 | GPIO14);
+}
+
+
+/**
+ * @brief Set driving direction to backward in both motors.
+ */
+static void drive_backward()
+{
+	gpio_clear(GPIOB, GPIO12 | GPIO14);
+	gpio_set(GPIOB, GPIO13 | GPIO15);
+}
+
+
+/**
+ * @brief Break both motors.
+ *
+ * Set driver controlling signals to high to short break the driver outputs.
+ * The break will be effective with any PWM input signal in the motor driver.
+ */
+static void drive_break()
+{
+	gpio_set(GPIOB, GPIO12 | GPIO13 | GPIO14 | GPIO15);
+}
+
+
+/**
  * @brief Initial setup and infinite wait.
  */
 int main(void)
 {
+	int j = 0;
+
 	setup_clock();
 	setup_gpio();
 	setup_usart();
@@ -206,12 +272,18 @@ int main(void)
 	setup_pwm();
 	setup_systick();
 
+	drive_forward();
+
 	while(1) {
 		int left = timer_get_counter(TIM1);
 		int right = timer_get_counter(TIM4);
-		for (int i = 0; i < 800000; i++)
+		power_left(j % 500);
+		power_right(j % 500);
+		for (int i = 0; i < 8000; i++)
 			__asm__("nop");
-		printf("Left: %d, Right: %d\n", left, right);
+		if (!(j % 500))
+			printf("Left: %d, Right: %d\n", left, right);
+		j += 1;
 	}
 
 	return 0;

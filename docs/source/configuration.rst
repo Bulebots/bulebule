@@ -53,6 +53,10 @@ PB6   TIM4_CH1   Right motor encoder, channel B
 PB7   TIM4_CH2   Right motor encoder, channel A
 PB10  USART3_TX  Bluetooth RX
 PB11  USART3_RX  Bluetooth TX
+PB12  GPIO       Left motor driver IN1
+PB13  GPIO       Left motor driver IN2
+PB14  GPIO       Right motor driver IN2
+PB15  GPIO       Right motor driver IN1
 ====  =========  ==============================
 
 
