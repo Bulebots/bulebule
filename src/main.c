@@ -52,7 +52,7 @@ static void setup_gpio(void)
 	/* Motor driver */
 	gpio_set_mode(GPIOB, GPIO_MODE_OUTPUT_50_MHZ,
 		      GPIO_CNF_OUTPUT_PUSHPULL,
-		      GPIO12 | GPIO13 | GPIO14 | GPIO15 );
+		      GPIO12 | GPIO13 | GPIO14 | GPIO15);
 	gpio_clear(GPIOB, GPIO12 | GPIO13 | GPIO14 | GPIO15);
 }
 
@@ -229,7 +229,7 @@ static void power_right(uint32_t power)
 /**
  * @brief Set driving direction to forward in both motors.
  */
-static void drive_forward()
+static void drive_forward(void)
 {
 	gpio_clear(GPIOB, GPIO13 | GPIO15);
 	gpio_set(GPIOB, GPIO12 | GPIO14);
@@ -239,7 +239,7 @@ static void drive_forward()
 /**
  * @brief Set driving direction to backward in both motors.
  */
-static void drive_backward()
+static void drive_backward(void)
 {
 	gpio_clear(GPIOB, GPIO12 | GPIO14);
 	gpio_set(GPIOB, GPIO13 | GPIO15);
@@ -252,7 +252,7 @@ static void drive_backward()
  * Set driver controlling signals to high to short break the driver outputs.
  * The break will be effective with any PWM input signal in the motor driver.
  */
-static void drive_break()
+static void drive_break(void)
 {
 	gpio_set(GPIOB, GPIO12 | GPIO13 | GPIO14 | GPIO15);
 }
@@ -274,9 +274,10 @@ int main(void)
 
 	drive_forward();
 
-	while(1) {
+	while (1) {
 		int left = timer_get_counter(TIM1);
 		int right = timer_get_counter(TIM4);
+
 		power_left(j % 500);
 		power_right(j % 500);
 		for (int i = 0; i < 8000; i++)
