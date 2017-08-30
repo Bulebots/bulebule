@@ -1,0 +1,12 @@
+before_script:
+  - linux="https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git"
+  - wget $linux/plain/scripts/spelling.txt
+  - wget $linux/plain/scripts/checkpatch.pl
+  - chmod +x checkpatch.pl
+
+script:
+  - options="--terse --no-tree --max-line-length=80"
+  - ./checkpatch.pl $options --file src/*
+
+after_script:
+  - rm checkpatch.pl
