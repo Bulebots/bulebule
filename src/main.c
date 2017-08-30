@@ -259,6 +259,24 @@ static void drive_break(void)
 
 
 /**
+ * @brief Read left motor encoder counter.
+ */
+static uint32_t read_encoder_left(void)
+{
+	return timer_get_counter(TIM1);
+}
+
+
+/**
+ * @brief Read right motor encoder counter.
+ */
+static uint32_t read_encoder_right(void)
+{
+	return timer_get_counter(TIM4);
+}
+
+
+/**
  * @brief Initial setup and infinite wait.
  */
 int main(void)
@@ -275,8 +293,8 @@ int main(void)
 	drive_forward();
 
 	while (1) {
-		int left = timer_get_counter(TIM1);
-		int right = timer_get_counter(TIM4);
+		int left = read_encoder_left();
+		int right = read_encoder_right();
 
 		power_left(j % 500);
 		power_right(j % 500);
