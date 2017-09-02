@@ -20,7 +20,7 @@ def circle_points(number, circle, shift=0):
 
 # Gears
 MODULE = 0.3
-Z_PINION = 14
+Z_PINION = 15
 Z_GEAR = 60
 
 # Motor
