@@ -7,10 +7,11 @@
 #include <libopencm3/stm32/rcc.h>
 #include <libopencm3/stm32/timer.h>
 #include <libopencm3/stm32/usart.h>
+#include <libopencm3/stm32/adc.h>
 
 
 int _write(int file, char *ptr, int len);
-
+volatile uint16_t sensor_1, sensor_2, sensor_3, sensor_4 = 0;
 
 /**
  * @brief Initial clock setup.
@@ -35,6 +36,10 @@ static void setup_clock(void)
 	rcc_periph_clock_enable(RCC_TIM1);
 	rcc_periph_clock_enable(RCC_TIM3);
 	rcc_periph_clock_enable(RCC_TIM4);
+	
+	/*Adc*/
+	rcc_periph_clock_enable(RCC_ADC1);
+	
 }
 
 
@@ -54,6 +59,11 @@ static void setup_gpio(void)
 		      GPIO_CNF_OUTPUT_PUSHPULL,
 		      GPIO12 | GPIO13 | GPIO14 | GPIO15);
 	gpio_clear(GPIOB, GPIO12 | GPIO13 | GPIO14 | GPIO15);
+
+	/*ADC*/
+	gpio_set_mode(GPIOA, GPIO_MODE_INPUT, 
+		      GPIO_CNF_INPUT_ANALOG,
+		      GPIO3 | GPIO4 | GPIO5 | GPIO6 );
 }
 
 
@@ -275,35 +285,120 @@ static uint32_t read_encoder_right(void)
 	return timer_get_counter(TIM4);
 }
 
+/**
+ * @brief General timer setup
+ *
+ * TIM2 to read ADC1
+ */
+static void setup_timer(void)
+{
+	/* Set up the timer TIM2 for injected sampling */
+	uint32_t timer;
+
+	timer   = TIM2;
+	rcc_periph_clock_enable(RCC_TIM2);
+
+	/* Time Base configuration */
+    rcc_periph_reset_pulse(RST_TIM2);
+    timer_set_mode(timer, TIM_CR1_CKD_CK_INT,
+	    TIM_CR1_CMS_EDGE, TIM_CR1_DIR_UP);
+    timer_set_period(timer, 0xFF);
+    timer_set_prescaler(timer, 0x8);
+    timer_set_clock_division(timer, 0x0);
+    /* Generate TRGO on every update. */
+    timer_set_master_mode(timer, TIM_CR2_MMS_UPDATE);
+    timer_enable_counter(timer);
+}
+
+/**
+ * @brief Setup for adc: scan mode ADC1.
+ */
+static void setup_adc(void)
+{
+	int i;
+	uint8_t channel_array[4]; 
+
+	/* Make sure the ADC doesn't run during config. */
+	adc_power_off(ADC1);
+
+	/* We configure everything for one single timer triggered injected conversion with interrupt generation. */
+	/* While not needed for a single channel, try out scan mode which does all channels in one sweep and
+	 * generates the interrupt/EOC/JEOC flags set at the end of all channels, not each one.
+	 */
+	adc_enable_scan_mode(ADC1);
+	adc_set_single_conversion_mode(ADC1);
+	/* We want to start the injected conversion with the TIM2 TRGO */
+	adc_enable_external_trigger_injected(ADC1,ADC_CR2_JEXTSEL_TIM2_TRGO);
+	/* Generate the ADC1_2_IRQ */
+	adc_enable_eoc_interrupt_injected(ADC1);
+	adc_set_right_aligned(ADC1);
+	adc_set_sample_time_on_all_channels(ADC1, ADC_SMPR_SMP_28DOT5CYC);
+
+	/* Select the channels we want to convert.
+	 * 3=Sensor1, 4=Sensor2, 5=Sensor3, 6=Sensor4
+	 */
+	channel_array[0] = 3;
+	channel_array[1] = 4;
+	channel_array[2] = 5;
+	channel_array[3] = 6;
+	adc_set_injected_sequence(ADC1, 4, channel_array);
+
+	adc_power_on(ADC1);
+
+	/* Wait for ADC starting up. */
+	for (i = 0; i < 800000; i++)    /* Wait a bit. */
+		__asm__("nop");
+
+	adc_reset_calibration(ADC1);
+	adc_calibrate(ADC1);
+}
+
+/**
+ * @brief Interruptions setup
+ */
+static void setup_irq(void)
+{
+	/* Enable the adc1_2_isr() routine */
+    nvic_set_priority(NVIC_ADC1_2_IRQ, 0);
+    nvic_enable_irq(NVIC_ADC1_2_IRQ);
+}
 
 /**
  * @brief Initial setup and infinite wait.
  */
 int main(void)
 {
-	int j = 0;
-
 	setup_clock();
 	setup_gpio();
 	setup_usart();
 	setup_encoders();
 	setup_pwm();
 	setup_systick();
+	setup_timer();
+	setup_irq();	
+	setup_adc();
 
 	drive_forward();
 
 	while (1) {
-		int left = read_encoder_left();
-		int right = read_encoder_right();
 
-		power_left(j % 500);
-		power_right(j % 500);
 		for (int i = 0; i < 8000; i++)
 			__asm__("nop");
-		if (!(j % 500))
-			printf("Left: %d, Right: %d\n", left, right);
-		j += 1;
+		printf("S1: %d, S2: %d, S3: %d, S4: %d\n", sensor_1, sensor_2,sensor_3,sensor_4);
 	}
 
 	return 0;
+}
+
+/**
+ * @brief Interruption routine.
+ */
+void adc1_2_isr(void)
+{
+    /* Clear Injected End Of Conversion (JEOC) */
+    ADC_SR(ADC1) &= ~ADC_SR_JEOC;
+    sensor_1 = adc_read_injected(ADC1,1);
+    sensor_2 = adc_read_injected(ADC1,2);
+    sensor_3 = adc_read_injected(ADC1,3);
+    sensor_4 = adc_read_injected(ADC1,4);
 }
