@@ -11,7 +11,22 @@
 
 
 int _write(int file, char *ptr, int len);
-volatile uint16_t sensor_1, sensor_2, sensor_3, sensor_4 = 0;
+volatile uint16_t sensors[2][4];
+volatile uint8_t emitter_status = 0;
+
+#define EMIT_UNDEFINED 0
+#define EMIT_ON 1
+#define EMIT_ADC_ON 2
+#define EMIT_OFF 3
+#define EMIT_ADC_OFF 4
+#define SENSOR_ON 0
+#define SENSOR_OFF 1
+#define SENSOR_1 0
+#define SENSOR_2 1
+#define SENSOR_3 2
+#define SENSOR_4 3
+
+
 
 /**
  * @brief Initial clock setup.
@@ -288,26 +303,95 @@ static uint32_t read_encoder_right(void)
 /**
  * @brief General timer setup
  *
- * TIM2 to read ADC1
+ * TIM2 to manage sensors
  */
 static void setup_timer(void)
 {
-	/* Set up the timer TIM2 for injected sampling */
-	uint32_t timer;
 
-	timer   = TIM2;
+	/* Enable TIM2 clock. */	
 	rcc_periph_clock_enable(RCC_TIM2);
 
+	/* Enable TIM2 interrupt. */
+	nvic_enable_irq(NVIC_TIM2_IRQ);
+
 	/* Time Base configuration */
-    rcc_periph_reset_pulse(RST_TIM2);
-    timer_set_mode(timer, TIM_CR1_CKD_CK_INT,
+    	rcc_periph_reset_pulse(RST_TIM2);
+    	timer_set_mode(TIM2, TIM_CR1_CKD_CK_INT,
 	    TIM_CR1_CMS_EDGE, TIM_CR1_DIR_UP);
-    timer_set_period(timer, 0xFF);
-    timer_set_prescaler(timer, 0x8);
-    timer_set_clock_division(timer, 0x0);
-    /* Generate TRGO on every update. */
-    timer_set_master_mode(timer, TIM_CR2_MMS_UPDATE);
-    timer_enable_counter(timer);
+    	timer_set_period(TIM2, 0xFF);
+    	timer_set_prescaler(TIM2, 0x8);
+    	timer_set_clock_division(TIM2, 0x0);
+   
+	 /* Generate TRGO on every update. */
+    	timer_set_master_mode(TIM2, TIM_CR2_MMS_UPDATE);
+    	timer_enable_counter(TIM2);
+    	timer_enable_irq(TIM2, TIM_DIER_CC1IE);
+}
+
+/**
+ * @brief TIM2 Interruption routine
+ *
+ * State 1:
+ * Read ADC (OFF)
+ * Emitter ON
+ * 
+ * State 2:
+ * ADC start
+ * 
+ * State 3:
+ * Read ADC (ON)
+ * Emitter OFF
+ * 
+ * State 4:
+ * ADC start
+ */
+void tim2_isr(void)
+{
+	if (timer_get_flag(TIM2, TIM_SR_CC1IF)) {
+
+		/* Clear compare interrupt flag. */
+		timer_clear_flag(TIM2, TIM_SR_CC1IF);
+		
+		/*State Machine*/
+		switch(emitter_status) {
+		
+		case EMIT_UNDEFINED:
+		emitter_status = EMIT_ON;
+		break;
+		
+  		case EMIT_ON  :
+		sensors[SENSOR_OFF][SENSOR_1] = adc_read_injected(ADC1,1);
+    		sensors[SENSOR_OFF][SENSOR_2] = adc_read_injected(ADC1,2);
+    		sensors[SENSOR_OFF][SENSOR_3] = adc_read_injected(ADC1,3);
+    		sensors[SENSOR_OFF][SENSOR_4] = adc_read_injected(ADC1,4);
+		/*EMITTER_ON()*/
+		emitter_status = EMIT_ADC_ON;
+      		break; 
+	
+		case EMIT_ADC_ON  :
+      		adc_start_conversion_injected(ADC1);
+		emitter_status = EMIT_OFF;
+      		break; 
+
+		case EMIT_OFF  :
+      		sensors[SENSOR_ON][SENSOR_1] = adc_read_injected(ADC1,1);
+    		sensors[SENSOR_ON][SENSOR_2] = adc_read_injected(ADC1,2);
+    		sensors[SENSOR_ON][SENSOR_3] = adc_read_injected(ADC1,3);
+    		sensors[SENSOR_ON][SENSOR_4] = adc_read_injected(ADC1,4);
+		/*EMITTER_OFF()*/
+		emitter_status = EMIT_ADC_OFF;
+      		break; 
+
+		case EMIT_ADC_OFF  :
+      		adc_start_conversion_injected(ADC1);
+		emitter_status = EMIT_ON;
+      		break; 
+  
+   		default : 
+		break;	
+		}
+
+	}
 }
 
 /**
@@ -327,10 +411,9 @@ static void setup_adc(void)
 	 */
 	adc_enable_scan_mode(ADC1);
 	adc_set_single_conversion_mode(ADC1);
-	/* We want to start the injected conversion with the TIM2 TRGO */
-	adc_enable_external_trigger_injected(ADC1,ADC_CR2_JEXTSEL_TIM2_TRGO);
-	/* Generate the ADC1_2_IRQ */
-	adc_enable_eoc_interrupt_injected(ADC1);
+	/* We want to start the injected conversion in SW*/
+	adc_enable_external_trigger_injected(ADC1,ADC_CR2_JEXTSEL_JSWSTART);
+
 	adc_set_right_aligned(ADC1);
 	adc_set_sample_time_on_all_channels(ADC1, ADC_SMPR_SMP_28DOT5CYC);
 
@@ -354,16 +437,6 @@ static void setup_adc(void)
 }
 
 /**
- * @brief Interruptions setup
- */
-static void setup_irq(void)
-{
-	/* Enable the adc1_2_isr() routine */
-    nvic_set_priority(NVIC_ADC1_2_IRQ, 0);
-    nvic_enable_irq(NVIC_ADC1_2_IRQ);
-}
-
-/**
  * @brief Initial setup and infinite wait.
  */
 int main(void)
@@ -374,31 +447,16 @@ int main(void)
 	setup_encoders();
 	setup_pwm();
 	setup_systick();
-	setup_timer();
-	setup_irq();	
+	setup_timer();	
 	setup_adc();
 
 	drive_forward();
 
 	while (1) {
-
 		for (int i = 0; i < 8000; i++)
 			__asm__("nop");
-		printf("S1: %d, S2: %d, S3: %d, S4: %d\n", sensor_1, sensor_2,sensor_3,sensor_4);
+		printf("S1ON: %d, S1OFF: %d\n", sensors[0][1], sensors[1][1]);
 	}
 
 	return 0;
-}
-
-/**
- * @brief Interruption routine.
- */
-void adc1_2_isr(void)
-{
-    /* Clear Injected End Of Conversion (JEOC) */
-    ADC_SR(ADC1) &= ~ADC_SR_JEOC;
-    sensor_1 = adc_read_injected(ADC1,1);
-    sensor_2 = adc_read_injected(ADC1,2);
-    sensor_3 = adc_read_injected(ADC1,3);
-    sensor_4 = adc_read_injected(ADC1,4);
 }
