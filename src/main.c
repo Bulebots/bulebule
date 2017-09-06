@@ -9,11 +9,6 @@
 #include <libopencm3/stm32/usart.h>
 #include <libopencm3/stm32/adc.h>
 
-
-int _write(int file, char *ptr, int len);
-volatile uint16_t sensors[2][4];
-volatile uint8_t emitter_status = 0;
-
 #define EMIT_UNDEFINED 0
 #define EMIT_ON 1
 #define EMIT_ADC_ON 2
@@ -26,7 +21,9 @@ volatile uint8_t emitter_status = 0;
 #define SENSOR_3 2
 #define SENSOR_4 3
 
-
+int _write(int file, char *ptr, int len);
+volatile uint16_t sensors[2][4];
+volatile uint8_t emitter_status = EMIT_UNDEFINED;
 
 /**
  * @brief Initial clock setup.
@@ -35,12 +32,18 @@ volatile uint8_t emitter_status = 0;
  * at 72 MHz (the maximum allowed when using the external crystal/resonator).
  * This output frequency is possible thanks to the Phase Locked Loop (PLL)
  * multiplier.
+ * The default values for preescalers are:
+ * ADC prescaler(Max. 14MHz): Divider 8 / Set 9MHz  
+ * APB1 prescaler(Max. 36MHz): Divider 2 / Set 36MHz 
+ * APB2 prescaler(Max. 72MHz): Divider 1 / Set 72 MHz
+ * AHB prescaler(Max. 72MHz): Divider 1 / Set 72 MHz 
  *
  * Enable required clocks for the GPIOs and timers as well.
  */
 static void setup_clock(void)
 {
 	rcc_clock_setup_in_hse_8mhz_out_72mhz();
+	rcc_periph_clock_enable(RCC_GPIOA);
 	rcc_periph_clock_enable(RCC_GPIOB);
 	rcc_periph_clock_enable(RCC_GPIOC);
 
@@ -75,10 +78,15 @@ static void setup_gpio(void)
 		      GPIO12 | GPIO13 | GPIO14 | GPIO15);
 	gpio_clear(GPIOB, GPIO12 | GPIO13 | GPIO14 | GPIO15);
 
-	/*ADC*/
+	/*ADC sensors*/
 	gpio_set_mode(GPIOA, GPIO_MODE_INPUT, 
 		      GPIO_CNF_INPUT_ANALOG,
 		      GPIO3 | GPIO4 | GPIO5 | GPIO6 );
+	/*Led test*/
+	gpio_set_mode(GPIOA, GPIO_MODE_OUTPUT_2_MHZ,
+			GPIO_CNF_OUTPUT_PUSHPULL, GPIO7);
+	gpio_clear(GPIOA, GPIO7);
+	
 }
 
 
@@ -307,7 +315,6 @@ static uint32_t read_encoder_right(void)
  */
 static void setup_timer(void)
 {
-
 	/* Enable TIM2 clock. */	
 	rcc_periph_clock_enable(RCC_TIM2);
 
@@ -316,13 +323,18 @@ static void setup_timer(void)
 
 	/* Time Base configuration */
     	rcc_periph_reset_pulse(RST_TIM2);
+	/*No clock division ratio/ No-aligned-mode(edge), 
+	* /direction up*/
     	timer_set_mode(TIM2, TIM_CR1_CKD_CK_INT,
 	    TIM_CR1_CMS_EDGE, TIM_CR1_DIR_UP);
-    	timer_set_period(TIM2, 0xFF);
-    	timer_set_prescaler(TIM2, 0x8);
-    	timer_set_clock_division(TIM2, 0x0);
+	timer_set_clock_division(TIM2, 0x00);
+	/*From 72 MHz (APB1 = 36 MHz * 2, See clock setup) to 1 KHz*/
+	timer_set_prescaler(TIM2, ((rcc_apb1_frequency * 2) / 10000));
+	/*From 1KHz to 1 Hz*/
+    	timer_set_period(TIM2, 0x2710); /*10000*/
    
-	 /* Generate TRGO on every update. */
+	 /* Generate TRGO on every update (Master Mode Selection
+	update). */
     	timer_set_master_mode(TIM2, TIM_CR2_MMS_UPDATE);
     	timer_enable_counter(TIM2);
     	timer_enable_irq(TIM2, TIM_DIER_CC1IE);
@@ -356,6 +368,7 @@ void tim2_isr(void)
 		switch(emitter_status) {
 		
 		case EMIT_UNDEFINED:
+		printf("undef\n");
 		emitter_status = EMIT_ON;
 		break;
 		
@@ -365,11 +378,14 @@ void tim2_isr(void)
     		sensors[SENSOR_OFF][SENSOR_3] = adc_read_injected(ADC1,3);
     		sensors[SENSOR_OFF][SENSOR_4] = adc_read_injected(ADC1,4);
 		/*EMITTER_ON()*/
+		printf("on\n");
+		gpio_toggle(GPIOA, GPIO7);
 		emitter_status = EMIT_ADC_ON;
       		break; 
 	
 		case EMIT_ADC_ON  :
       		adc_start_conversion_injected(ADC1);
+		printf("adc_on\n");
 		emitter_status = EMIT_OFF;
       		break; 
 
@@ -379,11 +395,14 @@ void tim2_isr(void)
     		sensors[SENSOR_ON][SENSOR_3] = adc_read_injected(ADC1,3);
     		sensors[SENSOR_ON][SENSOR_4] = adc_read_injected(ADC1,4);
 		/*EMITTER_OFF()*/
+		gpio_toggle(GPIOA, GPIO7);
+		printf("off\n");
 		emitter_status = EMIT_ADC_OFF;
       		break; 
 
 		case EMIT_ADC_OFF  :
       		adc_start_conversion_injected(ADC1);
+		printf("adc_off\n");
 		emitter_status = EMIT_ON;
       		break; 
   
@@ -451,11 +470,10 @@ int main(void)
 	setup_adc();
 
 	drive_forward();
-
 	while (1) {
 		for (int i = 0; i < 8000; i++)
 			__asm__("nop");
-		printf("S1ON: %d, S1OFF: %d\n", sensors[0][1], sensors[1][1]);
+	//	printf("S1ON: %d, S1OFF: %d\n", sensors[0][1], sensors[1][1]);
 	}
 
 	return 0;
