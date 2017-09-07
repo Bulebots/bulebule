@@ -45,6 +45,13 @@ Pinout
 ====  =========  ==============================
 Pin   Function   Connected to
 ====  =========  ==============================
+PA0   ADC12_IN0  Battery
+PA1   ADC12_IN1  Gyroscope Vref
+PA2   ADC12_IN2  Gyroscope Vout
+PA3   ADC12_IN3  Sensor left
+PA4   ADC12_IN4  Sensor front-left
+PA5   ADC12_IN5	 Sensor front-right
+PA6   ADC12_IN6  Sensor right
 PA8   TIM1_CH1   Left motor encoder, channel A
 PA9   TIM1_CH2   Left motor encoder, channel B
 PB0   TIM3_CH3   Left motor PWM
