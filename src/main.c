@@ -32,9 +32,14 @@ static void setup_clock(void)
 	rcc_periph_clock_enable(RCC_USART3);
 
 	/* Encoders */
-	rcc_periph_clock_enable(RCC_TIM1);
-	rcc_periph_clock_enable(RCC_TIM3);
+	rcc_periph_clock_enable(RCC_TIM2);
 	rcc_periph_clock_enable(RCC_TIM4);
+
+	/* PWM */
+	rcc_periph_clock_enable(RCC_TIM3);
+
+	/* Alternate functions */
+	rcc_periph_clock_enable(RCC_AFIO);
 }
 
 
@@ -48,6 +53,11 @@ static void setup_gpio(void)
 	gpio_set_mode(GPIOC, GPIO_MODE_OUTPUT_50_MHZ,
 		      GPIO_CNF_OUTPUT_PUSHPULL, GPIO13);
 	gpio_clear(GPIOC, GPIO13);
+
+	/* TIM2 remap for the quadrature encoder */
+	gpio_primary_remap(AFIO_MAPR_SWJ_CFG_JTAG_OFF_SW_ON,
+			   AFIO_MAPR_TIM2_REMAP_FULL_REMAP);
+
 
 	/* Motor driver */
 	gpio_set_mode(GPIOB, GPIO_MODE_OUTPUT_50_MHZ,
@@ -125,13 +135,14 @@ static void setup_pwm(void)
  *
  * - Set the Auto-Reload Register (TIMx_ARR).
  * - Set the encoder interface mode counting on both TI1 and TI2 edges.
- * - Configure inputs.
+ * - Configure inputs (see note).
  * - Enable counter.
  *
  * @param[in] timer_peripheral Timer register address base to configure.
  *
  * @see Reference manual (RM0008) "TIMx functional description" and in
  * particular "Encoder interface mode" section.
+ * @note It currently always use channels 1 and 2.
  */
 static void configure_timer_as_quadrature_encoder(uint32_t timer_peripheral)
 {
@@ -146,11 +157,11 @@ static void configure_timer_as_quadrature_encoder(uint32_t timer_peripheral)
 /**
  * @brief Setup timers for the motor encoders.
  *
- * TIM1 for the left motor and TIM4 for the right motor are configured.
+ * TIM2 for the left motor and TIM4 for the right motor are configured.
  */
 static void setup_encoders(void)
 {
-	configure_timer_as_quadrature_encoder(TIM1);
+	configure_timer_as_quadrature_encoder(TIM2);
 	configure_timer_as_quadrature_encoder(TIM4);
 }
 
@@ -263,7 +274,7 @@ static void drive_break(void)
  */
 static uint32_t read_encoder_left(void)
 {
-	return timer_get_counter(TIM1);
+	return timer_get_counter(TIM2);
 }
 
 
