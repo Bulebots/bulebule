@@ -33,10 +33,10 @@ volatile uint8_t emitter_status = EMIT_UNDEFINED;
  * This output frequency is possible thanks to the Phase Locked Loop (PLL)
  * multiplier.
  * The default values for preescalers are:
- * ADC prescaler(Max. 14MHz): Divider 8 / Set 9MHz  
- * APB1 prescaler(Max. 36MHz): Divider 2 / Set 36MHz 
+ * ADC prescaler(Max. 14MHz): Divider 8 / Set 9MHz
+ * APB1 prescaler(Max. 36MHz): Divider 2 / Set 36MHz
  * APB2 prescaler(Max. 72MHz): Divider 1 / Set 72 MHz
- * AHB prescaler(Max. 72MHz): Divider 1 / Set 72 MHz 
+ * AHB prescaler(Max. 72MHz): Divider 1 / Set 72 MHz
  *
  * Enable required clocks for the GPIOs and timers as well.
  */
@@ -51,13 +51,18 @@ static void setup_clock(void)
 	rcc_periph_clock_enable(RCC_USART3);
 
 	/* Encoders */
-	rcc_periph_clock_enable(RCC_TIM1);
-	rcc_periph_clock_enable(RCC_TIM3);
+	rcc_periph_clock_enable(RCC_TIM2);
 	rcc_periph_clock_enable(RCC_TIM4);
-	
+
+	/* PWM */
+	rcc_periph_clock_enable(RCC_TIM3);
+
+	/* Alternate functions */
+	rcc_periph_clock_enable(RCC_AFIO);
+
 	/*Adc*/
 	rcc_periph_clock_enable(RCC_ADC1);
-	
+
 }
 
 
@@ -72,6 +77,11 @@ static void setup_gpio(void)
 		      GPIO_CNF_OUTPUT_PUSHPULL, GPIO13);
 	gpio_clear(GPIOC, GPIO13);
 
+	/* TIM2 remap for the quadrature encoder */
+	gpio_primary_remap(AFIO_MAPR_SWJ_CFG_JTAG_OFF_SW_ON,
+			   AFIO_MAPR_TIM2_REMAP_FULL_REMAP);
+
+
 	/* Motor driver */
 	gpio_set_mode(GPIOB, GPIO_MODE_OUTPUT_50_MHZ,
 		      GPIO_CNF_OUTPUT_PUSHPULL,
@@ -79,14 +89,14 @@ static void setup_gpio(void)
 	gpio_clear(GPIOB, GPIO12 | GPIO13 | GPIO14 | GPIO15);
 
 	/*ADC sensors*/
-	gpio_set_mode(GPIOA, GPIO_MODE_INPUT, 
+	gpio_set_mode(GPIOA, GPIO_MODE_INPUT,
 		      GPIO_CNF_INPUT_ANALOG,
 		      GPIO3 | GPIO4 | GPIO5 | GPIO6 );
 	/*Led test*/
 	gpio_set_mode(GPIOA, GPIO_MODE_OUTPUT_2_MHZ,
 			GPIO_CNF_OUTPUT_PUSHPULL, GPIO7);
 	gpio_clear(GPIOA, GPIO7);
-	
+
 }
 
 
@@ -158,13 +168,14 @@ static void setup_pwm(void)
  *
  * - Set the Auto-Reload Register (TIMx_ARR).
  * - Set the encoder interface mode counting on both TI1 and TI2 edges.
- * - Configure inputs.
+ * - Configure inputs (see note).
  * - Enable counter.
  *
  * @param[in] timer_peripheral Timer register address base to configure.
  *
  * @see Reference manual (RM0008) "TIMx functional description" and in
  * particular "Encoder interface mode" section.
+ * @note It currently always use channels 1 and 2.
  */
 static void configure_timer_as_quadrature_encoder(uint32_t timer_peripheral)
 {
@@ -179,11 +190,11 @@ static void configure_timer_as_quadrature_encoder(uint32_t timer_peripheral)
 /**
  * @brief Setup timers for the motor encoders.
  *
- * TIM1 for the left motor and TIM4 for the right motor are configured.
+ * TIM2 for the left motor and TIM4 for the right motor are configured.
  */
 static void setup_encoders(void)
 {
-	configure_timer_as_quadrature_encoder(TIM1);
+	configure_timer_as_quadrature_encoder(TIM2);
 	configure_timer_as_quadrature_encoder(TIM4);
 }
 
@@ -296,7 +307,7 @@ static void drive_break(void)
  */
 static uint32_t read_encoder_left(void)
 {
-	return timer_get_counter(TIM1);
+	return timer_get_counter(TIM2);
 }
 
 
@@ -311,67 +322,64 @@ static uint32_t read_encoder_right(void)
 /**
  * @brief General timer setup
  *
- * TIM2 to manage sensors
+ * TIM1 to manage sensors
  */
 static void setup_timer(void)
 {
-	/* Enable TIM2 clock. */	
-	rcc_periph_clock_enable(RCC_TIM2);
+	/* Enable TIM1 clock. */
+	rcc_periph_clock_enable(RCC_TIM1);
 
-	/* Enable TIM2 interrupt. */
-	nvic_enable_irq(NVIC_TIM2_IRQ);
+	/* Enable TIM1 interrupt due update. */
+	nvic_enable_irq(NVIC_TIM1_UP_IRQ);
 
 	/* Time Base configuration */
-    	rcc_periph_reset_pulse(RST_TIM2);
-	/*No clock division ratio/ No-aligned-mode(edge), 
+    	rcc_periph_reset_pulse(RST_TIM1);
+	/*No clock division ratio/ No-aligned-mode(edge),
 	* /direction up*/
-    	timer_set_mode(TIM2, TIM_CR1_CKD_CK_INT,
+    	timer_set_mode(TIM1, TIM_CR1_CKD_CK_INT,
 	    TIM_CR1_CMS_EDGE, TIM_CR1_DIR_UP);
-	timer_set_clock_division(TIM2, 0x00);
-	/*From 72 MHz (APB1 = 36 MHz * 2, See clock setup) to 1 KHz*/
-	timer_set_prescaler(TIM2, ((rcc_apb1_frequency * 2) / 10000));
+	timer_set_clock_division(TIM1, 0x00);
+	/*TIM1, APB2 (APB2 = 72 MHz, See clock setup) to 1 KHz*/
+	timer_set_prescaler(TIM1, (rcc_apb2_frequency / 10000));
 	/*From 1KHz to 1 Hz*/
-    	timer_set_period(TIM2, 0x2710); /*10000*/
-   
-	 /* Generate TRGO on every update (Master Mode Selection
-	update). */
-    	timer_set_master_mode(TIM2, TIM_CR2_MMS_UPDATE);
-    	timer_enable_counter(TIM2);
-    	timer_enable_irq(TIM2, TIM_DIER_CC1IE);
+    	timer_set_period(TIM1, 0x2710); /*10000*/
+    	timer_enable_counter(TIM1);
+			/*Update interruption enable*/
+    	timer_enable_irq(TIM1, TIM_DIER_UIE);
 }
 
 /**
- * @brief TIM2 Interruption routine
+ * @brief TIM1 Interruption routine
  *
  * State 1:
  * Read ADC (OFF)
  * Emitter ON
- * 
+ *
  * State 2:
  * ADC start
- * 
+ *
  * State 3:
  * Read ADC (ON)
  * Emitter OFF
- * 
+ *
  * State 4:
  * ADC start
  */
-void tim2_isr(void)
+void tim1_up_isr(void)
 {
-	if (timer_get_flag(TIM2, TIM_SR_CC1IF)) {
+	if (timer_get_flag(TIM1, TIM_SR_UIF)) {
 
-		/* Clear compare interrupt flag. */
-		timer_clear_flag(TIM2, TIM_SR_CC1IF);
-		
+		/* Clear update interrupt flag. */
+		timer_clear_flag(TIM1, TIM_SR_UIF);
+
 		/*State Machine*/
 		switch(emitter_status) {
-		
+
 		case EMIT_UNDEFINED:
 		printf("undef\n");
 		emitter_status = EMIT_ON;
 		break;
-		
+
   		case EMIT_ON  :
 		sensors[SENSOR_OFF][SENSOR_1] = adc_read_injected(ADC1,1);
     		sensors[SENSOR_OFF][SENSOR_2] = adc_read_injected(ADC1,2);
@@ -381,13 +389,13 @@ void tim2_isr(void)
 		printf("on\n");
 		gpio_toggle(GPIOA, GPIO7);
 		emitter_status = EMIT_ADC_ON;
-      		break; 
-	
+      		break;
+
 		case EMIT_ADC_ON  :
       		adc_start_conversion_injected(ADC1);
 		printf("adc_on\n");
 		emitter_status = EMIT_OFF;
-      		break; 
+      		break;
 
 		case EMIT_OFF  :
       		sensors[SENSOR_ON][SENSOR_1] = adc_read_injected(ADC1,1);
@@ -398,16 +406,16 @@ void tim2_isr(void)
 		gpio_toggle(GPIOA, GPIO7);
 		printf("off\n");
 		emitter_status = EMIT_ADC_OFF;
-      		break; 
+      		break;
 
 		case EMIT_ADC_OFF  :
       		adc_start_conversion_injected(ADC1);
 		printf("adc_off\n");
 		emitter_status = EMIT_ON;
-      		break; 
-  
-   		default : 
-		break;	
+      		break;
+
+   		default :
+		break;
 		}
 
 	}
@@ -419,7 +427,7 @@ void tim2_isr(void)
 static void setup_adc(void)
 {
 	int i;
-	uint8_t channel_array[4]; 
+	uint8_t channel_array[4];
 
 	/* Make sure the ADC doesn't run during config. */
 	adc_power_off(ADC1);
@@ -466,7 +474,7 @@ int main(void)
 	setup_encoders();
 	setup_pwm();
 	setup_systick();
-	setup_timer();	
+	setup_timer();
 	setup_adc();
 
 	drive_forward();

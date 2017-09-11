@@ -42,22 +42,39 @@ on both TI1 and TI2 edges.
 Pinout
 ======
 
-====  =========  ==============================
-Pin   Function   Connected to
-====  =========  ==============================
-PA8   TIM1_CH1   Left motor encoder, channel A
-PA9   TIM1_CH2   Left motor encoder, channel B
-PB0   TIM3_CH3   Left motor PWM
-PB1   TIM3_CH4   Right motor PWM
-PB6   TIM4_CH1   Right motor encoder, channel B
-PB7   TIM4_CH2   Right motor encoder, channel A
-PB10  USART3_TX  Bluetooth RX
-PB11  USART3_RX  Bluetooth TX
-PB12  GPIO       Left motor driver IN1
-PB13  GPIO       Left motor driver IN2
-PB14  GPIO       Right motor driver IN2
-PB15  GPIO       Right motor driver IN1
-====  =========  ==============================
+====  =========  ======  ==============================
+Pin   Function   Type    Connected to
+====  =========  ======  ==============================
+PA0   ADC12_IN0  Input   Battery 1
+PA1   ADC12_IN1  Input   Battery 2
+PA2   ADC12_IN2  Input   Gyroscope Vref
+PA3   ADC12_IN3  Input   Gyroscope Vout
+PA4   ADC12_IN4  Input   Sensor left collector
+PA5   ADC12_IN5  Input   Sensor front-left collector
+PA6   ADC12_IN6  Input   Sensor front-right collector
+PA7   ADC12_IN7  Input   Sensor right collector
+PA8   GPIO       Output  Sensor emitter switch
+PA9   TIM1_CH2   Output  Speaker PWM
+PA10  GPIO       Input   Button
+PA11  GPIO       Input   Button
+PA12  GPIO       Output  Led
+PA15  TIM2_CH1   Input   Left motor encoder, channel A
+PB0   TIM3_CH3   Output  Left motor PWM
+PB1   TIM3_CH4   Output  Right motor PWM
+PB3   TIM2_CH2   Input   Left motor encoder, channel B
+PB4   GPIO       Output  Led
+PB5   GPIO       Output  Led
+PB6   TIM4_CH1   Input   Right motor encoder, channel B
+PB7   TIM4_CH2   Input   Right motor encoder, channel A
+PB8   N/A        N/A     N/A
+PB9   N/A        N/A     N/A
+PB10  USART3_TX  Output  Bluetooth RX
+PB11  USART3_RX  Input   Bluetooth TX
+PB12  GPIO       Output  Left motor driver IN1
+PB13  GPIO       Output  Left motor driver IN2
+PB14  GPIO       Output  Right motor driver IN2
+PB15  GPIO       Output  Right motor driver IN1
+====  =========  ======  ==============================
 
 
 References
