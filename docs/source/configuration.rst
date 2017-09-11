@@ -45,25 +45,25 @@ Pinout
 ====  =========  ======  ==============================
 Pin   Function   Type    Connected to
 ====  =========  ======  ==============================
-PA0   ADC12_IN0  Input   Battery 1
-PA1   ADC12_IN1  Input   Battery 2
+PA0   ADC12_IN0  Input   Battery
+PA1   N/A        N/A     N/A
 PA2   ADC12_IN2  Input   Gyroscope Vref
 PA3   ADC12_IN3  Input   Gyroscope Vout
-PA4   ADC12_IN4  Input   Sensor left collector
-PA5   ADC12_IN5  Input   Sensor front-left collector
-PA6   ADC12_IN6  Input   Sensor front-right collector
-PA7   ADC12_IN7  Input   Sensor right collector
-PA8   GPIO       Output  Sensor emitter switch
+PA4   ADC12_IN4  Input   Side left phototransistor
+PA5   ADC12_IN5  Input   Side right phototransistor
+PA6   ADC12_IN6  Input   Front left phototransistor
+PA7   ADC12_IN7  Input   Front right phototransistor
+PA8   GPIO       Output  Infrared emitter switch
 PA9   TIM1_CH2   Output  Speaker PWM
-PA10  GPIO       Input   Button
-PA11  GPIO       Input   Button
-PA12  GPIO       Output  Led
+PA10  GPIO       Input   Left button
+PA11  GPIO       Input   Right button
+PA12  N/A        N/A     N/A
 PA15  TIM2_CH1   Input   Left motor encoder, channel A
 PB0   TIM3_CH3   Output  Left motor PWM
 PB1   TIM3_CH4   Output  Right motor PWM
 PB3   TIM2_CH2   Input   Left motor encoder, channel B
-PB4   GPIO       Output  Led
-PB5   GPIO       Output  Led
+PB4   GPIO       Output  Left LED
+PB5   GPIO       Output  Right LED
 PB6   TIM4_CH1   Input   Right motor encoder, channel B
 PB7   TIM4_CH2   Input   Right motor encoder, channel A
 PB8   N/A        N/A     N/A
