@@ -339,10 +339,10 @@ static void setup_timer(void)
     	timer_set_mode(TIM1, TIM_CR1_CKD_CK_INT,
 	    TIM_CR1_CMS_EDGE, TIM_CR1_DIR_UP);
 	timer_set_clock_division(TIM1, 0x00);
-	/*TIM1, APB2 (APB2 = 72 MHz, See clock setup) to 1 KHz*/
-	timer_set_prescaler(TIM1, (rcc_apb2_frequency / 10000));
-	/*From 1KHz to 1 Hz*/
-    	timer_set_period(TIM1, 0x2710); /*10000*/
+	/*TIM1, APB2 (APB2 = 72 MHz, See clock setup) to 100 KHz*/
+	timer_set_prescaler(TIM1, (rcc_apb2_frequency / 100));
+	/*From 100KHz to 100 KHz*/
+    	timer_set_period(TIM1, 0x1);
     	timer_enable_counter(TIM1);
 			/*Update interruption enable*/
     	timer_enable_irq(TIM1, TIM_DIER_UIE);
@@ -376,7 +376,6 @@ void tim1_up_isr(void)
 		switch(emitter_status) {
 
 		case EMIT_UNDEFINED:
-		printf("undef\n");
 		emitter_status = EMIT_ON;
 		break;
 
@@ -386,14 +385,12 @@ void tim1_up_isr(void)
     		sensors[SENSOR_OFF][SENSOR_3] = adc_read_injected(ADC1,3);
     		sensors[SENSOR_OFF][SENSOR_4] = adc_read_injected(ADC1,4);
 		/*EMITTER_ON()*/
-		printf("on\n");
 		gpio_toggle(GPIOA, GPIO7);
 		emitter_status = EMIT_ADC_ON;
       		break;
 
 		case EMIT_ADC_ON  :
       		adc_start_conversion_injected(ADC1);
-		printf("adc_on\n");
 		emitter_status = EMIT_OFF;
       		break;
 
@@ -404,13 +401,11 @@ void tim1_up_isr(void)
     		sensors[SENSOR_ON][SENSOR_4] = adc_read_injected(ADC1,4);
 		/*EMITTER_OFF()*/
 		gpio_toggle(GPIOA, GPIO7);
-		printf("off\n");
 		emitter_status = EMIT_ADC_OFF;
       		break;
 
 		case EMIT_ADC_OFF  :
       		adc_start_conversion_injected(ADC1);
-		printf("adc_off\n");
 		emitter_status = EMIT_ON;
       		break;
 
@@ -445,12 +440,12 @@ static void setup_adc(void)
 	adc_set_sample_time_on_all_channels(ADC1, ADC_SMPR_SMP_28DOT5CYC);
 
 	/* Select the channels we want to convert.
-	 * 3=Sensor1, 4=Sensor2, 5=Sensor3, 6=Sensor4
+	 * 4=Sensor1, 5=Sensor2, 6=Sensor3, 7=Sensor4
 	 */
-	channel_array[0] = 3;
-	channel_array[1] = 4;
-	channel_array[2] = 5;
-	channel_array[3] = 6;
+	channel_array[0] = 4;
+	channel_array[1] = 5;
+	channel_array[2] = 6;
+	channel_array[3] = 7;
 	adc_set_injected_sequence(ADC1, 4, channel_array);
 
 	adc_power_on(ADC1);
@@ -481,7 +476,7 @@ int main(void)
 	while (1) {
 		for (int i = 0; i < 8000; i++)
 			__asm__("nop");
-	//	printf("S1ON: %d, S1OFF: %d\n", sensors[0][1], sensors[1][1]);
+		printf("S1ON: %d, S1OFF: %d\n", sensors[0][1], sensors[1][1]);
 	}
 
 	return 0;
