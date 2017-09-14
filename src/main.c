@@ -91,7 +91,7 @@ static void setup_gpio(void)
 	/*ADC sensors*/
 	gpio_set_mode(GPIOA, GPIO_MODE_INPUT,
 		      GPIO_CNF_INPUT_ANALOG,
-		      GPIO3 | GPIO4 | GPIO5 | GPIO6 );
+		      GPIO3 | GPIO4 | GPIO5 | GPIO6);
 	/*Led test*/
 	gpio_set_mode(GPIOA, GPIO_MODE_OUTPUT_2_MHZ,
 			GPIO_CNF_OUTPUT_PUSHPULL, GPIO7);
@@ -329,23 +329,24 @@ static void setup_timer(void)
 	/* Enable TIM1 clock. */
 	rcc_periph_clock_enable(RCC_TIM1);
 
-	/* Enable TIM1 interrupt due update. */
+	/* Enable TIM1 interrupt due update.*/
 	nvic_enable_irq(NVIC_TIM1_UP_IRQ);
 
 	/* Time Base configuration */
-    	rcc_periph_reset_pulse(RST_TIM1);
-	/*No clock division ratio/ No-aligned-mode(edge),
-	* /direction up*/
-    	timer_set_mode(TIM1, TIM_CR1_CKD_CK_INT,
-	    TIM_CR1_CMS_EDGE, TIM_CR1_DIR_UP);
+	rcc_periph_reset_pulse(RST_TIM1);
+	/*No clock division ratio -- No-aligned-mode(edge)
+	* -- direction up
+	*/
+	timer_set_mode(TIM1, TIM_CR1_CKD_CK_INT,
+		TIM_CR1_CMS_EDGE, TIM_CR1_DIR_UP);
 	timer_set_clock_division(TIM1, 0x00);
 	/*TIM1, APB2 (APB2 = 72 MHz, See clock setup) to 100 KHz*/
 	timer_set_prescaler(TIM1, (rcc_apb2_frequency / 100));
 	/*From 100KHz to 100 KHz*/
-    	timer_set_period(TIM1, 0x1);
-    	timer_enable_counter(TIM1);
-			/*Update interruption enable*/
-    	timer_enable_irq(TIM1, TIM_DIER_UIE);
+	timer_set_period(TIM1, 0x1);
+	timer_enable_counter(TIM1);
+	/*Update interruption enable*/
+	timer_enable_irq(TIM1, TIM_DIER_UIE);
 }
 
 /**
@@ -368,52 +369,44 @@ static void setup_timer(void)
 void tim1_up_isr(void)
 {
 	if (timer_get_flag(TIM1, TIM_SR_UIF)) {
-
 		/* Clear update interrupt flag. */
 		timer_clear_flag(TIM1, TIM_SR_UIF);
 
-		/*State Machine*/
-		switch(emitter_status) {
-
-		case EMIT_UNDEFINED:
-		emitter_status = EMIT_ON;
-		break;
-
-  		case EMIT_ON  :
-		sensors[SENSOR_OFF][SENSOR_1] = adc_read_injected(ADC1,1);
-    		sensors[SENSOR_OFF][SENSOR_2] = adc_read_injected(ADC1,2);
-    		sensors[SENSOR_OFF][SENSOR_3] = adc_read_injected(ADC1,3);
-    		sensors[SENSOR_OFF][SENSOR_4] = adc_read_injected(ADC1,4);
-		/*EMITTER_ON()*/
-		gpio_toggle(GPIOA, GPIO7);
-		emitter_status = EMIT_ADC_ON;
-      		break;
-
-		case EMIT_ADC_ON  :
-      		adc_start_conversion_injected(ADC1);
-		emitter_status = EMIT_OFF;
-      		break;
-
-		case EMIT_OFF  :
-      		sensors[SENSOR_ON][SENSOR_1] = adc_read_injected(ADC1,1);
-    		sensors[SENSOR_ON][SENSOR_2] = adc_read_injected(ADC1,2);
-    		sensors[SENSOR_ON][SENSOR_3] = adc_read_injected(ADC1,3);
-    		sensors[SENSOR_ON][SENSOR_4] = adc_read_injected(ADC1,4);
-		/*EMITTER_OFF()*/
-		gpio_toggle(GPIOA, GPIO7);
-		emitter_status = EMIT_ADC_OFF;
-      		break;
-
-		case EMIT_ADC_OFF  :
-      		adc_start_conversion_injected(ADC1);
-		emitter_status = EMIT_ON;
-      		break;
-
-   		default :
-		break;
-		}
-
+	/*State Machine*/
+	switch (emitter_status) {
+	case EMIT_UNDEFINED:
+	emitter_status = EMIT_ON;
+	break;
+	case EMIT_ON:
+	sensors[SENSOR_OFF][SENSOR_1] = adc_read_injected(ADC1, 1);
+	sensors[SENSOR_OFF][SENSOR_2] = adc_read_injected(ADC1, 2);
+	sensors[SENSOR_OFF][SENSOR_3] = adc_read_injected(ADC1, 3);
+	sensors[SENSOR_OFF][SENSOR_4] = adc_read_injected(ADC1, 4);
+	/*EMITTER_ON()*/
+	gpio_toggle(GPIOA, GPIO7);
+	emitter_status = EMIT_ADC_ON;
+	break;
+	case EMIT_ADC_ON:
+	adc_start_conversion_injected(ADC1);
+	emitter_status = EMIT_OFF;
+	break;
+	case EMIT_OFF:
+	sensors[SENSOR_ON][SENSOR_1] = adc_read_injected(ADC1, 1);
+	sensors[SENSOR_ON][SENSOR_2] = adc_read_injected(ADC1, 2);
+	sensors[SENSOR_ON][SENSOR_3] = adc_read_injected(ADC1, 3);
+	sensors[SENSOR_ON][SENSOR_4] = adc_read_injected(ADC1, 4);
+	/*EMITTER_OFF()*/
+	gpio_toggle(GPIOA, GPIO7);
+	emitter_status = EMIT_ADC_OFF;
+	break;
+	case EMIT_ADC_OFF:
+	adc_start_conversion_injected(ADC1);
+	emitter_status = EMIT_ON;
+	break;
+	default:
+	break;
 	}
+}
 }
 
 /**
@@ -427,14 +420,14 @@ static void setup_adc(void)
 	/* Make sure the ADC doesn't run during config. */
 	adc_power_off(ADC1);
 
-	/* We configure everything for one single timer triggered injected conversion with interrupt generation. */
-	/* While not needed for a single channel, try out scan mode which does all channels in one sweep and
-	 * generates the interrupt/EOC/JEOC flags set at the end of all channels, not each one.
-	 */
+	/* We configure everything for one single timer triggered injected
+	* conversion with interrupt generation.
+	*/
+
 	adc_enable_scan_mode(ADC1);
 	adc_set_single_conversion_mode(ADC1);
 	/* We want to start the injected conversion in SW*/
-	adc_enable_external_trigger_injected(ADC1,ADC_CR2_JEXTSEL_JSWSTART);
+	adc_enable_external_trigger_injected(ADC1, ADC_CR2_JEXTSEL_JSWSTART);
 
 	adc_set_right_aligned(ADC1);
 	adc_set_sample_time_on_all_channels(ADC1, ADC_SMPR_SMP_28DOT5CYC);
@@ -447,7 +440,6 @@ static void setup_adc(void)
 	channel_array[2] = 6;
 	channel_array[3] = 7;
 	adc_set_injected_sequence(ADC1, 4, channel_array);
-
 	adc_power_on(ADC1);
 
 	/* Wait for ADC starting up. */
