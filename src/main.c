@@ -3,6 +3,7 @@
 
 #include <libopencm3/cm3/nvic.h>
 #include <libopencm3/cm3/systick.h>
+#include <libopencm3/stm32/adc.h>
 #include <libopencm3/stm32/gpio.h>
 #include <libopencm3/stm32/rcc.h>
 #include <libopencm3/stm32/timer.h>
@@ -38,6 +39,9 @@ static void setup_clock(void)
 
 	/* Alternate functions */
 	rcc_periph_clock_enable(RCC_AFIO);
+
+	/* ADC */
+	rcc_periph_clock_enable(RCC_ADC1);
 }
 
 /**
@@ -59,6 +63,10 @@ static void setup_gpio(void)
 	gpio_set_mode(GPIOB, GPIO_MODE_OUTPUT_50_MHZ, GPIO_CNF_OUTPUT_PUSHPULL,
 		      GPIO12 | GPIO13 | GPIO14 | GPIO15);
 	gpio_clear(GPIOB, GPIO12 | GPIO13 | GPIO14 | GPIO15);
+
+	/* ADC sensors */
+	gpio_set_mode(GPIOA, GPIO_MODE_INPUT, GPIO_CNF_INPUT_ANALOG,
+		      GPIO4 | GPIO5 | GPIO6 | GPIO7);
 }
 
 /**
@@ -268,6 +276,45 @@ static uint32_t read_encoder_right(void)
 }
 
 /**
+ * @brief Setup for ADC: Four injected channels on scan mode for ADC1.
+ *
+ * - Initialize channel_sequence structure to map physical channels
+ *   versus software injected channels.
+ * - Power off the ADC to be sure that does not run during configuration.
+ * - Enable scan mode with single conversion mode triggered by software.
+ * - Configure the alignment (right) and the sample time (28.5 cycles of ADC
+ *   clock).
+ * - Set injected sequence with channel_sequence structure.
+ * - Power on the ADC and wait for ADC starting up (at least 3 us).
+ * - Calibrate the ADC.
+ *
+ * @see Reference manual (RM0008) "Analog-to-digital converter" and in
+ * particular "Scan mode" section.
+ */
+static void setup_adc(void)
+{
+	int i;
+
+	uint8_t channel_sequence[4] = {ADC_CHANNEL4, ADC_CHANNEL5, ADC_CHANNEL6,
+				       ADC_CHANNEL7};
+
+	adc_power_off(ADC1);
+	adc_enable_scan_mode(ADC1);
+	adc_set_single_conversion_mode(ADC1);
+	adc_enable_external_trigger_injected(ADC1, ADC_CR2_JEXTSEL_JSWSTART);
+	adc_set_right_aligned(ADC1);
+	adc_set_sample_time_on_all_channels(ADC1, ADC_SMPR_SMP_28DOT5CYC);
+	adc_set_injected_sequence(
+	    ADC1, sizeof(channel_sequence) / sizeof(channel_sequence[0]),
+	    channel_sequence);
+	adc_power_on(ADC1);
+	for (i = 0; i < 800000; i++)
+		__asm__("nop");
+	adc_reset_calibration(ADC1);
+	adc_calibrate(ADC1);
+}
+
+/**
  * @brief Initial setup and infinite wait.
  */
 int main(void)
@@ -280,19 +327,16 @@ int main(void)
 	setup_encoders();
 	setup_pwm();
 	setup_systick();
+	setup_adc();
 
 	drive_forward();
 
 	while (1) {
-		int left = read_encoder_left();
-		int right = read_encoder_right();
-
-		power_left(j % 500);
-		power_right(j % 500);
+		adc_start_conversion_injected(ADC1);
 		for (int i = 0; i < 8000; i++)
 			__asm__("nop");
 		if (!(j % 500))
-			printf("Left: %d, Right: %d\n", left, right);
+			printf("ADC_read: %d\n", adc_read_injected(ADC1, 1));
 		j += 1;
 	}
 
