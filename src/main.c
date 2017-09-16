@@ -7,10 +7,23 @@
 #include <libopencm3/stm32/rcc.h>
 #include <libopencm3/stm32/timer.h>
 #include <libopencm3/stm32/usart.h>
+#include <libopencm3/stm32/adc.h>
 
+#define EMIT_UNDEFINED 0
+#define EMIT_ON 1
+#define EMIT_ADC_ON 2
+#define EMIT_OFF 3
+#define EMIT_ADC_OFF 4
+#define SENSOR_ON 0
+#define SENSOR_OFF 1
+#define SENSOR_1 0
+#define SENSOR_2 1
+#define SENSOR_3 2
+#define SENSOR_4 3
 
 int _write(int file, char *ptr, int len);
-
+volatile uint16_t sensors[2][4];
+volatile uint8_t emitter_status = EMIT_UNDEFINED;
 
 /**
  * @brief Initial clock setup.
@@ -19,12 +32,18 @@ int _write(int file, char *ptr, int len);
  * at 72 MHz (the maximum allowed when using the external crystal/resonator).
  * This output frequency is possible thanks to the Phase Locked Loop (PLL)
  * multiplier.
+ * The default values for preescalers are:
+ * ADC prescaler(Max. 14MHz): Divider 8 / Set 9MHz
+ * APB1 prescaler(Max. 36MHz): Divider 2 / Set 36MHz
+ * APB2 prescaler(Max. 72MHz): Divider 1 / Set 72 MHz
+ * AHB prescaler(Max. 72MHz): Divider 1 / Set 72 MHz
  *
  * Enable required clocks for the GPIOs and timers as well.
  */
 static void setup_clock(void)
 {
 	rcc_clock_setup_in_hse_8mhz_out_72mhz();
+	rcc_periph_clock_enable(RCC_GPIOA);
 	rcc_periph_clock_enable(RCC_GPIOB);
 	rcc_periph_clock_enable(RCC_GPIOC);
 
@@ -40,6 +59,10 @@ static void setup_clock(void)
 
 	/* Alternate functions */
 	rcc_periph_clock_enable(RCC_AFIO);
+
+	/*Adc*/
+	rcc_periph_clock_enable(RCC_ADC1);
+
 }
 
 
@@ -64,6 +87,16 @@ static void setup_gpio(void)
 		      GPIO_CNF_OUTPUT_PUSHPULL,
 		      GPIO12 | GPIO13 | GPIO14 | GPIO15);
 	gpio_clear(GPIOB, GPIO12 | GPIO13 | GPIO14 | GPIO15);
+
+	/*ADC sensors*/
+	gpio_set_mode(GPIOA, GPIO_MODE_INPUT,
+		      GPIO_CNF_INPUT_ANALOG,
+		      GPIO3 | GPIO4 | GPIO5 | GPIO6);
+	/*Led test*/
+	gpio_set_mode(GPIOA, GPIO_MODE_OUTPUT_2_MHZ,
+			GPIO_CNF_OUTPUT_PUSHPULL, GPIO7);
+	gpio_clear(GPIOA, GPIO7);
+
 }
 
 
@@ -286,34 +319,156 @@ static uint32_t read_encoder_right(void)
 	return timer_get_counter(TIM4);
 }
 
+/**
+ * @brief General timer setup
+ *
+ * TIM1 to manage sensors
+ */
+static void setup_timer(void)
+{
+	/* Enable TIM1 clock. */
+	rcc_periph_clock_enable(RCC_TIM1);
+
+	/* Enable TIM1 interrupt due update.*/
+	nvic_enable_irq(NVIC_TIM1_UP_IRQ);
+
+	/* Time Base configuration */
+	rcc_periph_reset_pulse(RST_TIM1);
+	/*No clock division ratio -- No-aligned-mode(edge)
+	* -- direction up
+	*/
+	timer_set_mode(TIM1, TIM_CR1_CKD_CK_INT,
+		TIM_CR1_CMS_EDGE, TIM_CR1_DIR_UP);
+	timer_set_clock_division(TIM1, 0x00);
+	/*TIM1, APB2 (APB2 = 72 MHz, See clock setup) to 100 KHz*/
+	timer_set_prescaler(TIM1, (rcc_apb2_frequency / 100));
+	/*From 100KHz to 100 KHz*/
+	timer_set_period(TIM1, 0x1);
+	timer_enable_counter(TIM1);
+	/*Update interruption enable*/
+	timer_enable_irq(TIM1, TIM_DIER_UIE);
+}
+
+/**
+ * @brief TIM1 Interruption routine
+ *
+ * State 1:
+ * Read ADC (OFF)
+ * Emitter ON
+ *
+ * State 2:
+ * ADC start
+ *
+ * State 3:
+ * Read ADC (ON)
+ * Emitter OFF
+ *
+ * State 4:
+ * ADC start
+ */
+void tim1_up_isr(void)
+{
+	if (timer_get_flag(TIM1, TIM_SR_UIF)) {
+		/* Clear update interrupt flag. */
+		timer_clear_flag(TIM1, TIM_SR_UIF);
+
+	/*State Machine*/
+	switch (emitter_status) {
+	case EMIT_UNDEFINED:
+	emitter_status = EMIT_ON;
+	break;
+	case EMIT_ON:
+	sensors[SENSOR_OFF][SENSOR_1] = adc_read_injected(ADC1, 1);
+	sensors[SENSOR_OFF][SENSOR_2] = adc_read_injected(ADC1, 2);
+	sensors[SENSOR_OFF][SENSOR_3] = adc_read_injected(ADC1, 3);
+	sensors[SENSOR_OFF][SENSOR_4] = adc_read_injected(ADC1, 4);
+	/*EMITTER_ON()*/
+	gpio_toggle(GPIOA, GPIO7);
+	emitter_status = EMIT_ADC_ON;
+	break;
+	case EMIT_ADC_ON:
+	adc_start_conversion_injected(ADC1);
+	emitter_status = EMIT_OFF;
+	break;
+	case EMIT_OFF:
+	sensors[SENSOR_ON][SENSOR_1] = adc_read_injected(ADC1, 1);
+	sensors[SENSOR_ON][SENSOR_2] = adc_read_injected(ADC1, 2);
+	sensors[SENSOR_ON][SENSOR_3] = adc_read_injected(ADC1, 3);
+	sensors[SENSOR_ON][SENSOR_4] = adc_read_injected(ADC1, 4);
+	/*EMITTER_OFF()*/
+	gpio_toggle(GPIOA, GPIO7);
+	emitter_status = EMIT_ADC_OFF;
+	break;
+	case EMIT_ADC_OFF:
+	adc_start_conversion_injected(ADC1);
+	emitter_status = EMIT_ON;
+	break;
+	default:
+	break;
+	}
+}
+}
+
+/**
+ * @brief Setup for adc: scan mode ADC1.
+ */
+static void setup_adc(void)
+{
+	int i;
+	uint8_t channel_array[4];
+
+	/* Make sure the ADC doesn't run during config. */
+	adc_power_off(ADC1);
+
+	/* We configure everything for one single timer triggered injected
+	* conversion with interrupt generation.
+	*/
+
+	adc_enable_scan_mode(ADC1);
+	adc_set_single_conversion_mode(ADC1);
+	/* We want to start the injected conversion in SW*/
+	adc_enable_external_trigger_injected(ADC1, ADC_CR2_JEXTSEL_JSWSTART);
+
+	adc_set_right_aligned(ADC1);
+	adc_set_sample_time_on_all_channels(ADC1, ADC_SMPR_SMP_28DOT5CYC);
+
+	/* Select the channels we want to convert.
+	 * 4=Sensor1, 5=Sensor2, 6=Sensor3, 7=Sensor4
+	 */
+	channel_array[0] = 4;
+	channel_array[1] = 5;
+	channel_array[2] = 6;
+	channel_array[3] = 7;
+	adc_set_injected_sequence(ADC1, 4, channel_array);
+	adc_power_on(ADC1);
+
+	/* Wait for ADC starting up. */
+	for (i = 0; i < 800000; i++)    /* Wait a bit. */
+		__asm__("nop");
+
+	adc_reset_calibration(ADC1);
+	adc_calibrate(ADC1);
+}
 
 /**
  * @brief Initial setup and infinite wait.
  */
 int main(void)
 {
-	int j = 0;
-
 	setup_clock();
 	setup_gpio();
 	setup_usart();
 	setup_encoders();
 	setup_pwm();
 	setup_systick();
+	setup_timer();
+	setup_adc();
 
 	drive_forward();
-
 	while (1) {
-		int left = read_encoder_left();
-		int right = read_encoder_right();
-
-		power_left(j % 500);
-		power_right(j % 500);
 		for (int i = 0; i < 8000; i++)
 			__asm__("nop");
-		if (!(j % 500))
-			printf("Left: %d, Right: %d\n", left, right);
-		j += 1;
+		printf("S1ON: %d, S1OFF: %d\n", sensors[0][1], sensors[1][1]);
 	}
 
 	return 0;
