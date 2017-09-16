@@ -19,11 +19,22 @@ int _write(int file, char *ptr, int len);
  * This output frequency is possible thanks to the Phase Locked Loop (PLL)
  * multiplier.
  *
+ * The prescalers are set to:
+ *
+ * - AHB to 1 with output at 72 MHz (max. is 72 MHz).
+ * - ADC to 8 with output at 9 MHz (max. is 14 MHz).
+ * - APB1 to 2 with output at 36 MHz (max. is 36 MHz).
+ * - APB2 to 1 with output at 72 MHz (max. is 72 MHz).
+ *
  * Enable required clocks for the GPIOs and timers as well.
+ *
+ * @see Reference manual (RM0008) "Connectivity line devices: reset and clock
+ * control (RCC)" and in particular "Clocks" section.
  */
 static void setup_clock(void)
 {
 	rcc_clock_setup_in_hse_8mhz_out_72mhz();
+	rcc_periph_clock_enable(RCC_GPIOA);
 	rcc_periph_clock_enable(RCC_GPIOB);
 	rcc_periph_clock_enable(RCC_GPIOC);
 
@@ -42,6 +53,9 @@ static void setup_clock(void)
 
 	/* ADC */
 	rcc_periph_clock_enable(RCC_ADC1);
+
+	/* TIM1 */
+	rcc_periph_clock_enable(RCC_TIM1);
 }
 
 /**
@@ -67,6 +81,11 @@ static void setup_gpio(void)
 	/* ADC sensors */
 	gpio_set_mode(GPIOA, GPIO_MODE_INPUT, GPIO_CNF_INPUT_ANALOG,
 		      GPIO4 | GPIO5 | GPIO6 | GPIO7);
+
+	/* LED test */
+	gpio_set_mode(GPIOA, GPIO_MODE_OUTPUT_2_MHZ, GPIO_CNF_OUTPUT_PUSHPULL,
+		      GPIO7);
+	gpio_clear(GPIOA, GPIO7);
 }
 
 /**
@@ -315,6 +334,52 @@ static void setup_adc(void)
 }
 
 /**
+ * @brief TIM1 interruption routine.
+ *
+ * - Manage the update event interruption flag.
+ * - LED toggling each second.
+ */
+void tim1_up_isr(void)
+{
+	if (timer_get_flag(TIM1, TIM_SR_UIF)) {
+		timer_clear_flag(TIM1, TIM_SR_UIF);
+		gpio_toggle(GPIOA, GPIO7);
+	}
+}
+
+/**
+ * @brief TIM1 setup.
+ *
+ * The TIM1 generates an update event interruption that invokes the
+ * function tim1_up_isr.
+ *
+ * - Enable an interruption of type TIM1 update event on the system.
+ * - Set TIM1 default values.
+ * - Configure the base time (no clock division ratio, no aligned mode,
+ *   direction up).
+ * - Set clock division, prescaler and period parameters to get an update
+ *   event with a frequency of 1 Hz.
+ * - Enable the TIM1.
+ * - Enable the interruption of type update event on the TIM1.
+ *
+ * @notes The TIM1 is conected to the APB2 prescaler.
+ *
+ * @see Reference manual (RM0008) "Advanced-control timers"
+ */
+static void setup_timer1(void)
+{
+	nvic_enable_irq(NVIC_TIM1_UP_IRQ);
+	rcc_periph_reset_pulse(RST_TIM1);
+	timer_set_mode(TIM1, TIM_CR1_CKD_CK_INT, TIM_CR1_CMS_EDGE,
+		       TIM_CR1_DIR_UP);
+	timer_set_clock_division(TIM1, 0x00);
+	timer_set_prescaler(TIM1, (rcc_apb2_frequency / 10000));
+	timer_set_period(TIM1, 0x2710);
+	timer_enable_counter(TIM1);
+	timer_enable_irq(TIM1, TIM_DIER_UIE);
+}
+
+/**
  * @brief Initial setup and infinite wait.
  */
 int main(void)
@@ -327,6 +392,7 @@ int main(void)
 	setup_encoders();
 	setup_pwm();
 	setup_systick();
+	setup_timer1();
 	setup_adc();
 
 	drive_forward();
