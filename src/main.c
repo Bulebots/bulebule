@@ -1,5 +1,5 @@
-#include <stdio.h>
 #include <errno.h>
+#include <stdio.h>
 
 #include <libopencm3/cm3/nvic.h>
 #include <libopencm3/cm3/systick.h>
@@ -8,9 +8,7 @@
 #include <libopencm3/stm32/timer.h>
 #include <libopencm3/stm32/usart.h>
 
-
 int _write(int file, char *ptr, int len);
-
 
 /**
  * @brief Initial clock setup.
@@ -42,7 +40,6 @@ static void setup_clock(void)
 	rcc_periph_clock_enable(RCC_AFIO);
 }
 
-
 /**
  * @brief Initial GPIO configuration.
  *
@@ -50,22 +47,19 @@ static void setup_clock(void)
  */
 static void setup_gpio(void)
 {
-	gpio_set_mode(GPIOC, GPIO_MODE_OUTPUT_50_MHZ,
-		      GPIO_CNF_OUTPUT_PUSHPULL, GPIO13);
+	gpio_set_mode(GPIOC, GPIO_MODE_OUTPUT_50_MHZ, GPIO_CNF_OUTPUT_PUSHPULL,
+		      GPIO13);
 	gpio_clear(GPIOC, GPIO13);
 
 	/* TIM2 remap for the quadrature encoder */
 	gpio_primary_remap(AFIO_MAPR_SWJ_CFG_JTAG_OFF_SW_ON,
 			   AFIO_MAPR_TIM2_REMAP_FULL_REMAP);
 
-
 	/* Motor driver */
-	gpio_set_mode(GPIOB, GPIO_MODE_OUTPUT_50_MHZ,
-		      GPIO_CNF_OUTPUT_PUSHPULL,
+	gpio_set_mode(GPIOB, GPIO_MODE_OUTPUT_50_MHZ, GPIO_CNF_OUTPUT_PUSHPULL,
 		      GPIO12 | GPIO13 | GPIO14 | GPIO15);
 	gpio_clear(GPIOB, GPIO12 | GPIO13 | GPIO14 | GPIO15);
 }
-
 
 /**
  * @brief Setup USART for bluetooth communication.
@@ -84,7 +78,6 @@ static void setup_usart(void)
 
 	usart_enable(USART3);
 }
-
 
 /**
  * @brief Setup PWM for the motor drivers.
@@ -106,8 +99,8 @@ static void setup_usart(void)
  */
 static void setup_pwm(void)
 {
-	timer_set_mode(TIM3, TIM_CR1_CKD_CK_INT,
-		       TIM_CR1_CMS_EDGE, TIM_CR1_DIR_UP);
+	timer_set_mode(TIM3, TIM_CR1_CKD_CK_INT, TIM_CR1_CMS_EDGE,
+		       TIM_CR1_DIR_UP);
 
 	timer_set_prescaler(TIM3, 3);
 	timer_set_repetition_counter(TIM3, 0);
@@ -128,7 +121,6 @@ static void setup_pwm(void)
 
 	timer_enable_counter(TIM3);
 }
-
 
 /**
  * @brief Configure timer to read a quadrature encoder.
@@ -153,7 +145,6 @@ static void configure_timer_as_quadrature_encoder(uint32_t timer_peripheral)
 	timer_enable_counter(timer_peripheral);
 }
 
-
 /**
  * @brief Setup timers for the motor encoders.
  *
@@ -164,7 +155,6 @@ static void setup_encoders(void)
 	configure_timer_as_quadrature_encoder(TIM2);
 	configure_timer_as_quadrature_encoder(TIM4);
 }
-
 
 /**
  * @brief Set SysTick interruptions frequency and enable SysTick counter.
@@ -183,7 +173,6 @@ static void setup_systick(void)
 	systick_interrupt_enable();
 }
 
-
 /**
  * @brief Handle the SysTick interruptions.
  */
@@ -191,7 +180,6 @@ void sys_tick_handler(void)
 {
 	gpio_toggle(GPIOC, GPIO13);
 }
-
 
 /**
  * @brief Make `printf` send characters through the USART.
@@ -210,7 +198,6 @@ int _write(int file, char *ptr, int len)
 	return -1;
 }
 
-
 /**
  * @brief Set left motor power.
  *
@@ -222,7 +209,6 @@ static void power_left(uint32_t power)
 {
 	timer_set_oc_value(TIM3, TIM_OC3, power);
 }
-
 
 /**
  * @brief Set right motor power.
@@ -236,7 +222,6 @@ static void power_right(uint32_t power)
 	timer_set_oc_value(TIM3, TIM_OC4, power);
 }
 
-
 /**
  * @brief Set driving direction to forward in both motors.
  */
@@ -246,7 +231,6 @@ static void drive_forward(void)
 	gpio_set(GPIOB, GPIO12 | GPIO14);
 }
 
-
 /**
  * @brief Set driving direction to backward in both motors.
  */
@@ -255,7 +239,6 @@ static void drive_backward(void)
 	gpio_clear(GPIOB, GPIO12 | GPIO14);
 	gpio_set(GPIOB, GPIO13 | GPIO15);
 }
-
 
 /**
  * @brief Break both motors.
@@ -268,7 +251,6 @@ static void drive_break(void)
 	gpio_set(GPIOB, GPIO12 | GPIO13 | GPIO14 | GPIO15);
 }
 
-
 /**
  * @brief Read left motor encoder counter.
  */
@@ -277,7 +259,6 @@ static uint32_t read_encoder_left(void)
 	return timer_get_counter(TIM2);
 }
 
-
 /**
  * @brief Read right motor encoder counter.
  */
@@ -285,7 +266,6 @@ static uint32_t read_encoder_right(void)
 {
 	return timer_get_counter(TIM4);
 }
-
 
 /**
  * @brief Initial setup and infinite wait.
