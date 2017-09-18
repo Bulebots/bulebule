@@ -334,20 +334,6 @@ static void setup_adc(void)
 }
 
 /**
- * @brief TIM1 interruption routine.
- *
- * - Manage the update event interruption flag.
- * - LED toggling each second.
- */
-void tim1_up_isr(void)
-{
-	if (timer_get_flag(TIM1, TIM_SR_UIF)) {
-		timer_clear_flag(TIM1, TIM_SR_UIF);
-		gpio_toggle(GPIOA, GPIO7);
-	}
-}
-
-/**
  * @brief TIM1 setup.
  *
  * The TIM1 generates an update event interruption that invokes the

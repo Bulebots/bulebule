@@ -1,3 +1,5 @@
+OBJS = detection.o
+
 BINARY = main
 
 OPENCM3_DIR	= ../.opencm3/libopencm3
