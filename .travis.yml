@@ -1,12 +1,23 @@
+addons:
+  apt:
+    sources:
+      - llvm-toolchain-trusty-4.0
+    packages:
+      - clang-format-4.0
+
 before_script:
   - linux="https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git"
   - wget $linux/plain/scripts/spelling.txt
   - wget $linux/plain/scripts/checkpatch.pl
+  - wget $linux/plain/scripts/const_structs.checkpatch
   - chmod +x checkpatch.pl
+  - clang-format() { clang-format-4.0 $@; }
+  - export -f clang-format
+  - export CHECKPATCH_OPTIONS="--terse --no-tree --max-line-length=80 --ignore ARRAY_SIZE"
 
 script:
-  - options="--terse --no-tree --max-line-length=80 --ignore ARRAY_SIZE"
-  - ./checkpatch.pl $options --file src/*
+  - ./scripts/check_format.sh
+  - ./checkpatch.pl $CHECKPATCH_OPTIONS --file src/*
 
 after_script:
   - rm checkpatch.pl
