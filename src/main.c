@@ -388,7 +388,7 @@ int main(void)
 		for (int i = 0; i < 8000; i++)
 			__asm__("nop");
 		if (!(j % 500))
-			printf("ADC_read: %d\n", adc_read_injected(ADC1, 1));
+			__asm__("nop");
 		j += 1;
 	}
 
