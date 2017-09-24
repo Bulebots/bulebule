@@ -38,15 +38,16 @@ static void sm_emitter_adc(void)
 {
 	static uint8_t emitter_status = EMIT_UNDEFINED;
 	static uint16_t sensors_off[4], sensors_on[4];
+
 	switch (emitter_status) {
 	case EMIT_UNDEFINED:
 		emitter_status = EMIT_ON;
 		break;
 	case EMIT_ON:
 		sensors_off[SENSOR_SIDE_LEFT] = adc_read_injected(ADC1, 1);
-		sensors_off[SENSOR_FRONT_LEFT] = adc_read_injected(ADC1, 2);
-		sensors_off[SENSOR_FRONT_RIGHT] = adc_read_injected(ADC1, 3);
-		sensors_off[SENSOR_SIDE_RIGHT] = adc_read_injected(ADC1, 4);
+		sensors_off[SENSOR_SIDE_RIGHT] = adc_read_injected(ADC1, 2);
+		sensors_off[SENSOR_FRONT_LEFT] = adc_read_injected(ADC1, 3);
+		sensors_off[SENSOR_FRONT_RIGHT] = adc_read_injected(ADC1, 4);
 		printf("sensors_off %d\n", sensors_off[SENSOR_SIDE_LEFT]);
 		gpio_toggle(GPIOA, GPIO7);
 		emitter_status = EMIT_ON_ADC_ON;
@@ -57,9 +58,9 @@ static void sm_emitter_adc(void)
 		break;
 	case EMIT_OFF:
 		sensors_on[SENSOR_SIDE_LEFT] = adc_read_injected(ADC1, 1);
-		sensors_on[SENSOR_FRONT_LEFT] = adc_read_injected(ADC1, 2);
-		sensors_on[SENSOR_FRONT_RIGHT] = adc_read_injected(ADC1, 3);
-		sensors_on[SENSOR_SIDE_RIGHT] = adc_read_injected(ADC1, 4);
+		sensors_on[SENSOR_SIDE_RIGHT] = adc_read_injected(ADC1, 2);
+		sensors_on[SENSOR_FRONT_LEFT] = adc_read_injected(ADC1, 3);
+		sensors_on[SENSOR_FRONT_RIGHT] = adc_read_injected(ADC1, 4);
 		printf("sensors_on %d\n", sensors_on[SENSOR_SIDE_LEFT]);
 		gpio_toggle(GPIOA, GPIO7);
 		emitter_status = EMIT_OFF_ADC_ON;

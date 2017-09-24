@@ -298,7 +298,8 @@ static uint32_t read_encoder_right(void)
  * @brief Setup for ADC: Four injected channels on scan mode for ADC1.
  *
  * - Initialize channel_sequence structure to map physical channels
- *   versus software injected channels.
+ *   versus software injected channels. The order to read the sensors is: left
+ *   side, right side, left front, right front.
  * - Power off the ADC to be sure that does not run during configuration.
  * - Enable scan mode with single conversion mode triggered by software.
  * - Configure the alignment (right) and the sample time (28.5 cycles of ADC
@@ -309,13 +310,16 @@ static uint32_t read_encoder_right(void)
  *
  * @see Reference manual (RM0008) "Analog-to-digital converter" and in
  * particular "Scan mode" section.
+ *
+ * @see Pinout section from project official documentation
+ * (https://theseus.readthedocs.io/)
  */
 static void setup_adc(void)
 {
 	int i;
 
-	uint8_t channel_sequence[4] = {ADC_CHANNEL4, ADC_CHANNEL5, ADC_CHANNEL6,
-				       ADC_CHANNEL7};
+	uint8_t channel_sequence[4] = {ADC_CHANNEL6, ADC_CHANNEL5, ADC_CHANNEL7,
+				       ADC_CHANNEL4};
 
 	adc_power_off(ADC1);
 	adc_enable_scan_mode(ADC1);
