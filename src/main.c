@@ -159,9 +159,10 @@ static void setup_pwm(void)
  *
  * @param[in] timer_peripheral Timer register address base to configure.
  *
+ * @note It currently always use channels 1 and 2.
+ *
  * @see Reference manual (RM0008) "TIMx functional description" and in
  * particular "Encoder interface mode" section.
- * @note It currently always use channels 1 and 2.
  */
 static void configure_timer_as_quadrature_encoder(uint32_t timer_peripheral)
 {
@@ -352,7 +353,7 @@ static void setup_adc(void)
  * - Enable the TIM1.
  * - Enable the interruption of type update event on the TIM1.
  *
- * @notes The TIM1 is conected to the APB2 prescaler.
+ * @note The TIM1 is conected to the APB2 prescaler.
  *
  * @see Reference manual (RM0008) "Advanced-control timers"
  */
