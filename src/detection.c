@@ -48,7 +48,6 @@ static void sm_emitter_adc(void)
 		sensors_off[SENSOR_SIDE_RIGHT] = adc_read_injected(ADC1, 2);
 		sensors_off[SENSOR_FRONT_LEFT] = adc_read_injected(ADC1, 3);
 		sensors_off[SENSOR_FRONT_RIGHT] = adc_read_injected(ADC1, 4);
-		printf("sensors_off %d\n", sensors_off[SENSOR_SIDE_LEFT]);
 		gpio_toggle(GPIOA, GPIO7);
 		emitter_status = EMIT_ON_ADC_ON;
 		break;
@@ -61,7 +60,6 @@ static void sm_emitter_adc(void)
 		sensors_on[SENSOR_SIDE_RIGHT] = adc_read_injected(ADC1, 2);
 		sensors_on[SENSOR_FRONT_LEFT] = adc_read_injected(ADC1, 3);
 		sensors_on[SENSOR_FRONT_RIGHT] = adc_read_injected(ADC1, 4);
-		printf("sensors_on %d\n", sensors_on[SENSOR_SIDE_LEFT]);
 		gpio_toggle(GPIOA, GPIO7);
 		emitter_status = EMIT_OFF_ADC_ON;
 		break;

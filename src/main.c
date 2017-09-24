@@ -53,6 +53,7 @@ static void setup_clock(void)
 
 	/* ADC */
 	rcc_periph_clock_enable(RCC_ADC1);
+	rcc_periph_clock_enable(RCC_ADC2);
 
 	/* TIM1 */
 	rcc_periph_clock_enable(RCC_TIM1);
@@ -296,7 +297,7 @@ static uint32_t read_encoder_right(void)
 }
 
 /**
- * @brief Setup for ADC: Four injected channels on scan mode for ADC1.
+ * @brief Setup for ADC 1: Four injected channels on scan mode.
  *
  * - Initialize channel_sequence structure to map physical channels
  *   versus software injected channels. The order to read the sensors is: left
@@ -309,13 +310,15 @@ static uint32_t read_encoder_right(void)
  * - Power on the ADC and wait for ADC starting up (at least 3 us).
  * - Calibrate the ADC.
  *
+ * @note This ADC reads phototransistor sensors measurements.
+ *
  * @see Reference manual (RM0008) "Analog-to-digital converter" and in
  * particular "Scan mode" section.
  *
  * @see Pinout section from project official documentation
  * (https://theseus.readthedocs.io/)
  */
-static void setup_adc(void)
+static void setup_adc1(void)
 {
 	int i;
 
@@ -336,6 +339,50 @@ static void setup_adc(void)
 		__asm__("nop");
 	adc_reset_calibration(ADC1);
 	adc_calibrate(ADC1);
+}
+
+/**
+ * @brief Setup for ADC 2: Two injected channels on scan mode.
+ *
+ * - Initialize channel_sequence structure to map physical channels
+ *   versus software injected channels.The order of the sequence is: Vout,
+ *   Vref.
+ * - Power off the ADC to be sure that does not run during configuration.
+ * - Enable scan mode with single conversion mode triggered by software.
+ * - Configure the alignment (right) and the sample time (28.5 cycles of ADC
+ *   clock).
+ * - Set injected sequence with channel_sequence structure.
+ * - Power on the ADC and wait for ADC starting up (at least 3 us).
+ * - Calibrate the ADC.
+ *
+ * @note This ADC reads gyroscope outputs.
+ *
+ * @see Reference manual (RM0008) "Analog-to-digital converter" and in
+ * particular "Scan mode" section.
+ *
+ * @see Pinout section from project official documentation
+ * (https://theseus.readthedocs.io/)
+ */
+static void setup_adc2(void)
+{
+	int i;
+
+	uint8_t channel_sequence[4] = {ADC_CHANNEL3, ADC_CHANNEL2};
+
+	adc_power_off(ADC2);
+	adc_enable_scan_mode(ADC2);
+	adc_set_single_conversion_mode(ADC2);
+	adc_enable_external_trigger_injected(ADC2, ADC_CR2_JEXTSEL_JSWSTART);
+	adc_set_right_aligned(ADC2);
+	adc_set_sample_time_on_all_channels(ADC2, ADC_SMPR_SMP_28DOT5CYC);
+	adc_set_injected_sequence(
+	    ADC2, sizeof(channel_sequence) / sizeof(channel_sequence[0]),
+	    channel_sequence);
+	adc_power_on(ADC2);
+	for (i = 0; i < 800000; i++)
+		__asm__("nop");
+	adc_reset_calibration(ADC2);
+	adc_calibrate(ADC2);
 }
 
 /**
@@ -384,16 +431,18 @@ int main(void)
 	setup_pwm();
 	setup_systick();
 	setup_timer1();
-	setup_adc();
+	setup_adc1();
+	setup_adc2();
 
 	drive_forward();
 
 	while (1) {
-		adc_start_conversion_injected(ADC1);
+		adc_start_conversion_injected(ADC2);
 		for (int i = 0; i < 8000; i++)
 			__asm__("nop");
-		if (!(j % 500))
-			__asm__("nop");
+		if (!(j % 50))
+			printf("Vout %d, Vref %d\n", adc_read_injected(ADC2, 1),
+			       adc_read_injected(ADC2, 2));
 		j += 1;
 	}
 
