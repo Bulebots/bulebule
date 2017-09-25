@@ -367,7 +367,7 @@ static void setup_adc2(void)
 {
 	int i;
 
-	uint8_t channel_sequence[4] = {ADC_CHANNEL3, ADC_CHANNEL2};
+	uint8_t channel_sequence[2] = {ADC_CHANNEL3, ADC_CHANNEL2};
 
 	adc_power_off(ADC2);
 	adc_enable_scan_mode(ADC2);
