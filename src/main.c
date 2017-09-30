@@ -60,6 +60,18 @@ static void setup_clock(void)
 }
 
 /**
+ * @brief Initial interruptions configuration.
+ *
+ * Interruptions enabled:
+ *
+ * - TIM1 Update interrupt.
+ */
+static void setup_nvic(void)
+{
+	nvic_enable_irq(NVIC_TIM1_UP_IRQ);
+}
+
+/**
  * @brief Initial GPIO configuration.
  *
  * Set GPIO modes and initial states.
@@ -391,7 +403,6 @@ static void setup_adc2(void)
  * The TIM1 generates an update event interruption that invokes the
  * function tim1_up_isr.
  *
- * - Enable an interruption of type TIM1 update event on the system.
  * - Set TIM1 default values.
  * - Configure the base time (no clock division ratio, no aligned mode,
  *   direction up).
@@ -406,7 +417,6 @@ static void setup_adc2(void)
  */
 static void setup_timer1(void)
 {
-	nvic_enable_irq(NVIC_TIM1_UP_IRQ);
 	rcc_periph_reset_pulse(RST_TIM1);
 	timer_set_mode(TIM1, TIM_CR1_CKD_CK_INT, TIM_CR1_CMS_EDGE,
 		       TIM_CR1_DIR_UP);
@@ -425,6 +435,7 @@ int main(void)
 	int j = 0;
 
 	setup_clock();
+	setup_nvic();
 	setup_gpio();
 	setup_usart();
 	setup_encoders();
