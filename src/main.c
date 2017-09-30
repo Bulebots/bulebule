@@ -11,6 +11,14 @@
 
 int _write(int file, char *ptr, int len);
 
+/* Battery threshold:
+ * - We want to stop draining the LIPO battery with a voltage of 3.6 V.
+ * - The battery is connected to a voltage divider of 2: 3.6 V / 2 = 1.8 V.
+ * - For 12 bits ADC, 1 LSB ideal = Vref (3,3 V)/ 4096.
+ * - Low_threshold = 1.8 * 4096 / 3.3 = 2234.
+ */
+#define BATTERY_LOW_LIMIT 2234
+
 /**
  * @brief Initial clock setup.
  *
@@ -65,10 +73,12 @@ static void setup_clock(void)
  * Interruptions enabled:
  *
  * - TIM1 Update interrupt.
+ * - ADC1 and ADC2 global interrupt.
  */
 static void setup_nvic(void)
 {
 	nvic_enable_irq(NVIC_TIM1_UP_IRQ);
+	nvic_enable_irq(NVIC_ADC1_2_IRQ);
 }
 
 /**
@@ -78,9 +88,10 @@ static void setup_nvic(void)
  */
 static void setup_gpio(void)
 {
+	/* Battery level*/
 	gpio_set_mode(GPIOC, GPIO_MODE_OUTPUT_50_MHZ, GPIO_CNF_OUTPUT_PUSHPULL,
 		      GPIO13);
-	gpio_clear(GPIOC, GPIO13);
+	gpio_set(GPIOC, GPIO13);
 
 	/* TIM2 remap for the quadrature encoder */
 	gpio_primary_remap(AFIO_MAPR_SWJ_CFG_JTAG_OFF_SW_ON,
@@ -91,11 +102,11 @@ static void setup_gpio(void)
 		      GPIO12 | GPIO13 | GPIO14 | GPIO15);
 	gpio_clear(GPIOB, GPIO12 | GPIO13 | GPIO14 | GPIO15);
 
-	/* ADC sensors */
+	/* ADC inputs: gyroscope, sensors and battery */
 	gpio_set_mode(GPIOA, GPIO_MODE_INPUT, GPIO_CNF_INPUT_ANALOG,
-		      GPIO4 | GPIO5 | GPIO6 | GPIO7);
+		      GPIO4 | GPIO5 | GPIO6 | GPIO7 | GPIO0 | GPIO2 | GPIO3);
 
-	/* LED test */
+	/* Infrared emitter */
 	gpio_set_mode(GPIOA, GPIO_MODE_OUTPUT_2_MHZ, GPIO_CNF_OUTPUT_PUSHPULL,
 		      GPIO7);
 	gpio_clear(GPIOA, GPIO7);
@@ -219,7 +230,6 @@ static void setup_systick(void)
  */
 void sys_tick_handler(void)
 {
-	gpio_toggle(GPIOC, GPIO13);
 }
 
 /**
@@ -354,16 +364,20 @@ static void setup_adc1(void)
 }
 
 /**
- * @brief Setup for ADC 2: Two injected channels on scan mode.
+ * @brief Setup for ADC 2: Three injected channels on scan mode and an analog
+ * watchdog on one channel.
  *
  * - Initialize channel_sequence structure to map physical channels
  *   versus software injected channels.The order of the sequence is: Vout,
- *   Vref.
+ *   Vref, battery.
  * - Power off the ADC to be sure that does not run during configuration.
  * - Enable scan mode with single conversion mode triggered by software.
  * - Configure the alignment (right) and the sample time (28.5 cycles of ADC
  *   clock).
  * - Set injected sequence with channel_sequence structure.
+ * - Setup for analog watchdog: define the lowest battery level, select
+ *   the channels to be enabled (injected channel 0) and activate ADC2
+ *   analog watchdog interruption.
  * - Power on the ADC and wait for ADC starting up (at least 3 us).
  * - Calibrate the ADC.
  *
@@ -379,8 +393,8 @@ static void setup_adc2(void)
 {
 	int i;
 
-	uint8_t channel_sequence[2] = {ADC_CHANNEL3, ADC_CHANNEL2};
-
+	uint8_t channel_sequence[3] = {ADC_CHANNEL3, ADC_CHANNEL2,
+				       ADC_CHANNEL0};
 	adc_power_off(ADC2);
 	adc_enable_scan_mode(ADC2);
 	adc_set_single_conversion_mode(ADC2);
@@ -390,6 +404,11 @@ static void setup_adc2(void)
 	adc_set_injected_sequence(
 	    ADC2, sizeof(channel_sequence) / sizeof(channel_sequence[0]),
 	    channel_sequence);
+	adc_set_watchdog_low_threshold(ADC2, BATTERY_LOW_LIMIT);
+	adc_enable_analog_watchdog_injected(ADC2);
+	adc_enable_analog_watchdog_on_selected_channel(ADC2,
+						       ADC_CR1_AWDCH_CHANNEL0);
+	adc_enable_awd_interrupt(ADC2);
 	adc_power_on(ADC2);
 	for (i = 0; i < 800000; i++)
 		__asm__("nop");
@@ -448,12 +467,11 @@ int main(void)
 	drive_forward();
 
 	while (1) {
-		adc_start_conversion_injected(ADC2);
+
 		for (int i = 0; i < 8000; i++)
-			__asm__("nop");
+			adc_start_conversion_injected(ADC2);
 		if (!(j % 50))
-			printf("Vout %d, Vref %d\n", adc_read_injected(ADC2, 1),
-			       adc_read_injected(ADC2, 2));
+			printf("battery %d\n", adc_read_injected(ADC2, 3));
 		j += 1;
 	}
 
