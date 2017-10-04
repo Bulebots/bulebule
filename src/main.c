@@ -1,4 +1,3 @@
-#include <errno.h>
 #include <stdio.h>
 
 #include <libopencm3/cm3/nvic.h>
@@ -9,7 +8,7 @@
 #include <libopencm3/stm32/timer.h>
 #include <libopencm3/stm32/usart.h>
 
-int _write(int file, char *ptr, int len);
+#include "logging.h"
 
 /* Battery threshold:
  * - We want to stop draining the LIPO battery with a voltage of 3.6 V.
@@ -233,23 +232,6 @@ void sys_tick_handler(void)
 }
 
 /**
- * @brief Make `printf` send characters through the USART.
- */
-int _write(int file, char *ptr, int len)
-{
-	int i;
-
-	if (file == 1) {
-		for (i = 0; i < len; i++)
-			usart_send_blocking(USART3, ptr[i]);
-		return i;
-	}
-
-	errno = EIO;
-	return -1;
-}
-
-/**
  * @brief Set left motor power.
  *
  * Power is set modulating the PWM signal sent to the motor driver.
@@ -466,13 +448,15 @@ int main(void)
 
 	drive_forward();
 
+	int i = 0;
+
 	while (1) {
 
-		for (int i = 0; i < 8000; i++)
-			adc_start_conversion_injected(ADC2);
-		if (!(j % 50))
-			printf("battery %d\n", adc_read_injected(ADC2, 3));
-		j += 1;
+		if (i < 1000) {
+			LOG_INFO("hello world!");
+			LOG_INFO("format %c %d!", 'a', 38);
+		}
+		i++;
 	}
 
 	return 0;
