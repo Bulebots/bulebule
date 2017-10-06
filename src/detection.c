@@ -24,44 +24,62 @@ void tim1_up_isr(void)
  * will be read with the infrared emitter sensors powered on and powered
  * off.
  *
- * - State 0: Do nothing.
- * - State 1: Save ADC registers from emitter OFF and power ON the emitter.
- * - State 2: Start the ADC read.
- * - State 3: Save ADC registers from emitter ON and power OFF the emitter.
- * - State 4: Start the ADC read.
+ * The gyroscope uses interleaved states to give some time to ADC
+ * to convert channels.
+ *
+ * - State 1 (first because the emitter is OFF on start):
+ *         -# Start the gyroscope (ADC2) read.
+ *         -# Save phototranistors sensors (ADC1) from emitter OFF and
+ *            power ON the emitter.
+ * - State 2:
+ *         -# Start the phototranistors sensors (ADC1) read.
+ *         -# Sum and save the difference of output and reference from
+	      gyroscope.
+ * - State 3:
+ *         -# Start the gyroscope (ADC2) read.
+ *         -# Save phototranistors sensors (ADC1) from emitter ON and
+ *            power OFF the emitter.
+ * - State 4:
+ *         -# Start the phototranistors sensors (ADC1) read.
+ *         -# Sum and save the difference of output and reference from
+ *            gyroscope.
  */
 static void sm_emitter_adc(void)
 {
-	static uint8_t emitter_status = EMIT_UNDEFINED;
+	static uint8_t emitter_status = 1;
 	static uint16_t sensors_off[4], sensors_on[4];
+	static int32_t gyro_deg_raw;
 
 	switch (emitter_status) {
-	case EMIT_UNDEFINED:
-		emitter_status = EMIT_ON;
-		break;
-	case EMIT_ON:
+	case 1:
+		adc_start_conversion_injected(ADC2);
 		sensors_off[SENSOR_SIDE_LEFT] = adc_read_injected(ADC1, 1);
 		sensors_off[SENSOR_SIDE_RIGHT] = adc_read_injected(ADC1, 2);
 		sensors_off[SENSOR_FRONT_LEFT] = adc_read_injected(ADC1, 3);
 		sensors_off[SENSOR_FRONT_RIGHT] = adc_read_injected(ADC1, 4);
 		gpio_toggle(GPIOA, GPIO7);
-		emitter_status = EMIT_ON_ADC_ON;
+		emitter_status = 2;
 		break;
-	case EMIT_ON_ADC_ON:
+	case 2:
 		adc_start_conversion_injected(ADC1);
-		emitter_status = EMIT_OFF;
+		gyro_deg_raw =
+		    adc_read_injected(ADC2, 1) - adc_read_injected(ADC2, 2);
+		emitter_status = 3;
 		break;
-	case EMIT_OFF:
+	case 3:
+		adc_start_conversion_injected(ADC2);
 		sensors_on[SENSOR_SIDE_LEFT] = adc_read_injected(ADC1, 1);
 		sensors_on[SENSOR_SIDE_RIGHT] = adc_read_injected(ADC1, 2);
 		sensors_on[SENSOR_FRONT_LEFT] = adc_read_injected(ADC1, 3);
 		sensors_on[SENSOR_FRONT_RIGHT] = adc_read_injected(ADC1, 4);
 		gpio_toggle(GPIOA, GPIO7);
-		emitter_status = EMIT_OFF_ADC_ON;
+		emitter_status = 4;
 		break;
-	case EMIT_OFF_ADC_ON:
+	case 4:
 		adc_start_conversion_injected(ADC1);
-		emitter_status = EMIT_ON;
+		gyro_deg_raw =
+		    adc_read_injected(ADC2, 1) - adc_read_injected(ADC2, 2);
+		emitter_status = 1;
 		break;
 	default:
 		break;
