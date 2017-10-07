@@ -3,20 +3,6 @@
 static void sm_emitter_adc(void);
 
 /**
- * @brief TIM1 interruption routine.
- *
- * - Manage the update event interruption flag.
- * - Trigger state machine to manage sensors.
- */
-void tim1_up_isr(void)
-{
-	if (timer_get_flag(TIM1, TIM_SR_UIF)) {
-		timer_clear_flag(TIM1, TIM_SR_UIF);
-		sm_emitter_adc();
-	}
-}
-
-/**
  * @brief State machine to manage the sensors activation and deactivation
  * states and readings.
  *
@@ -84,4 +70,29 @@ static void sm_emitter_adc(void)
 	default:
 		break;
 	}
+}
+
+/**
+ * @brief TIM1 interruption routine.
+ *
+ * - Manage the update event interruption flag.
+ * - Trigger state machine to manage sensors.
+ */
+void tim1_up_isr(void)
+{
+	if (timer_get_flag(TIM1, TIM_SR_UIF)) {
+		timer_clear_flag(TIM1, TIM_SR_UIF);
+		sm_emitter_adc();
+	}
+}
+
+/**
+ * @brief Function to get data from gyroscope.
+ *
+ * - Return the output and reference voltages of gyroscope on bits.
+ */
+void get_gyro_raw(uint16_t *vo, uint16_t *vref)
+{
+	*vo = adc_read_injected(ADC2, 1);
+	*vref = adc_read_injected(ADC2, 2);
 }

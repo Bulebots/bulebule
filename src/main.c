@@ -10,6 +10,7 @@
 
 #include "battery.h"
 #include "clock.h"
+#include "detection.h"
 #include "encoder.h"
 #include "logging.h"
 #include "setup.h"
@@ -392,7 +393,7 @@ static void setup_adc2(void)
  * - Configure the base time (no clock division ratio, no aligned mode,
  *   direction up).
  * - Set clock division, prescaler and period parameters to get an update
- *   event with a frequency of 100 KHz / 50 = 2 KHz.
+ *   event with a frequency of 100 KHz.
  * - Enable the TIM1.
  * - Enable the interruption of type update event on the TIM1.
  *
@@ -407,7 +408,7 @@ static void setup_timer1(void)
 		       TIM_CR1_DIR_UP);
 	timer_set_clock_division(TIM1, 0x00);
 	timer_set_prescaler(TIM1, (rcc_apb2_frequency / 100));
-	timer_set_period(TIM1, 0x32);
+	timer_set_period(TIM1, 0x1);
 	timer_enable_counter(TIM1);
 	timer_enable_irq(TIM1, TIM_DIER_UIE);
 }
@@ -432,17 +433,15 @@ int main(void)
 
 	drive_forward();
 
-	LOG_INFO("Battery level %f", get_battery_level());
-
 	while (1) {
-		int left_diff = get_encoder_left_diff_count();
-		int right_diff = get_encoder_right_diff_count();
-		int left_total = get_encoder_left_total_count();
-		int right_total = get_encoder_right_total_count();
+		uint16_t vo;
+		uint16_t vref;
 
-		sleep_ticks(250);
-		LOG_INFO("ld: %d, rd: %d, lt: %d, rt: %d", left_diff,
-			 right_diff, left_total, right_total);
+		if (!(j % 50)) {
+			get_gyro_raw(&vo, &vref);
+			LOG_INFO("Vout/Vref, %d, %d", vo, vref);
+		}
+
 		j += 1;
 	}
 
