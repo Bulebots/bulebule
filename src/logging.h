@@ -3,6 +3,7 @@
 
 #include <errno.h>
 #include <stdio.h>
+#include <unistd.h>
 
 #include <libopencm3/stm32/usart.h>
 
