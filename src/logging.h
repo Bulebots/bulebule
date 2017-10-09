@@ -13,7 +13,7 @@ static const char *const log_level_strings[] = {"INFO", "WARNING", "ERROR"};
 int _write(int file, char *ptr, int len);
 
 #define LOG_MESSAGE(level, format, arg...)                                     \
-	printf("[%s] %s:%d: " format "\n", log_level_strings[level], __FILE__, \
+	printf("%s,%s:%d," format "\n", log_level_strings[level], __FILE__, \
 	       __LINE__, ##arg)
 
 #define LOG_INFO(format, arg...) LOG_MESSAGE(LOG_LEVEL_INFO, format, ##arg)
