@@ -9,6 +9,7 @@
 #include <libopencm3/stm32/usart.h>
 
 #include "logging.h"
+#include "setup.h"
 
 /* Battery threshold:
  * - We want to stop draining the LIPO battery with a voltage of 3.6 V.
@@ -156,7 +157,7 @@ static void setup_pwm(void)
 	timer_set_repetition_counter(TIM3, 0);
 	timer_enable_preload(TIM3);
 	timer_continuous_mode(TIM3);
-	timer_set_period(TIM3, 1000);
+	timer_set_period(TIM3, DRIVER_PWM_PERIOD);
 
 	gpio_set_mode(GPIOB, GPIO_MODE_OUTPUT_50_MHZ,
 		      GPIO_CNF_OUTPUT_ALTFN_PUSHPULL,
@@ -214,12 +215,14 @@ static void setup_encoders(void)
  * because, by default, the AHB divider is set to 1, so the AHB clock has the
  * same frequency as the SYSCLK.
  *
+ * SysTick interruption frequency is set to `SYSTICK_FREQUENCY_HZ`.
+ *
  * @see STM32F103x8/STM32F103xB data sheet and in particular the "Clock tree"
  * figure.
  */
 static void setup_systick(void)
 {
-	systick_set_frequency(1, 72000000);
+	systick_set_frequency(SYSTICK_FREQUENCY_HZ, SYSCLK_FREQUENCY_HZ);
 	systick_counter_enable();
 	systick_interrupt_enable();
 }
@@ -236,7 +239,7 @@ void sys_tick_handler(void)
  *
  * Power is set modulating the PWM signal sent to the motor driver.
  *
- * @param[in] power Power value from 0 to 1000.
+ * @param[in] power Power value from 0 to DRIVER_PWM_PERIOD.
  */
 static void power_left(uint32_t power)
 {
@@ -248,7 +251,7 @@ static void power_left(uint32_t power)
  *
  * Power is set modulating the PWM signal sent to the motor driver.
  *
- * @param[in] power Power value from 0 to 1000.
+ * @param[in] power Power value from 0 to DRIVER_PWM_PERIOD.
  */
 static void power_right(uint32_t power)
 {
