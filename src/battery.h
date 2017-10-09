@@ -4,6 +4,8 @@
 #include <libopencm3/stm32/adc.h>
 #include <libopencm3/stm32/gpio.h>
 
+#include "logging.h"
+
 void adc1_2_isr(void);
 
 #endif /* __BATTERY_H */
