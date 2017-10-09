@@ -8,6 +8,7 @@
 #include <libopencm3/stm32/timer.h>
 #include <libopencm3/stm32/usart.h>
 
+#include "encoder.h"
 #include "logging.h"
 #include "setup.h"
 
@@ -232,6 +233,7 @@ static void setup_systick(void)
  */
 void sys_tick_handler(void)
 {
+	update_encoder_readings();
 }
 
 /**
@@ -285,22 +287,6 @@ static void drive_backward(void)
 static void drive_break(void)
 {
 	gpio_set(GPIOB, GPIO12 | GPIO13 | GPIO14 | GPIO15);
-}
-
-/**
- * @brief Read left motor encoder counter.
- */
-static uint32_t read_encoder_left(void)
-{
-	return timer_get_counter(TIM2);
-}
-
-/**
- * @brief Read right motor encoder counter.
- */
-static uint32_t read_encoder_right(void)
-{
-	return timer_get_counter(TIM4);
 }
 
 /**
