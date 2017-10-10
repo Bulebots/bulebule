@@ -9,6 +9,7 @@
 #include <libopencm3/stm32/usart.h>
 
 #include "battery.h"
+#include "clock.h"
 #include "encoder.h"
 #include "logging.h"
 #include "setup.h"
@@ -226,6 +227,7 @@ static void setup_systick(void)
  */
 void sys_tick_handler(void)
 {
+	clock_tick();
 	update_encoder_readings();
 }
 
@@ -430,15 +432,18 @@ int main(void)
 
 	drive_forward();
 
-	int i = 0;
+	LOG_INFO("Battery level %f", get_battery_level());
 
 	while (1) {
-		LOG_INFO("battery level %f", get_battery_level());
-		if (i < 1000) {
-			LOG_INFO("hello world!");
-			LOG_INFO("format %c %d!", 'a', 38);
-		}
-		i++;
+		int left_diff = get_encoder_left_diff_count();
+		int right_diff = get_encoder_right_diff_count();
+		int left_total = get_encoder_left_total_count();
+		int right_total = get_encoder_right_total_count();
+
+		sleep_ticks(250);
+		LOG_INFO("ld: %d, rd: %d, lt: %d, rt: %d", left_diff,
+			 right_diff, left_total, right_total);
+		j += 1;
 	}
 
 	return 0;
