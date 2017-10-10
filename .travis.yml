@@ -13,7 +13,7 @@ before_script:
   - chmod +x checkpatch.pl
   - clang-format() { clang-format-4.0 $@; }
   - export -f clang-format
-  - export CHECKPATCH_OPTIONS="--terse --no-tree --max-line-length=80 --ignore ARRAY_SIZE"
+  - export CHECKPATCH_OPTIONS="--terse --no-tree --max-line-length=80 --ignore ARRAY_SIZE --ignore VOLATILE"
 
 script:
   - ./scripts/check_format.sh
