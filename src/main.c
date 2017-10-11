@@ -9,6 +9,7 @@
 #include <libopencm3/stm32/usart.h>
 
 #include "encoder.h"
+#include "battery.h"
 #include "logging.h"
 #include "setup.h"
 
@@ -440,7 +441,7 @@ int main(void)
 	int i = 0;
 
 	while (1) {
-
+		LOG_INFO("battery level %f", get_battery_level());
 		if (i < 1000) {
 			LOG_INFO("hello world!");
 			LOG_INFO("format %c %d!", 'a', 38);

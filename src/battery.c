@@ -17,3 +17,24 @@ void adc1_2_isr(void)
 		adc_disable_analog_watchdog_injected(ADC2);
 	}
 }
+
+/**
+ * @brief Function to get battery level.
+ *
+ * This function reads the level of the battery from the register configured
+ * on the ADC2. The conversion is triggered on sensors state machine function
+ * sm_emitter_adc.
+ *
+ * The value is converted from bits to voltage taking into account that the
+ * battery level is read through a voltage divider.
+ */
+float get_battery_level(void)
+{
+	uint16_t battery_bits;
+	float battery_level_mv;
+
+	battery_bits = adc_read_injected(ADC2, 3);
+	battery_level_mv =
+	    (battery_bits * V_REF_MV * VOLT_DIV_FACTOR) / ADC_12_BITS;
+	return battery_level_mv;
+}
