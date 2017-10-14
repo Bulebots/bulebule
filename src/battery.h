@@ -1,6 +1,7 @@
 #ifndef __BATTERY_H
 #define __BATTERY_H
 
+#include "common.h"
 #include "logging.h"
 #include "setup.h"
 #include <libopencm3/stm32/adc.h>
