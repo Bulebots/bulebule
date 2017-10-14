@@ -1,8 +1,8 @@
 #include "encoder.h"
 
 /* Total number of counts */
-static volatile uint32_t left_total_count;
-static volatile uint32_t right_total_count;
+static volatile int32_t left_total_count;
+static volatile int32_t right_total_count;
 
 /* Difference between the current count and the latest count */
 static volatile int32_t left_diff_count;
