@@ -17,7 +17,7 @@ int _write(int file, char *ptr, int len);
 #define LOG_MESSAGE(level, format, arg...)                                     \
 	do {                                                                   \
 		uint32_t time = get_clock_ticks();                             \
-		printf("%ld,%s,%s:%d: " format "\n", time,                     \
+		printf("%ld,%s,%s:%d," format "\n", time,                      \
 		       log_level_strings[level], __FILE__, __LINE__, ##arg);   \
 	} while (0)
 
