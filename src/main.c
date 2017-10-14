@@ -8,8 +8,8 @@
 #include <libopencm3/stm32/timer.h>
 #include <libopencm3/stm32/usart.h>
 
-#include "encoder.h"
 #include "battery.h"
+#include "encoder.h"
 #include "logging.h"
 #include "setup.h"
 
