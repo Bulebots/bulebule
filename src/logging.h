@@ -2,6 +2,7 @@
 #define __LOGGING_H
 
 #include <errno.h>
+#include <inttypes.h>
 #include <stdio.h>
 #include <unistd.h>
 
@@ -17,7 +18,7 @@ int _write(int file, char *ptr, int len);
 #define LOG_MESSAGE(level, format, arg...)                                     \
 	do {                                                                   \
 		uint32_t time = get_clock_ticks();                             \
-		printf("%ld,%s,%s:%d," format "\n", time,                      \
+		printf("%" PRIu32 ",%s,%s:%d," format "\n", time,              \
 		       log_level_strings[level], __FILE__, __LINE__, ##arg);   \
 	} while (0)
 
