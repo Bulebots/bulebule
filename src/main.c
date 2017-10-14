@@ -12,14 +12,6 @@
 #include "logging.h"
 #include "setup.h"
 
-/* Battery threshold:
- * - We want to stop draining the LIPO battery with a voltage of 3.6 V.
- * - The battery is connected to a voltage divider of 2: 3.6 V / 2 = 1.8 V.
- * - For 12 bits ADC, 1 LSB ideal = Vref (3,3 V)/ 4096.
- * - Low_threshold = 1.8 * 4096 / 3.3 = 2234.
- */
-#define BATTERY_LOW_LIMIT 2234
-
 /**
  * @brief Initial clock setup.
  *
