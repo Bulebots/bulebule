@@ -8,6 +8,10 @@ static volatile int32_t right_total_count;
 static volatile int32_t left_diff_count;
 static volatile int32_t right_diff_count;
 
+/* Total travelled distance */
+static volatile float left_distance;
+static volatile float right_distance;
+
 /**
  * @brief Read left motor encoder counter.
  */
@@ -42,6 +46,22 @@ int32_t get_encoder_left_diff_count(void)
 int32_t get_encoder_right_diff_count(void)
 {
 	return right_diff_count;
+}
+
+/**
+ * @brief Read left motor encoder travelled distance in millimeters.
+ */
+float get_encoder_left_distance(void)
+{
+	return left_distance;
+}
+
+/**
+ * @brief Read right motor encoder travelled distance in millimeters.
+ */
+float get_encoder_right_distance(void)
+{
+	return right_distance;
 }
 
 /**
@@ -87,6 +107,9 @@ void update_encoder_readings(void)
 
 	left_total_count += left_diff_count;
 	right_total_count += right_diff_count;
+
+	left_distance = left_total_count * MILLIMETERS_PER_COUNT;
+	right_distance = right_total_count * MILLIMETERS_PER_COUNT;
 
 	left_latest_count = left_count;
 	right_latest_count = right_count;
