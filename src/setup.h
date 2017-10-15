@@ -7,7 +7,14 @@
 #define DRIVER_PWM_PERIOD 1024
 
 /** Encoder-related constants */
-#define MILLIMETERS_PER_COUNT 0.0084189
+#define MICROMETERS_PER_COUNT 8.4189
+
+/** Maximum acceleration and deceleration in meters per second squared */
+#define MAX_ACCELERATION 1.
+#define MAX_DECELERATION 1.
+
+/** Unit conversion */
+#define MICROMETERS_PER_METER 1000000
 
 /** ADC constants */
 #define ADC_12_BITS 4096
