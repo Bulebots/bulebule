@@ -1,5 +1,4 @@
-OBJS = detection.o common.o battery.o logging.o encoder.o clock.o motor.o
-
+OBJS = $(patsubst %.c,%.o,$(wildcard *.c))
 BINARY = main
 
 OPENCM3_DIR	= ../.opencm3/libopencm3
