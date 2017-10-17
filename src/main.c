@@ -107,6 +107,11 @@ static void setup_gpio(void)
 	gpio_set_mode(GPIOA, GPIO_MODE_OUTPUT_2_MHZ, GPIO_CNF_OUTPUT_PUSHPULL,
 		      GPIO7);
 	gpio_clear(GPIOA, GPIO7);
+
+	/* LEDs */
+	gpio_set_mode(GPIOB, GPIO_MODE_OUTPUT_2_MHZ, GPIO_CNF_OUTPUT_PUSHPULL,
+		      GPIO4 | GPIO5);
+	gpio_clear(GPIOB, GPIO4 | GPIO5);
 }
 
 /**
@@ -366,8 +371,6 @@ static void setup_timer1(void)
  */
 int main(void)
 {
-	int j = 0;
-
 	setup_clock();
 	setup_nvic();
 	setup_gpio();
@@ -382,15 +385,9 @@ int main(void)
 	drive_forward();
 
 	while (1) {
-		uint16_t vo;
-		uint16_t vref;
-
-		if (!(j % 50)) {
-			get_gyro_raw(&vo, &vref);
-			LOG_INFO("Vout/Vref, %d, %d", vo, vref);
-		}
-
-		j += 1;
+		sleep_ticks(1000);
+		gpio_toggle(GPIOB, GPIO4);
+		gpio_toggle(GPIOB, GPIO5);
 	}
 
 	return 0;
