@@ -1,4 +1,4 @@
-OBJS = detection.o common.o battery.o logging.o encoder.o clock.o motor.o
+OBJS = detection.o common.o battery.o logging.o encoder.o clock.o motor.o hmi.o
 
 BINARY = main
 

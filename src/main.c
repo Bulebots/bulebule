@@ -12,6 +12,7 @@
 #include "clock.h"
 #include "detection.h"
 #include "encoder.h"
+#include "hmi.h"
 #include "logging.h"
 #include "motor.h"
 #include "setup.h"
@@ -386,8 +387,21 @@ int main(void)
 
 	while (1) {
 		sleep_ticks(1000);
-		gpio_toggle(GPIOB, GPIO4);
-		gpio_toggle(GPIOB, GPIO5);
+		led_left_on();
+		sleep_ticks(250);
+		led_right_on();
+		sleep_ticks(1000);
+		led_left_off();
+		sleep_ticks(250);
+		led_right_off();
+		sleep_ticks(1000);
+		led_right_toggle();
+		sleep_ticks(250);
+		led_left_toggle();
+		sleep_ticks(1000);
+		led_right_toggle();
+		sleep_ticks(250);
+		led_left_toggle();
 	}
 
 	return 0;
