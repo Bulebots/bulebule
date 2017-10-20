@@ -1,4 +1,4 @@
-OBJS = $(patsubst %.c,%.o,$(wildcard *.c))
+OBJS = $(filter-out main.o, (filter-out main.c, (patsubst %.c,%.o,$(wildcard *.c))))
 BINARY = main
 
 OPENCM3_DIR	= ../.opencm3/libopencm3
