@@ -9,5 +9,7 @@ void led_left_on(void);
 void led_right_on(void);
 void led_left_off(void);
 void led_right_off(void);
+bool button_left_read(void);
+bool button_right_read(void);
 
 #endif /* __HMI_H */

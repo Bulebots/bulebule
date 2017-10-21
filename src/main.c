@@ -113,6 +113,10 @@ static void setup_gpio(void)
 	gpio_set_mode(GPIOB, GPIO_MODE_OUTPUT_2_MHZ, GPIO_CNF_OUTPUT_PUSHPULL,
 		      GPIO4 | GPIO5);
 	gpio_clear(GPIOB, GPIO4 | GPIO5);
+
+	/*Buttons*/
+	gpio_set_mode(GPIOA, GPIO_MODE_INPUT, GPIO_CNF_INPUT_PULL_UPDOWN,
+		      GPIO11 | GPIO12);
 }
 
 /**
@@ -387,21 +391,8 @@ int main(void)
 
 	while (1) {
 		sleep_ticks(1000);
-		led_left_on();
-		sleep_ticks(250);
-		led_right_on();
-		sleep_ticks(1000);
-		led_left_off();
-		sleep_ticks(250);
-		led_right_off();
-		sleep_ticks(1000);
-		led_right_toggle();
-		sleep_ticks(250);
-		led_left_toggle();
-		sleep_ticks(1000);
-		led_right_toggle();
-		sleep_ticks(250);
-		led_left_toggle();
+		LOG_INFO("ButtonLeft %d", button_left_read());
+		LOG_INFO("ButtonRight %d", button_right_read());
 	}
 
 	return 0;
