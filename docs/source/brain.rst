@@ -17,6 +17,50 @@ Microcontroller
 ===============
 
 
+.. index:: workspace
+
+Workspace
+=========
+
+We will be using `libopencm3`_ firmware library. Our workspace is based on 
+the `reuse instructions
+<https://github.com/libopencm3/libopencm3-examples#reuse>`_ from that project.
+
+1. Clone the project including submodules to get libopencm3
+
+  .. code-block:: none
+  
+     git clone --recursive git@github.com:Theseus/theseus.git
+
+2. Grab a copy of the libopencm3 basic rules on .opencm3 folder
+
+  .. code-block:: none
+  
+     cd .opencm3
+  
+     wget \ 
+     
+     https://raw.githubusercontent.com/libopencm3/libopencm3-examples/master/examples/rules.mk \
+     
+     -O libopencm3.rules.mk
+
+3. Compile the libopencm3 library (See Compiling Section)
+
+  .. code-block:: none
+  
+     make
+
+4. Compile Theseus
+   
+  .. code-block:: none
+  
+     cd ../../src
+     
+     make
+
+.. note:: The makefile on the src folder combines the libopencm3.target.mk file, 
+	  the board STM32F1 makefile and the Theseus project relative paths.
+
 .. index:: programmer
 
 Programmer
@@ -176,3 +220,6 @@ References
   http://openocd.org/
 .. _`GDB`:
   https://www.gnu.org/software/gdb/
+.. _`libopencm3`:
+  https://github.com/libopencm3/libopencm3
+
