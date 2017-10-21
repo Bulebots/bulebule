@@ -1,5 +1,6 @@
 #include "detection.h"
 
+static volatile uint16_t sensors_off[4], sensors_on[4];
 static void sm_emitter_adc(void);
 
 /**
@@ -33,7 +34,6 @@ static void sm_emitter_adc(void);
 static void sm_emitter_adc(void)
 {
 	static uint8_t emitter_status = 1;
-	static uint16_t sensors_off[4], sensors_on[4];
 	static int32_t gyro_deg_raw;
 
 	switch (emitter_status) {
@@ -43,7 +43,8 @@ static void sm_emitter_adc(void)
 		sensors_off[SENSOR_SIDE_RIGHT] = adc_read_injected(ADC1, 2);
 		sensors_off[SENSOR_FRONT_LEFT] = adc_read_injected(ADC1, 3);
 		sensors_off[SENSOR_FRONT_RIGHT] = adc_read_injected(ADC1, 4);
-		gpio_toggle(GPIOA, GPIO7);
+		gpio_toggle(GPIOA, GPIO8 | GPIO9);
+		gpio_toggle(GPIOB, GPIO8 | GPIO9);
 		emitter_status = 2;
 		break;
 	case 2:
@@ -58,7 +59,8 @@ static void sm_emitter_adc(void)
 		sensors_on[SENSOR_SIDE_RIGHT] = adc_read_injected(ADC1, 2);
 		sensors_on[SENSOR_FRONT_LEFT] = adc_read_injected(ADC1, 3);
 		sensors_on[SENSOR_FRONT_RIGHT] = adc_read_injected(ADC1, 4);
-		gpio_toggle(GPIOA, GPIO7);
+		gpio_toggle(GPIOA, GPIO8 | GPIO9);
+		gpio_toggle(GPIOB, GPIO8 | GPIO9);
 		emitter_status = 4;
 		break;
 	case 4:
@@ -87,12 +89,23 @@ void tim1_up_isr(void)
 }
 
 /**
- * @brief Function to get data from gyroscope.
- *
- * - Return the output and reference voltages of gyroscope on bits.
+ * @brief Get output and references voltages from gyroscope on bits.
  */
 void get_gyro_raw(uint16_t *vo, uint16_t *vref)
 {
 	*vo = adc_read_injected(ADC2, 1);
 	*vref = adc_read_injected(ADC2, 2);
+}
+
+/**
+ * @brief Get sensors values with emitter on and off.
+ */
+void get_sensors_data(uint16_t *off, uint16_t *on)
+{
+	uint8_t i = 0;
+
+	for (i = 0; i < NUM_SENSOR; i++) {
+		off[i] = sensors_off[i];
+		on[i] = sensors_on[i];
+	}
 }

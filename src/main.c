@@ -106,8 +106,11 @@ static void setup_gpio(void)
 
 	/* Infrared emitter */
 	gpio_set_mode(GPIOA, GPIO_MODE_OUTPUT_2_MHZ, GPIO_CNF_OUTPUT_PUSHPULL,
-		      GPIO7);
-	gpio_clear(GPIOA, GPIO7);
+		      GPIO8 | GPIO9);
+	gpio_set_mode(GPIOB, GPIO_MODE_OUTPUT_2_MHZ, GPIO_CNF_OUTPUT_PUSHPULL,
+		      GPIO8 | GPIO9);
+	gpio_clear(GPIOA, GPIO8 | GPIO9);
+	gpio_clear(GPIOB, GPIO8 | GPIO9);
 
 	/* LEDs */
 	gpio_set_mode(GPIOB, GPIO_MODE_OUTPUT_2_MHZ, GPIO_CNF_OUTPUT_PUSHPULL,
@@ -390,9 +393,13 @@ int main(void)
 	drive_forward();
 
 	while (1) {
-		sleep_ticks(1000);
-		LOG_INFO("ButtonLeft %d", button_left_read());
-		LOG_INFO("ButtonRight %d", button_right_read());
+		uint16_t off[4];
+		uint16_t on[4];
+
+		sleep_ticks(250);
+		get_sensors_data(off, on);
+		LOG_INFO("OFF-ON, %d, %d, %d, %d, %d, %d, %d, %d", off[0],
+			 off[1], off[2], off[3], on[0], on[1], on[2], on[3]);
 	}
 
 	return 0;
