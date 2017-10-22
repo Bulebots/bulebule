@@ -8,6 +8,8 @@
 #include <libopencm3/stm32/gpio.h>
 #include <libopencm3/stm32/timer.h>
 
+#include "setup.h"
+
 /* Sensors */
 #define SENSOR_SIDE_LEFT 0
 #define SENSOR_SIDE_RIGHT 1
