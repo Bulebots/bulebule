@@ -1,6 +1,14 @@
 #ifndef __SETUP_H
 #define __SETUP_H
 
+#include <libopencm3/cm3/nvic.h>
+#include <libopencm3/cm3/systick.h>
+#include <libopencm3/stm32/adc.h>
+#include <libopencm3/stm32/gpio.h>
+#include <libopencm3/stm32/rcc.h>
+#include <libopencm3/stm32/timer.h>
+#include <libopencm3/stm32/usart.h>
+
 /** System clock frequency is set in `setup_clock` */
 #define SYSCLK_FREQUENCY_HZ 72000000
 #define SYSTICK_FREQUENCY_HZ 1000
@@ -29,5 +37,7 @@
  * - Low_threshold = 1.8 * 4096 / 3.3 = 2234.
  */
 #define BATTERY_LOW_LIMIT 2234
+
+void setup(void);
 
 #endif /* __SETUP_H */
