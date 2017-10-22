@@ -39,3 +39,25 @@ void sleep_ticks(uint32_t ticks)
 	while (awake > clock_ticks)
 		;
 }
+
+/**
+ * @brief Execute a function each period during a defined time span.
+ *
+ * @param[in] period Execution period, in ticks.
+ * @param[in] function Function to execute.
+ * @param[in] during Duration of the time span, in ticks.
+ */
+void each(uint32_t period, void (*function)(void), uint32_t during)
+{
+	uint32_t ticks_initial;
+	uint32_t ticks_current;
+
+	ticks_initial = get_clock_ticks();
+	ticks_current = ticks_initial;
+	while (ticks_current - ticks_initial < during) {
+		if (ticks_current % period == 0)
+			function();
+		sleep_ticks(1);
+		ticks_current = get_clock_ticks();
+	}
+}
