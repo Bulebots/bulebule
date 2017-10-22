@@ -45,7 +45,7 @@ void led_left_off(void)
  */
 bool button_left_read(void)
 {
-	return (bool)(gpio_get(GPIOA, GPIO11) && GPIO11);
+	return (bool)(gpio_get(GPIOA, GPIO11));
 }
 
 /**
@@ -53,5 +53,5 @@ bool button_left_read(void)
  */
 bool button_right_read(void)
 {
-	return (bool)(gpio_get(GPIOA, GPIO12) && GPIO12);
+	return (bool)(gpio_get(GPIOA, GPIO12));
 }
