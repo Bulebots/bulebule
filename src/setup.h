@@ -18,8 +18,8 @@
 #define MICROMETERS_PER_COUNT 8.4189
 
 /** Maximum acceleration and deceleration in meters per second squared */
-#define MAX_ACCELERATION 1.
-#define MAX_DECELERATION 1.
+#define MAX_ACCELERATION .5
+#define MAX_DECELERATION .5
 
 /** Unit conversion */
 #define MICROMETERS_PER_METER 1000000
