@@ -105,6 +105,34 @@ float get_encoder_right_speed(void)
 }
 
 /**
+ * @brief Return the most likely counter difference.
+ *
+ * When reading an increasing or decreasing counter caution must be taken to:
+ *
+ * - Account for counter overflow.
+ * - Account for counter direction (increasing or decreasing).
+ *
+ * This function assumes the most likely situation is to read the counter fast
+ * enough to ensure that the direction is defined by the minimal difference
+ * between the two reads (i.e.: readings are much faster than counter
+ * overflows).
+ *
+ * @param[in] now Counter reading now.
+ * @param[in] before Counter reading before.
+ */
+int32_t max_likelihood_counter_diff(uint16_t now, uint16_t before)
+{
+	uint16_t forward_diff;
+	uint16_t backward_diff;
+
+	forward_diff = (uint16_t)(now - before);
+	backward_diff = (uint16_t)(before - now);
+	if (forward_diff > backward_diff)
+		return -(int32_t)backward_diff;
+	return (int32_t)forward_diff;
+}
+
+/**
  * @brief Update encoder readings.
  *
  * - Read raw encoder counters.
@@ -122,10 +150,12 @@ void update_encoder_readings(void)
 
 	left_count = read_encoder_left();
 	right_count = read_encoder_right();
+	left_diff_count =
+	    max_likelihood_counter_diff(left_count, last_left_count);
+	right_diff_count =
+	    max_likelihood_counter_diff(right_count, last_right_count);
 	left_total_count += left_diff_count;
 	right_total_count += right_diff_count;
-	left_diff_count = (int32_t)(left_count - last_left_count);
-	right_diff_count = (int32_t)(right_count - last_right_count);
 
 	left_micrometers = (int32_t)(left_total_count * MICROMETERS_PER_COUNT);
 	right_micrometers =

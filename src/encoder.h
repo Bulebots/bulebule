@@ -16,6 +16,7 @@ int32_t get_encoder_right_micrometers(void);
 float get_encoder_left_speed(void);
 float get_encoder_right_speed(void);
 
+int32_t max_likelihood_counter_diff(uint16_t now, uint16_t before);
 void update_encoder_readings(void);
 
 #endif /* __ENCODER_H */
