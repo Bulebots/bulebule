@@ -1,3 +1,4 @@
+
 OBJS = $(filter-out main.o,$(patsubst %.c,%.o,$(wildcard *.c)))
 BINARY = main
 

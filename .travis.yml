@@ -2,8 +2,10 @@ addons:
   apt:
     sources:
       - llvm-toolchain-trusty-4.0
+      - sourceline: 'ppa:team-gcc-arm-embedded/ppa'
     packages:
       - clang-format-4.0
+      - gcc-arm-embedded
 
 before_script:
   - linux="https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git"
@@ -14,10 +16,12 @@ before_script:
   - clang-format() { clang-format-4.0 $@; }
   - export -f clang-format
   - export CHECKPATCH_OPTIONS="--terse --no-tree --max-line-length=80 --ignore ARRAY_SIZE --ignore VOLATILE"
+  - ./scripts/setup_libopencm3.sh
 
 script:
   - ./scripts/check_format.sh
   - ./checkpatch.pl $CHECKPATCH_OPTIONS --file src/*
+  - cd src/ && make
 
 after_script:
   - rm checkpatch.pl

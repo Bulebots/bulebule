@@ -27,6 +27,8 @@ void adc1_2_isr(void)
  *
  * The value is converted from bits to voltage taking into account that the
  * battery level is read through a voltage divider.
+ *
+ *@return The battery level on millivolts.
  */
 float get_battery_level(void)
 {
