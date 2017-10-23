@@ -9,6 +9,6 @@
 #include "logging.h"
 #include "setup.h"
 
-float get_battery_level(void);
+float get_battery_voltage(void);
 
 #endif /* __BATTERY_H */

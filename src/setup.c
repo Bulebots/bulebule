@@ -306,7 +306,9 @@ static void setup_adc2(void)
 	adc_set_injected_sequence(
 	    ADC2, sizeof(channel_sequence) / sizeof(channel_sequence[0]),
 	    channel_sequence);
-	adc_set_watchdog_low_threshold(ADC2, BATTERY_LOW_LIMIT);
+	adc_set_watchdog_low_threshold(
+	    ADC2,
+	    (uint16_t)(BATTERY_LOW_LIMIT_VOLTAGE / VOLT_DIV_FACTOR * ADC_LSB));
 	adc_enable_analog_watchdog_injected(ADC2);
 	adc_enable_analog_watchdog_on_selected_channel(ADC2,
 						       ADC_CR1_AWDCH_CHANNEL0);
