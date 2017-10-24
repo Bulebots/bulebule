@@ -48,8 +48,10 @@ int main(void)
 
 			/* Speed profile test */
 			each(20, my_log, 1000);
+			set_target_angular_speed(0.);
 			set_target_linear_speed(.5);
 			each(20, my_log, 3000);
+			set_target_angular_speed(0.);
 			set_target_linear_speed(0.);
 			each(20, my_log, 2000);
 
