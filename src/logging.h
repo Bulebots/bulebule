@@ -18,8 +18,9 @@ int _write(int file, char *ptr, int len);
 #define LOG_MESSAGE(level, format, arg...)                                     \
 	do {                                                                   \
 		uint32_t time = get_clock_ticks();                             \
-		printf("%" PRIu32 ",%s,%s:%d," format "\n", time,              \
-		       log_level_strings[level], __FILE__, __LINE__, ##arg);   \
+		printf("%" PRIu32 ",%s,%s:%d,%s," format "\n", time,           \
+		       log_level_strings[level], __FILE__, __LINE__, __func__, \
+		       ##arg);                                                 \
 	} while (0)
 
 #define LOG_INFO(format, arg...) LOG_MESSAGE(LOG_LEVEL_INFO, format, ##arg)
