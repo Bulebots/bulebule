@@ -2,6 +2,7 @@ sphinx
 sphinx_rtd_theme
 cadquery
 numpy
+pyqtgraph
 pyserial
 pytest
 zmq
