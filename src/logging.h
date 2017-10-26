@@ -9,11 +9,14 @@
 #include <libopencm3/stm32/usart.h>
 
 #include "clock.h"
+#include "control.h"
+#include "encoder.h"
 
 enum { LOG_LEVEL_INFO, LOG_LEVEL_WARNING, LOG_LEVEL_ERROR };
 static const char *const log_level_strings[] = {"INFO", "WARNING", "ERROR"};
 
 int _write(int file, char *ptr, int len);
+void log_linear_speed(void);
 
 #define LOG_MESSAGE(level, format, arg...)                                     \
 	do {                                                                   \

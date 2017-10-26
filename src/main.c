@@ -19,22 +19,6 @@ void sys_tick_handler(void)
 	motor_control();
 }
 
-void my_log(void)
-{
-	float left_speed = get_encoder_left_speed();
-	float right_speed = get_encoder_right_speed();
-	float target_speed = get_target_linear_speed();
-	float ideal_speed = get_ideal_linear_speed();
-	int32_t pwm_left = get_left_pwm();
-	int32_t pwm_right = get_right_pwm();
-	int32_t left_diff_count = get_encoder_left_diff_count();
-	int32_t right_diff_count = get_encoder_right_diff_count();
-
-	LOG_INFO("%f,%f,%f,%f,%d,%d,%d,%d", target_speed, ideal_speed,
-		 left_speed, right_speed, pwm_left, pwm_right, left_diff_count,
-		 right_diff_count);
-}
-
 /**
  * @brief Initial setup and infinite wait.
  */
@@ -47,13 +31,13 @@ int main(void)
 			led_left_on();
 
 			/* Speed profile test */
-			each(20, my_log, 1000);
+			each(20, log_linear_speed, 1000);
 			set_target_angular_speed(0.);
 			set_target_linear_speed(.5);
-			each(20, my_log, 3000);
+			each(20, log_linear_speed, 3000);
 			set_target_angular_speed(0.);
 			set_target_linear_speed(0.);
-			each(20, my_log, 2000);
+			each(20, log_linear_speed, 2000);
 
 			led_left_off();
 		}
