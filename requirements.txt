@@ -1,5 +1,7 @@
 sphinx
 sphinx_rtd_theme
 cadquery
+numpy
 pyserial
+pytest
 zmq

@@ -1,3 +1,8 @@
+language: python
+
+python:
+    - 3.6
+
 addons:
   apt:
     sources:
@@ -6,6 +11,9 @@ addons:
     packages:
       - clang-format-4.0
       - gcc-arm-embedded
+
+install:
+  - pip install -r requirements.txt
 
 before_script:
   - linux="https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git"
@@ -22,6 +30,7 @@ script:
   - ./scripts/check_format.sh
   - ./checkpatch.pl $CHECKPATCH_OPTIONS --file src/*
   - cd src/ && make
+  - cd ../ && pytest -sv
 
 after_script:
   - rm checkpatch.pl
