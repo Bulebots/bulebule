@@ -107,7 +107,7 @@ class MazeItem(GraphicsObject):
         self.picture = QtGui.QPicture()
 
         self.context = zmq.Context()
-        self.puller = self.context.socket(zmq.PULL)
+        self.puller = self.context.socket(zmq.REP)
         self.puller.bind('tcp://127.0.0.1:6574')
         self.poller = zmq.Poller()
         self.poller.register(self.puller, zmq.POLLIN)
@@ -145,26 +145,26 @@ class MazeItem(GraphicsObject):
             for socket in events:
                 if events[socket] != zmq.POLLIN:
                     continue
-                message = socket.recv()
-        if not message:
-            return
-        print(time.time())
+                self.process_socket(socket)
 
-        order = message[0]
+    def process_socket(self, socket):
+        print(time.time())
+        message = socket.recv()
+        socket.send(b'ok')
+
+        order = chr(message[0])
         distances = message[1:257]
         distances = numpy.frombuffer(distances, dtype='uint8')
         distances = distances.reshape(MAZE_SIZE, MAZE_SIZE).T
         if order == 'F':
             distances = distances.T
-        print(distances)
 
-        order = message[257]
+        order = chr(message[257])
         walls = message[258:]
         walls = numpy.frombuffer(walls, dtype='uint8')
-        walls = walls.reshape(MAZE_SIZE, MAZE_SIZE)
+        walls = walls.reshape(MAZE_SIZE, MAZE_SIZE).T
         if order == 'F':
             walls = walls.T
-        print(walls)
 
         self.walls = walls
         self.distances = distances
@@ -190,7 +190,7 @@ def run():
 
     timer = QtCore.QTimer()
     timer.timeout.connect(maze.update)
-    timer.start(100)
+    timer.start(10)
 
     sys.exit(QtGui.QApplication.instance().exec_())
 

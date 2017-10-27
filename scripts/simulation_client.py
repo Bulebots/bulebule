@@ -13,10 +13,12 @@ walls[-1, :] += 2
 walls[:, 0] += 4
 walls[0, :] += 8
 walls[:, -1] += 16
+walls[0][0] += 16
 walls = walls.tobytes(order='C')
 
 context = zmq.Context()
-pusher = context.socket(zmq.PUSH)
-pusher.connect('tcp://127.0.0.1:6574')
+requester = context.socket(zmq.REQ)
+requester.connect('tcp://127.0.0.1:6574')
 
-pusher.send(b'F' + distances + b'F' + walls)
+requester.send(b'F' + distances + b'F' + walls)
+print(requester.recv())
