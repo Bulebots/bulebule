@@ -4,6 +4,11 @@ from typing import IO
 import numpy
 
 
+EAST = 0
+SOUTH = 1
+WEST = 2
+NORTH = 3
+
 VISITED_BIT = 1
 EAST_BIT = 2
 SOUTH_BIT = 4
