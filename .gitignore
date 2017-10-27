@@ -1,8 +1,12 @@
+__pycache__/
+.cache/
+.ipynb_checkpoints/
 *~
 *.d
 *.elf
 *.map
 *.o
+*.out
 *.stylecheck
 *.swp
 libopencm3.rules.mk
