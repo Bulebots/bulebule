@@ -97,9 +97,9 @@ static void initialize_maze_walls(void)
 /**
  * @brief Initialize maze distances with respect to the center of the maze.
  *
- * The centered is considered to be a 2x2 area in the exact middle of the maze.
+ * The center is considered to be a 2x2 area in the exact middle of the maze.
  */
-static void initialize_distances(void)
+static void initialize_distances_standard(void)
 {
 	int i;
 	int j;
@@ -117,12 +117,25 @@ static void initialize_distances(void)
 }
 
 /**
+ * @brief Initialize maze distances with respect to a given single coordinate.
+ */
+static void initialize_distances_coordinate(int x, int y)
+{
+	int i;
+	int j;
+
+	for (i=0; i<MAZE_SIZE; i++)
+		for (j=0; j<MAZE_SIZE; j++)
+			distances[i][j] = abs(i - x) + abs(j - y);
+}
+
+/**
  * @brief Initialize maze walls, distances and set current initial direction.
  */
 void initialize(void)
 {
 	initialize_maze_walls();
-	initialize_distances();
+	initialize_distances_standard();
 	position.x = 0;
 	position.y = 0;
 	position.direction = initial_direction;
