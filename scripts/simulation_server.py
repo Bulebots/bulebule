@@ -107,11 +107,29 @@ def paint_position(painter, x, y, direction):
     painter.setBrush(mkBrush(RED))
     painter.setPen(mkPen(None))
     print(x, y, direction)
+    if direction in ['E', 'W']:
+        robot_width = 50
+        robot_height = 100
+    else:
+        robot_width = 100
+        robot_height = 50
+    x_compensation = 0
+    y_compensation = 0
+    if direction == 'E':
+        y_compensation = robot_height / 2
+    elif direction == 'S':
+        x_compensation = (CELL_WIDTH - robot_width) / 2
+    elif direction == 'W':
+        x_compensation = CELL_WIDTH - robot_width
+        y_compensation = robot_height / 2
+    elif direction == 'N':
+        x_compensation = (CELL_WIDTH - robot_width) / 2
+        y_compensation = CELL_WIDTH - robot_height
     painter.drawRect(QtCore.QRectF(
-        x * CELL_WIDTH,
-        -y * CELL_WIDTH - 100,
-        50,
-        100,
+        x * CELL_WIDTH + x_compensation,
+        -(y + 1) * CELL_WIDTH + y_compensation,
+        robot_width,
+        robot_height,
     ))
 
 
@@ -190,6 +208,7 @@ class MazeItem(GraphicsObject):
     def update_position(self, position):
         print('Received position: ', position)
         self.x, self.y, self.direction = struct.unpack('3B', position)
+        self.direction = chr(self.direction)
         self.generatePosition()
         self.informViewBoundsChanged()
         return read_walls(self.template, self.x, self.y, self.direction)
@@ -216,7 +235,7 @@ class MazeItem(GraphicsObject):
 
 
 # Template walls
-template_file = Path('./mazes/00.txt')
+template_file = Path('./mazes/apec_2010.txt')
 template = load_maze(template_file)
 
 setConfigOptions(antialias=True)

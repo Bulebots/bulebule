@@ -30,7 +30,7 @@ enum step_direction {
 	BACK = 3
 };
 
-enum compass_direction initial_direction = EAST;
+enum compass_direction initial_direction = NORTH;
 
 uint8_t distances[MAZE_SIZE * MAZE_SIZE];
 uint8_t walls[MAZE_SIZE * MAZE_SIZE];
@@ -43,7 +43,28 @@ struct sensors_detection {
 	bool right : 1;
 } current_walls;
 
+struct data_stack {
+	uint8_t data[2 * MAZE_AREA];
+	uint32_t size;
+} stack;
+
 void *requester;
+
+/**
+ * @brief Push a cell to the stack.
+ */
+void push_cell(uint8_t cell)
+{
+	stack.data[stack.size++] = cell;
+}
+
+/**
+ * @brief Pop a cell from the stack.
+ */
+uint8_t pop_cell(void)
+{
+	return stack.data[--stack.size];
+}
 
 void wait_response()
 {
@@ -80,7 +101,16 @@ void read_walls()
 	position_state[0] = 'P';
 	position_state[1] = current_position % MAZE_SIZE;
 	position_state[2] = current_position / MAZE_SIZE;
-	position_state[3] = current_direction;
+	if (current_direction == EAST)
+		position_state[3] = 'E';
+	else if (current_direction == SOUTH)
+		position_state[3] = 'S';
+	else if (current_direction == WEST)
+		position_state[3] = 'W';
+	else if (current_direction == NORTH)
+		position_state[3] = 'N';
+	else
+		position_state[3] = 'X';
 
 	zmq_send(requester, position_state, 4, 0);
 	zmq_recv(requester, buffer, 3, 0);
@@ -124,28 +154,54 @@ uint8_t next_step_position(enum step_direction step)
 	return current_position + next_compass_direction(step);
 }
 
-void create_wall_north(void)
+bool wall_exists(uint8_t position, uint8_t bit)
 {
-	walls[current_position] |= NORTH_BIT;
-	// TODO: create wall in adyacent cell as well
+	return (walls[position] & bit);
 }
 
-void create_wall_east(void)
+void build_wall(uint8_t position, uint8_t bit)
 {
-	walls[current_position] |= EAST_BIT;
-	// TODO: create wall in adyacent cell as well
+	walls[position] |= bit;
+	switch (bit) {
+	case EAST_BIT:
+		if (position % MAZE_SIZE == MAZE_SIZE - 1)
+			break;
+		walls[position + EAST] |= WEST_BIT;
+		break;
+	case SOUTH_BIT:
+		if (position / MAZE_SIZE == 0)
+			break;
+		walls[position + SOUTH] |= NORTH_BIT;
+		break;
+	case WEST_BIT:
+		if (position % MAZE_SIZE == 0)
+			break;
+		walls[position + WEST] |= EAST_BIT;
+		break;
+	case NORTH_BIT:
+		if (position / MAZE_SIZE == MAZE_SIZE - 1)
+			break;
+		walls[position + NORTH] |= SOUTH_BIT;
+		break;
+	default:
+		break;
+	}
 }
 
-void create_wall_south(void)
+/**
+ * @brief Place a new wall in the maze memory representation.
+ *
+ * If the wall was already there, it will do nothing.
+ *
+ * @return Whether the wall was built or not (i.e.: if it existed before).
+ */
+bool place_wall(uint8_t bit)
 {
-	walls[current_position] |= SOUTH_BIT;
-	// TODO: create wall in adyacent cell as well
-}
-
-void create_wall_west(void)
-{
-	walls[current_position] |= WEST_BIT;
-	// TODO: create wall in adyacent cell as well
+	if (!wall_exists(current_position, bit)) {
+		build_wall(current_position, bit);
+		return true;
+	}
+	return false;
 }
 
 void update_walls(void)
@@ -180,14 +236,15 @@ void update_walls(void)
 	default:
 		break;
 	}
-	if (windrose[0])
-		create_wall_east();
-	if (windrose[1])
-		create_wall_south();
-	if (windrose[2])
-		create_wall_west();
-	if (windrose[3])
-		create_wall_north();
+	push_cell(current_position);
+	if (windrose[0] && place_wall(EAST_BIT))
+		push_cell(current_position + EAST);
+	if (windrose[1] && place_wall(SOUTH_BIT))
+		push_cell(current_position + SOUTH);
+	if (windrose[2] && place_wall(WEST_BIT))
+		push_cell(current_position + WEST);
+	if (windrose[3] && place_wall(NORTH_BIT))
+		push_cell(current_position + NORTH);
 	walls[current_position] |= VISITED_BIT;
 }
 
@@ -293,6 +350,60 @@ enum step_direction best_neighbor_step(void)
 	return BACK;
 }
 
+uint8_t minimum_open_neighbor_distance(uint8_t cell)
+{
+	uint8_t minimum = 255;
+	uint8_t neighbor;
+
+	if (!wall_exists(cell, EAST_BIT)) {
+		neighbor = distances[cell + EAST];
+		minimum = (neighbor < minimum) ? neighbor : minimum;
+	}
+	if (!wall_exists(cell, SOUTH_BIT)) {
+		neighbor = distances[cell + SOUTH];
+		minimum = (neighbor < minimum) ? neighbor : minimum;
+	}
+	if (!wall_exists(cell, WEST_BIT)) {
+		neighbor = distances[cell + WEST];
+		minimum = (neighbor < minimum) ? neighbor : minimum;
+	}
+	if (!wall_exists(cell, NORTH_BIT)) {
+		neighbor = distances[cell + NORTH];
+		minimum = (neighbor < minimum) ? neighbor : minimum;
+	}
+
+	return minimum;
+}
+
+void push_open_neighbors(uint8_t cell)
+{
+	if (!wall_exists(cell, EAST_BIT))
+		push_cell(cell + EAST);
+	if (!wall_exists(cell, SOUTH_BIT))
+		push_cell(cell + SOUTH);
+	if (!wall_exists(cell, WEST_BIT))
+		push_cell(cell + WEST);
+	if (!wall_exists(cell, NORTH_BIT))
+		push_cell(cell + NORTH);
+}
+
+void update_distances(void)
+{
+	uint8_t cell;
+	uint8_t minimum;
+
+	while (stack.size) {
+		cell = pop_cell();
+		minimum = minimum_open_neighbor_distance(cell);
+		if (distances[cell] == 0)
+			continue;
+		if (distances[cell] == minimum + 1)
+			continue;
+		distances[cell] = minimum + 1;
+		push_open_neighbors(cell);
+	}
+}
+
 void move(enum step_direction step)
 {
 	enum compass_direction next;
@@ -318,7 +429,6 @@ void initialize(void)
 
 int main (void)
 {
-	int i;
 	int rc;
 	void *context = zmq_ctx_new();
 	char buffer[256];
@@ -330,12 +440,11 @@ int main (void)
 
 	initialize();
 
-	for (i=0; i<20; i++) {
-
+	while (current_distance() > 0) {
 		read_walls();
 		update_walls();
 		printf("Walls: %d, %d, %d\n", current_walls.left, current_walls.front, current_walls.right);
-		// TODO: update_distances();
+		update_distances();
 		send_discovery();
 
 		step = best_neighbor_step();
@@ -344,8 +453,13 @@ int main (void)
 		read(STDIN_FILENO, buffer, sizeof(buffer));
 
 		move(step);
-		printf("Current position: %d\n", current_position);
+		printf("Current position: %d (%d, %d)\n", current_position,
+		    current_position % MAZE_SIZE, current_position / MAZE_SIZE);
 	}
+	read_walls();
+	update_walls();
+	update_distances();
+	send_discovery();
 
 	return 0;
 }

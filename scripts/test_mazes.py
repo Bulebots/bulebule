@@ -6,11 +6,6 @@ import pytest
 from mazes import load_maze
 from mazes import read_walls
 
-from mazes import EAST_DIRECTION
-from mazes import SOUTH_DIRECTION
-from mazes import WEST_DIRECTION
-from mazes import NORTH_DIRECTION
-
 
 MAZE_OSHWDEM_00 = """OSHWDEM Maze Generator v1.2 R42263
 +---+---+---+---+---+
@@ -39,14 +34,14 @@ def test_load_maze_oshwdem():
 
 
 @pytest.mark.parametrize('x,y,direction,walls', [
-    (0, 0, EAST_DIRECTION, (True, False, True)),
-    (1, 0, EAST_DIRECTION, (True, False, True)),
-    (2, 0, EAST_DIRECTION, (False, False, True)),
-    (0, 0, NORTH_DIRECTION, (True, True, False)),
-    (0, 1, NORTH_DIRECTION, (True, False, False)),
-    (3, 2, NORTH_DIRECTION, (True, True, True)),
-    (3, 3, SOUTH_DIRECTION, (True, True, False)),
-    (4, 4, WEST_DIRECTION, (False, False, True)),
+    (0, 0, 'E', (True, False, True)),
+    (1, 0, 'E', (True, False, True)),
+    (2, 0, 'E', (False, False, True)),
+    (0, 0, 'N', (True, True, False)),
+    (0, 1, 'N', (True, False, False)),
+    (3, 2, 'N', (True, True, True)),
+    (3, 3, 'S', (True, True, False)),
+    (4, 4, 'W', (False, False, True)),
 ])
 def test_read_walls(x, y, direction, walls):
     maze = load_maze(StringIO(MAZE_OSHWDEM_00))
