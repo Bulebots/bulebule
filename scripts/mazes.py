@@ -1,19 +1,42 @@
+from collections import deque
 from pathlib import Path
 from typing import IO
 
 import numpy
 
 
-EAST = 0
-SOUTH = 1
-WEST = 2
-NORTH = 3
+MAZE_SIZE = 16
+EAST_DIRECTION = 1
+SOUTH_DIRECTION = -MAZE_SIZE
+WEST_DIRECTION = -1
+NORTH_DIRECTION = MAZE_SIZE
 
 VISITED_BIT = 1
 EAST_BIT = 2
 SOUTH_BIT = 4
 WEST_BIT = 8
 NORTH_BIT = 16
+
+
+def read_walls(walls, x, y, direction):
+    if walls is None:
+        return (0, 0, 0)
+    wall = walls[x][y]
+    detections = deque([
+        wall & EAST_BIT,
+        wall & SOUTH_BIT,
+        wall & WEST_BIT,
+        wall & NORTH_BIT,
+    ])
+    if direction == EAST_DIRECTION:
+        detections.rotate(1)
+    elif direction == NORTH_DIRECTION:
+        detections.rotate(2)
+    elif direction == WEST_DIRECTION:
+        detections.rotate(-1)
+    elif direction == SOUTH_DIRECTION:
+        pass
+    return tuple([bool(x) for x in detections][:3])
 
 
 def _read_maze_oshwdem(txt: str) -> numpy.ndarray:

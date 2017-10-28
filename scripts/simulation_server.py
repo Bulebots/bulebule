@@ -17,16 +17,19 @@ from pyqtgraph import (
 import zmq
 
 from mazes import load_maze
+from mazes import read_walls
+
 from mazes import EAST_BIT
 from mazes import SOUTH_BIT
 from mazes import WEST_BIT
 from mazes import NORTH_BIT
 from mazes import VISITED_BIT
 
+from mazes import MAZE_SIZE
+
 
 CELL_WIDTH = 180
 WALL_WIDTH = 12
-MAZE_SIZE = 16
 
 GRAY = (100, 100, 100)
 GREEN = (0, 255, 0)
@@ -75,7 +78,7 @@ def paint_discovered(painter, distances, walls):
     for (x, y) in product(range(MAZE_SIZE), repeat=2):
         painter.setPen(mkPen(color=GRAY))
         if walls is not None:
-            wall = walls[y][x]
+            wall = walls[x][y]
             if wall & VISITED_BIT:
                 painter.setPen(mkPen(color=GREEN))
         painter.drawText(QtCore.QRectF(
@@ -98,6 +101,7 @@ def paint_template(painter, walls):
             WALL_WIDTH,
             WALL_WIDTH,
         ))
+
 
 def paint_position(painter, x, y, direction):
     painter.setBrush(mkBrush(RED))
@@ -163,7 +167,6 @@ class MazeItem(GraphicsObject):
         return QtCore.QRectF(self.template_picture.boundingRect())
 
     def update(self):
-        message = None
         while True:
             events = dict(self.poller.poll(0))
             if not events:
@@ -176,17 +179,20 @@ class MazeItem(GraphicsObject):
     def process_socket(self, socket):
         print(time.time())
         message = socket.recv()
-        socket.send(b'ok')
         if message.startswith(b'D'):
             self.update_discovery(message.lstrip(b'D'))
+            socket.send(b'ok')
         elif message.startswith(b'P'):
-            self.update_position(message.lstrip(b'P'))
+            walls = self.update_position(message.lstrip(b'P'))
+            print('Walls: ', walls)
+            socket.send(struct.pack('3B', *walls))
 
     def update_position(self, position):
         print('Received position: ', position)
         self.x, self.y, self.direction = struct.unpack('3B', position)
         self.generatePosition()
         self.informViewBoundsChanged()
+        return read_walls(self.template, self.x, self.y, self.direction)
 
     def update_discovery(self, discovery):
         order = chr(discovery[0])
