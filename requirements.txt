@@ -2,6 +2,8 @@ sphinx
 sphinx_rtd_theme
 cadquery
 numpy
+osbrain
+pybluez
 pyqtgraph
 pyserial
 pytest

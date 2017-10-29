@@ -55,11 +55,13 @@ static void setup_clock(void)
  *
  * - TIM1 Update interrupt.
  * - ADC1 and ADC2 global interrupt.
+ * - USART3 interrupt.
  */
 static void setup_nvic(void)
 {
 	nvic_enable_irq(NVIC_TIM1_UP_IRQ);
 	nvic_enable_irq(NVIC_ADC1_2_IRQ);
+	nvic_enable_irq(NVIC_USART3_IRQ);
 }
 
 /**
@@ -112,13 +114,17 @@ static void setup_usart(void)
 {
 	gpio_set_mode(GPIOB, GPIO_MODE_OUTPUT_50_MHZ,
 		      GPIO_CNF_OUTPUT_ALTFN_PUSHPULL, GPIO_USART3_TX);
+	gpio_set_mode(GPIOB, GPIO_MODE_INPUT, GPIO_CNF_INPUT_FLOAT,
+		      GPIO_USART3_RX);
 
 	usart_set_baudrate(USART3, 921600);
 	usart_set_databits(USART3, 8);
 	usart_set_stopbits(USART3, USART_STOPBITS_1);
 	usart_set_parity(USART3, USART_PARITY_NONE);
 	usart_set_flow_control(USART3, USART_FLOWCONTROL_NONE);
-	usart_set_mode(USART3, USART_MODE_TX);
+	usart_set_mode(USART3, USART_MODE_TX_RX);
+
+	USART_CR1(USART3) |= USART_CR1_RXNEIE;
 
 	usart_enable(USART3);
 }
