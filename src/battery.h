@@ -6,7 +6,7 @@
 #include <libopencm3/stm32/gpio.h>
 
 #include "common.h"
-#include "logging.h"
+#include "formatting.h"
 #include "setup.h"
 
 float get_battery_voltage(void);

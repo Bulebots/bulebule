@@ -42,7 +42,7 @@ int main(void)
 			led_left_off();
 		}
 		if (button_right_read()) {
-			LOG_INFO("%f", get_battery_voltage());
+			log_battery_voltage();
 			sleep_ticks(500);
 		}
 	}

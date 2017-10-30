@@ -34,7 +34,7 @@ static void clear_received(void)
 static void process_command(void)
 {
 	if (!strncmp(buffer.data, "battery", BUFFER_SIZE))
-		LOG_INFO("Battery voltage: %.2f V", get_battery_voltage());
+		log_battery_voltage();
 	else
 		LOG_WARNING("Unknown command: `%s`!", buffer.data);
 	clear_received();
