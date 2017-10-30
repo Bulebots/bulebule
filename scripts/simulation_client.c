@@ -440,6 +440,7 @@ int main (void)
 
 	initialize();
 
+	read(STDIN_FILENO, buffer, sizeof(buffer));
 	while (current_distance() > 0) {
 		read_walls();
 		update_walls();
@@ -450,7 +451,8 @@ int main (void)
 		step = best_neighbor_step();
 		printf("Step: %d\n", step);
 
-		read(STDIN_FILENO, buffer, sizeof(buffer));
+		// read(STDIN_FILENO, buffer, sizeof(buffer));
+		usleep(100000);
 
 		move(step);
 		printf("Current position: %d (%d, %d)\n", current_position,
