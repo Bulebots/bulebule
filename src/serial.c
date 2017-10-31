@@ -7,6 +7,8 @@ static struct data_buffer {
 	uint32_t size;
 } buffer;
 
+static bool run_linear_speed_profile_signal;
+
 /**
  * @brief Push a single char to the serial received buffer.
  */
@@ -35,6 +37,8 @@ static void process_command(void)
 {
 	if (!strncmp(buffer.data, "battery", BUFFER_SIZE))
 		log_battery_voltage();
+	else if (!strncmp(buffer.data, "run linear_speed_profile", BUFFER_SIZE))
+		run_linear_speed_profile_signal = true;
 	else
 		LOG_WARNING("Unknown command: `%s`!", buffer.data);
 	clear_received();
@@ -57,5 +61,16 @@ void usart3_isr(void)
 		push_received(data);
 		if (data == '\0')
 			process_command();
+	}
+}
+
+/**
+ * @brief Execute commands received.
+ */
+void execute_commands(void)
+{
+	if (run_linear_speed_profile_signal) {
+		run_linear_speed_profile_signal = false;
+		run_linear_speed_profile();
 	}
 }

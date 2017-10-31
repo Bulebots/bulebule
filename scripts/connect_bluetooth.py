@@ -97,7 +97,8 @@ class Proxy(Agent):
 class Theseus(cmd.Cmd):
     prompt = '>>> '
     LOG_SUBCOMMANDS = ['all', 'clear']
-    PLOT_SUBCOMMANDS = ['linear_profile']
+    PLOT_SUBCOMMANDS = ['linear_speed_profile']
+    RUN_SUBCOMMANDS = ['linear_speed_profile']
 
     def cmdloop(self, intro=None):
         """Modified cmdloop() to handle keyboard interruptions."""
@@ -146,16 +147,26 @@ class Theseus(cmd.Cmd):
 
     def do_plot(self, extra):
         """Plot different logged data."""
-        if extra == 'linear_profile':
-            self.plot_linear_profile()
+        if extra == 'linear_speed_profile':
+            self.plot_linear_speed_profile()
         else:
             print('Please, specify what to plot!')
+
+    def do_run(self, extra):
+        """Run different procedures on the mouse."""
+        if extra == 'linear_speed_profile':
+            self.proxy.send('run linear_speed_profile\0')
+        else:
+            print('Please, specify what to run!')
 
     def complete_log(self, text, line, begidx, endidx):
         return complete_subcommands(text, self.LOG_SUBCOMMANDS)
 
     def complete_plot(self, text, line, begidx, endidx):
         return complete_subcommands(text, self.PLOT_SUBCOMMANDS)
+
+    def complete_run(self, text, line, begidx, endidx):
+        return complete_subcommands(text, self.RUN_SUBCOMMANDS)
 
     def do_exit(self, *args):
         """Exit shell."""
@@ -165,7 +176,7 @@ class Theseus(cmd.Cmd):
         """Exit shell."""
         return True
 
-    def plot_linear_profile(self):
+    def plot_linear_speed_profile(self):
         """Plot a linear profile out of the current log data."""
         df = log_as_dataframe(self.proxy.get_attr('log'))
         if not len(df):

@@ -7,6 +7,7 @@
 #include "hmi.h"
 #include "logging.h"
 #include "motor.h"
+#include "serial.h"
 #include "setup.h"
 
 /**
@@ -37,6 +38,7 @@ int main(void)
 			log_battery_voltage();
 			sleep_ticks(500);
 		}
+		execute_commands();
 	}
 
 	return 0;
