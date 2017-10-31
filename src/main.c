@@ -1,4 +1,5 @@
 #include "battery.h"
+#include "calibration.h"
 #include "clock.h"
 #include "control.h"
 #include "detection.h"
@@ -29,16 +30,7 @@ int main(void)
 	while (1) {
 		if (button_left_read()) {
 			led_left_on();
-
-			/* Speed profile test */
-			each(20, log_linear_speed, 1000);
-			set_target_angular_speed(0.);
-			set_target_linear_speed(.5);
-			each(20, log_linear_speed, 3000);
-			set_target_angular_speed(0.);
-			set_target_linear_speed(0.);
-			each(20, log_linear_speed, 2000);
-
+			run_linear_speed_profile();
 			led_left_off();
 		}
 		if (button_right_read()) {

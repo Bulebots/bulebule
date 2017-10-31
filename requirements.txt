@@ -3,6 +3,8 @@ sphinx_rtd_theme
 cadquery
 numpy
 osbrain
+matplotlib
+pandas
 pybluez
 pyqtgraph
 pyserial

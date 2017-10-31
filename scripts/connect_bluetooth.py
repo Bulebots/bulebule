@@ -1,18 +1,42 @@
 import os
 import cmd
 from pprint import pprint
-from time import sleep
 from traceback import print_exc
 
 from bluetooth import (
     BluetoothSocket,
     RFCOMM,
 )
+import matplotlib
+from matplotlib import pyplot
 from osbrain import (
     Agent,
     run_agent,
     run_nameserver,
 )
+import pandas
+
+
+matplotlib.interactive(True)
+
+
+def complete_subcommands(text, subcommands):
+    if not text:
+        return subcommands
+    return [c for c in subcommands if c.startswith(text)]
+
+
+def log_as_dataframe(log):
+    columns = ['timestamp', 'level', 'source', 'function', 'data']
+    df = pandas.DataFrame(log, columns=columns)
+    return df.set_index('timestamp').sort_index()
+
+
+def explode_csv_series(series):
+    def x(row):
+        return [float(x) for x in row.split(',')]
+
+    return series.apply(x).apply(pandas.Series)
 
 
 class Proxy(Agent):
@@ -70,15 +94,10 @@ class Proxy(Agent):
         return float(self.log[-1].split(b',')[0])
 
 
-def complete_subcommands(text, subcommands):
-    if not text:
-        return subcommands
-    return [c for c in subcommands if c.startswith(text)]
-
-
 class Theseus(cmd.Cmd):
     prompt = '>>> '
     LOG_SUBCOMMANDS = ['all', 'clear']
+    PLOT_SUBCOMMANDS = ['linear_profile']
 
     def cmdloop(self, intro=None):
         """Modified cmdloop() to handle keyboard interruptions."""
@@ -125,8 +144,18 @@ class Theseus(cmd.Cmd):
         else:
             pprint(self.proxy.tail(10))
 
+    def do_plot(self, extra):
+        """Plot different logged data."""
+        if extra == 'linear_profile':
+            self.plot_linear_profile()
+        else:
+            print('Please, specify what to plot!')
+
     def complete_log(self, text, line, begidx, endidx):
         return complete_subcommands(text, self.LOG_SUBCOMMANDS)
+
+    def complete_plot(self, text, line, begidx, endidx):
+        return complete_subcommands(text, self.PLOT_SUBCOMMANDS)
 
     def do_exit(self, *args):
         """Exit shell."""
@@ -135,6 +164,31 @@ class Theseus(cmd.Cmd):
     def do_EOF(self, line):
         """Exit shell."""
         return True
+
+    def plot_linear_profile(self):
+        """Plot a linear profile out of the current log data."""
+        df = log_as_dataframe(self.proxy.get_attr('log'))
+        if not len(df):
+            print('Empty dataframe...')
+            return
+        df = df[(df['level'] == 'INFO') &
+                (df['function'] == 'log_linear_speed')]
+        if not len(df):
+            print('Empty dataframe...')
+            return
+        df = explode_csv_series(df['data'])
+        speed_columns = ['target_speed', 'ideal_speed', 'left_speed',
+                         'right_speed']
+        pwm_columns = ['pwm_left', 'pwm_right']
+        df.columns = speed_columns + pwm_columns
+        fig, (ax1, ax2) = pyplot.subplots(nrows=2, ncols=1, sharex=True)
+        for column in speed_columns:
+            ax1.plot(df[column], label=column)
+        for column in pwm_columns:
+            ax2.plot(df[column], label=column)
+        ax1.legend()
+        ax2.legend()
+        pyplot.show(block=False)
 
 
 if __name__ == '__main__':
