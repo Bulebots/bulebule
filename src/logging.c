@@ -63,3 +63,16 @@ void log_angular_speed(void)
 	LOG_INFO("%f,%f,%f,%d,%d", target_speed, ideal_speed, angular_speed,
 		 pwm_left, pwm_right);
 }
+
+/**
+ * @brief Log all sensor distance readings.
+ */
+void log_sensors_distance(void)
+{
+	float sl_dist = get_side_left_distance();
+	float sr_dist = get_side_right_distance();
+	float fl_dist = get_front_left_distance();
+	float fr_dist = get_front_right_distance();
+
+	LOG_INFO("%f,%f,%f,%f", sl_dist, sr_dist, fl_dist, fr_dist);
+}

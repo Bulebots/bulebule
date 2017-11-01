@@ -1,4 +1,3 @@
-#include "battery.h"
 #include "calibration.h"
 #include "clock.h"
 #include "control.h"
@@ -19,6 +18,7 @@ void sys_tick_handler(void)
 	if (!collision_detected()) {
 		update_ideal_speed();
 		update_encoder_readings();
+		update_distance_readings();
 		motor_control();
 	} else {
 		drive_off();
@@ -26,7 +26,6 @@ void sys_tick_handler(void)
 		led_right_on();
 	}
 }
-
 /**
  * @brief Initial setup and infinite wait.
  */
@@ -37,7 +36,7 @@ int main(void)
 	while (1) {
 		if (button_left_read()) {
 			led_left_on();
-			run_linear_speed_profile();
+			each(200, log_sensors_distance, 1000);
 			led_left_off();
 		}
 		if (button_right_read()) {

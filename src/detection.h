@@ -1,6 +1,7 @@
 #ifndef __DETECTION_H
 #define __DETECTION_H
 
+#include <math.h>
 #include <stdio.h>
 
 #include <libopencm3/cm3/nvic.h>
@@ -10,14 +11,19 @@
 
 #include "setup.h"
 
-/* Sensors */
-#define SENSOR_SIDE_LEFT 0
-#define SENSOR_SIDE_RIGHT 1
-#define SENSOR_FRONT_LEFT 2
-#define SENSOR_FRONT_RIGHT 3
+/* Sensors IDs*/
+#define SENSOR_SIDE_LEFT_ID 0
+#define SENSOR_SIDE_RIGHT_ID 1
+#define SENSOR_FRONT_LEFT_ID 2
+#define SENSOR_FRONT_RIGHT_ID 3
 #define NUM_SENSOR 4
 
 void get_gyro_raw(uint16_t *vo, uint16_t *vref);
-void get_sensors_data(uint16_t *off, uint16_t *on);
+void get_sensors_raw(uint16_t *off, uint16_t *on);
+void update_distance_readings(void);
+float get_side_left_distance(void);
+float get_side_right_distance(void);
+float get_front_left_distance(void);
+float get_front_right_distance(void);
 
 #endif /* __DETECTION_H */
