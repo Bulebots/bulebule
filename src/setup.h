@@ -21,6 +21,24 @@
 #define MAX_ACCELERATION 1.
 #define MAX_DECELERATION 1.
 
+/**
+ * Maximum PWM period (should be <= DRIVER_PWM_PERIOD).
+ *
+ * Usually it should be set to DRIVER_PWM_PERIOD except for testing purposes
+ * in order to protect the locomotion system and avoid reaching uncontrolled
+ * speeds.
+ */
+#define MAX_PWM_PERIOD 300
+
+/**
+ * Maximum time period allowed with saturated PWM output.
+ *
+ * After reaching this period we consider there has been a collision. When a
+ * collision occurs, the robot motor control stops working and the motor driver
+ * is disabled.
+ */
+#define MAX_PWM_SATURATION_PERIOD 0.01
+
 /** Unit conversion */
 #define MICROMETERS_PER_METER 1000000
 

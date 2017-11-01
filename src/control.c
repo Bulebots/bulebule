@@ -13,6 +13,16 @@ static volatile float kd_angular = 1.;
 static volatile int32_t pwm_left;
 static volatile int32_t pwm_right;
 
+static volatile bool collision_detected_signal;
+
+/**
+ * @brief Returns true if a collision was detected.
+ */
+bool collision_detected(void)
+{
+	return collision_detected_signal;
+}
+
 /**
  * @brief Return the current PWM duty for the left motor.
  */
@@ -100,6 +110,10 @@ void update_ideal_speed(void)
  * @brief Execute the robot motor control.
  *
  * Set the motors power to try to follow a defined speed profile.
+ *
+ * This function also implements collision detection by checking PWM output
+ * saturation. If collision is detected it sets the `collision_detected_signal`
+ * variable to `true`.
  */
 void motor_control(void)
 {
@@ -135,4 +149,12 @@ void motor_control(void)
 	power_right(pwm_right);
 
 	last_linear_error = linear_error;
+
+	if (pwm_saturation() >
+	    MAX_PWM_SATURATION_PERIOD * SYSTICK_FREQUENCY_HZ) {
+		collision_detected_signal = true;
+		drive_off();
+		led_left_on();
+		led_right_on();
+	}
 }

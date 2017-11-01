@@ -6,8 +6,10 @@
 
 #include "setup.h"
 
+void drive_break(void);
+void drive_off(void);
+uint32_t pwm_saturation(void);
 void power_left(int32_t power);
 void power_right(int32_t power);
-void drive_break(void);
 
 #endif /* __MOTOR_H */

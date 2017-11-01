@@ -2,9 +2,11 @@
 #define __CONTROL_H
 
 #include "encoder.h"
+#include "hmi.h"
 #include "motor.h"
 #include "setup.h"
 
+bool collision_detected(void);
 float get_left_pwm(void);
 float get_right_pwm(void);
 float get_target_linear_speed(void);

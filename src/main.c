@@ -16,9 +16,11 @@
 void sys_tick_handler(void)
 {
 	clock_tick();
-	update_ideal_speed();
-	update_encoder_readings();
-	motor_control();
+	if (!collision_detected()) {
+		update_ideal_speed();
+		update_encoder_readings();
+		motor_control();
+	}
 }
 
 /**
