@@ -9,6 +9,10 @@
 #include <libopencm3/stm32/timer.h>
 #include <libopencm3/stm32/usart.h>
 
+/** Universal constants */
+#define MICROMETERS_PER_METER 1000000
+#define PI 3.1415
+
 /** System clock frequency is set in `setup_clock` */
 #define SYSCLK_FREQUENCY_HZ 72000000
 #define SYSTICK_FREQUENCY_HZ 1000
@@ -16,10 +20,18 @@
 
 /** Encoder-related constants */
 #define MICROMETERS_PER_COUNT 8.4189
+#define WHEELS_SEPARATION 0.073
 
-/** Maximum acceleration and deceleration in meters per second squared */
-#define MAX_ACCELERATION 1.
-#define MAX_DECELERATION 1.
+/**
+ * Maximum acceleration and deceleration.
+ *
+ * - Linear acceleration is defined in meters per second squared.
+ * - Angular acceleration is defined in radians per second squared.
+ */
+#define MAX_LINEAR_ACCELERATION 1.
+#define MAX_LINEAR_DECELERATION 1.
+#define MAX_ANGULAR_ACCELERATION (1. * PI)
+#define MAX_ANGULAR_DECELERATION (1. * PI)
 
 /**
  * Maximum PWM period (should be <= DRIVER_PWM_PERIOD).
@@ -38,9 +50,6 @@
  * is disabled.
  */
 #define MAX_PWM_SATURATION_PERIOD 0.01
-
-/** Unit conversion */
-#define MICROMETERS_PER_METER 1000000
 
 /** ADC constants */
 #define ADC_LSB (3.3 / 4096)

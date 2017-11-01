@@ -97,8 +97,8 @@ class Proxy(Agent):
 class Theseus(cmd.Cmd):
     prompt = '>>> '
     LOG_SUBCOMMANDS = ['all', 'clear']
-    PLOT_SUBCOMMANDS = ['linear_speed_profile']
-    RUN_SUBCOMMANDS = ['linear_speed_profile']
+    PLOT_SUBCOMMANDS = ['linear_speed_profile', 'angular_speed_profile']
+    RUN_SUBCOMMANDS = ['linear_speed_profile', 'angular_speed_profile']
 
     def cmdloop(self, intro=None):
         """Modified cmdloop() to handle keyboard interruptions."""
@@ -149,6 +149,8 @@ class Theseus(cmd.Cmd):
         """Plot different logged data."""
         if extra == 'linear_speed_profile':
             self.plot_linear_speed_profile()
+        elif extra == 'angular_speed_profile':
+            self.plot_angular_speed_profile()
         else:
             print('Please, specify what to plot!')
 
@@ -156,6 +158,8 @@ class Theseus(cmd.Cmd):
         """Run different procedures on the mouse."""
         if extra == 'linear_speed_profile':
             self.proxy.send('run linear_speed_profile\0')
+        elif extra == 'angular_speed_profile':
+            self.proxy.send('run angular_speed_profile\0')
         else:
             print('Please, specify what to run!')
 
@@ -190,6 +194,30 @@ class Theseus(cmd.Cmd):
         df = explode_csv_series(df['data'])
         speed_columns = ['target_speed', 'ideal_speed', 'left_speed',
                          'right_speed']
+        pwm_columns = ['pwm_left', 'pwm_right']
+        df.columns = speed_columns + pwm_columns
+        fig, (ax1, ax2) = pyplot.subplots(nrows=2, ncols=1, sharex=True)
+        for column in speed_columns:
+            ax1.plot(df[column], label=column)
+        for column in pwm_columns:
+            ax2.plot(df[column], label=column)
+        ax1.legend()
+        ax2.legend()
+        pyplot.show(block=False)
+
+    def plot_angular_speed_profile(self):
+        """Plot the angular speed profile with the current log data."""
+        df = log_as_dataframe(self.proxy.get_attr('log'))
+        if not len(df):
+            print('Empty dataframe...')
+            return
+        df = df[(df['level'] == 'INFO') &
+                (df['function'] == 'log_angular_speed')]
+        if not len(df):
+            print('Empty filtered dataframe...')
+            return
+        df = explode_csv_series(df['data'])
+        speed_columns = ['target_speed', 'ideal_speed', 'angular_speed']
         pwm_columns = ['pwm_left', 'pwm_right']
         df.columns = speed_columns + pwm_columns
         fig, (ax1, ax2) = pyplot.subplots(nrows=2, ncols=1, sharex=True)

@@ -20,6 +20,10 @@ void sys_tick_handler(void)
 		update_ideal_speed();
 		update_encoder_readings();
 		motor_control();
+	} else {
+		drive_off();
+		led_left_on();
+		led_right_on();
 	}
 }
 

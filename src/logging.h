@@ -8,5 +8,6 @@
 
 void log_battery_voltage(void);
 void log_linear_speed(void);
+void log_angular_speed(void);
 
 #endif /* __LOGGING_H */

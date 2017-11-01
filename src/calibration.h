@@ -6,5 +6,6 @@
 #include "logging.h"
 
 void run_linear_speed_profile(void);
+void run_angular_speed_profile(void);
 
 #endif /* __CALIBRATION_H */

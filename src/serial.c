@@ -8,6 +8,7 @@ static struct data_buffer {
 } buffer;
 
 static bool run_linear_speed_profile_signal;
+static bool run_angular_speed_profile_signal;
 
 /**
  * @brief Push a single char to the serial received buffer.
@@ -39,6 +40,9 @@ static void process_command(void)
 		log_battery_voltage();
 	else if (!strncmp(buffer.data, "run linear_speed_profile", BUFFER_SIZE))
 		run_linear_speed_profile_signal = true;
+	else if (!strncmp(buffer.data, "run angular_speed_profile",
+			  BUFFER_SIZE))
+		run_angular_speed_profile_signal = true;
 	else
 		LOG_WARNING("Unknown command: `%s`!", buffer.data);
 	clear_received();
@@ -72,5 +76,8 @@ void execute_commands(void)
 	if (run_linear_speed_profile_signal) {
 		run_linear_speed_profile_signal = false;
 		run_linear_speed_profile();
+	} else if (run_angular_speed_profile_signal) {
+		run_angular_speed_profile_signal = false;
+		run_angular_speed_profile();
 	}
 }

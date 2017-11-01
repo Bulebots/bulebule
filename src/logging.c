@@ -29,3 +29,24 @@ void log_linear_speed(void)
 	LOG_INFO("%f,%f,%f,%f,%d,%d", target_speed, ideal_speed, left_speed,
 		 right_speed, pwm_left, pwm_right);
 }
+
+/**
+ * @brief Log information about angular speed relevant variables.
+ *
+ * These include:
+ *
+ * - Target angular speed and ideal (expected) angular speed.
+ * - Actual calculated angular speed.
+ * - PWM output value for both motors.
+ */
+void log_angular_speed(void)
+{
+	float angular_speed = get_encoder_angular_speed();
+	float target_speed = get_target_angular_speed();
+	float ideal_speed = get_ideal_angular_speed();
+	int pwm_left = get_left_pwm();
+	int pwm_right = get_right_pwm();
+
+	LOG_INFO("%f,%f,%f,%d,%d", target_speed, ideal_speed, angular_speed,
+		 pwm_left, pwm_right);
+}

@@ -7,8 +7,8 @@ static volatile float ideal_angular_speed;
 
 static volatile float kp_linear = 100.;
 static volatile float kd_linear = 200.;
-static volatile float kp_angular = 1.;
-static volatile float kd_angular = 1.;
+static volatile float kp_angular = 30.;
+static volatile float kd_angular = 50.;
 
 static volatile int32_t pwm_left;
 static volatile int32_t pwm_right;
@@ -96,13 +96,26 @@ void set_target_angular_speed(float speed)
 void update_ideal_speed(void)
 {
 	if (ideal_linear_speed < target_linear_speed) {
-		ideal_linear_speed += MAX_ACCELERATION / SYSTICK_FREQUENCY_HZ;
+		ideal_linear_speed +=
+		    MAX_LINEAR_ACCELERATION / SYSTICK_FREQUENCY_HZ;
 		if (ideal_linear_speed > target_linear_speed)
 			ideal_linear_speed = target_linear_speed;
 	} else if (ideal_linear_speed > target_linear_speed) {
-		ideal_linear_speed -= MAX_DECELERATION / SYSTICK_FREQUENCY_HZ;
+		ideal_linear_speed -=
+		    MAX_LINEAR_DECELERATION / SYSTICK_FREQUENCY_HZ;
 		if (ideal_linear_speed < target_linear_speed)
 			ideal_linear_speed = target_linear_speed;
+	}
+	if (ideal_angular_speed < target_angular_speed) {
+		ideal_angular_speed +=
+		    MAX_ANGULAR_ACCELERATION / SYSTICK_FREQUENCY_HZ;
+		if (ideal_angular_speed > target_angular_speed)
+			ideal_angular_speed = target_angular_speed;
+	} else if (ideal_angular_speed > target_angular_speed) {
+		ideal_angular_speed -=
+		    MAX_ANGULAR_DECELERATION / SYSTICK_FREQUENCY_HZ;
+		if (ideal_angular_speed < target_angular_speed)
+			ideal_angular_speed = target_angular_speed;
 	}
 }
 
@@ -132,7 +145,7 @@ void motor_control(void)
 	left_speed = get_encoder_left_speed();
 	right_speed = get_encoder_right_speed();
 	encoder_feedback_linear = (left_speed + right_speed) / 2.;
-	encoder_feedback_angular = (left_speed - right_speed) / 2.;
+	encoder_feedback_angular = get_encoder_angular_speed();
 
 	linear_error += ideal_linear_speed - encoder_feedback_linear;
 	angular_error += ideal_angular_speed - encoder_feedback_angular;
@@ -149,12 +162,8 @@ void motor_control(void)
 	power_right(pwm_right);
 
 	last_linear_error = linear_error;
+	last_angular_error = angular_error;
 
-	if (pwm_saturation() >
-	    MAX_PWM_SATURATION_PERIOD * SYSTICK_FREQUENCY_HZ) {
+	if (pwm_saturation() > MAX_PWM_SATURATION_PERIOD * SYSTICK_FREQUENCY_HZ)
 		collision_detected_signal = true;
-		drive_off();
-		led_left_on();
-		led_right_on();
-	}
 }
