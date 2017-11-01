@@ -15,6 +15,45 @@ static volatile int32_t pwm_right;
 
 static volatile bool collision_detected_signal;
 
+float get_kp_linear(void)
+{
+	return kp_linear;
+}
+
+void set_kp_linear(float value)
+{
+	kp_linear = value;
+}
+
+float get_kd_linear(void)
+{
+	return kd_linear;
+}
+void set_kd_linear(float value)
+{
+	kd_linear = value;
+}
+
+float get_kp_angular(void)
+{
+	return kp_angular;
+}
+
+void set_kp_angular(float value)
+{
+	kp_angular = value;
+}
+
+float get_kd_angular(void)
+{
+	return kd_angular;
+}
+
+void set_kd_angular(float value)
+{
+	kd_angular = value;
+}
+
 /**
  * @brief Returns true if a collision was detected.
  */

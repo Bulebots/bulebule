@@ -9,6 +9,19 @@ void log_battery_voltage(void)
 }
 
 /**
+ * @brief Log all the control variables.
+ */
+void log_control_variables(void)
+{
+	float kp_linear = get_kp_linear();
+	float kd_linear = get_kd_linear();
+	float kp_angular = get_kp_angular();
+	float kd_angular = get_kd_angular();
+
+	LOG_INFO("%f,%f,%f,%f", kp_linear, kd_linear, kp_angular, kd_angular);
+}
+
+/**
  * @brief Log information about linear speed relevant variables.
  *
  * These include:

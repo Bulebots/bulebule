@@ -6,6 +6,14 @@
 #include "motor.h"
 #include "setup.h"
 
+float get_kp_linear(void);
+void set_kp_linear(float value);
+float get_kd_linear(void);
+void set_kd_linear(float value);
+float get_kp_angular(void);
+void set_kp_angular(float value);
+float get_kd_angular(void);
+void set_kd_angular(float value);
 bool collision_detected(void);
 float get_left_pwm(void);
 float get_right_pwm(void);

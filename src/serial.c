@@ -32,19 +32,39 @@ static void clear_received(void)
 }
 
 /**
+ * @brief Parse a float number in the received buffer.
+ */
+static float parse_float(const char *left_strip)
+{
+	char *pointer;
+
+	pointer = buffer.data;
+	pointer += strlen(left_strip);
+	return strtof(pointer, NULL);
+}
+
+/**
  * @brief Process a command received.
  */
 static void process_command(void)
 {
-	if (!strncmp(buffer.data, "battery", BUFFER_SIZE))
+	if (!strcmp(buffer.data, "battery")) {
 		log_battery_voltage();
-	else if (!strncmp(buffer.data, "run linear_speed_profile", BUFFER_SIZE))
+	} else if (!strcmp(buffer.data, "control_variables")) {
+		log_control_variables();
+	} else if (!strcmp(buffer.data, "run linear_speed_profile")) {
 		run_linear_speed_profile_signal = true;
-	else if (!strncmp(buffer.data, "run angular_speed_profile",
-			  BUFFER_SIZE))
+	} else if (!strcmp(buffer.data, "run angular_speed_profile")) {
 		run_angular_speed_profile_signal = true;
-	else
+	} else if (!strncmp(buffer.data, "set kp_angular ",
+			    strlen("set kp_angular "))) {
+		set_kp_angular(parse_float("set kp_angular "));
+	} else if (!strncmp(buffer.data, "set kd_angular ",
+			    strlen("set kd_angular "))) {
+		set_kd_angular(parse_float("set kd_angular "));
+	} else {
 		LOG_WARNING("Unknown command: `%s`!", buffer.data);
+	}
 	clear_received();
 }
 

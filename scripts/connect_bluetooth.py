@@ -99,6 +99,8 @@ class Theseus(cmd.Cmd):
     LOG_SUBCOMMANDS = ['all', 'clear']
     PLOT_SUBCOMMANDS = ['linear_speed_profile', 'angular_speed_profile']
     RUN_SUBCOMMANDS = ['linear_speed_profile', 'angular_speed_profile']
+    SET_SUBCOMMANDS = ['kp_linear ', 'kd_linear ', 'kp_angular ',
+                       'kd_angular ']
 
     def cmdloop(self, intro=None):
         """Modified cmdloop() to handle keyboard interruptions."""
@@ -129,6 +131,14 @@ class Theseus(cmd.Cmd):
     def do_battery(self, *args):
         """Get battery voltage."""
         self.proxy.send('battery\0')
+
+    def do_control_variables(self, *args):
+        """Get control variables."""
+        self.proxy.send('control_variables\0')
+
+    def do_set(self, line):
+        """Set robot variables."""
+        self.proxy.send('set ' + line + '\0')
 
     def do_clear(self, *args):
         """Clear screen."""
@@ -171,6 +181,9 @@ class Theseus(cmd.Cmd):
 
     def complete_run(self, text, line, begidx, endidx):
         return complete_subcommands(text, self.RUN_SUBCOMMANDS)
+
+    def complete_set(self, text, line, begidx, endidx):
+        return complete_subcommands(text, self.SET_SUBCOMMANDS)
 
     def do_exit(self, *args):
         """Exit shell."""
