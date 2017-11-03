@@ -17,21 +17,12 @@ install:
   - pip install -r requirements.txt
 
 before_script:
-  - linux="https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git"
-  - wget $linux/plain/scripts/spelling.txt
-  - wget $linux/plain/scripts/checkpatch.pl
-  - wget $linux/plain/scripts/const_structs.checkpatch
-  - chmod +x checkpatch.pl
   - clang-format() { clang-format-4.0 $@; }
   - export -f clang-format
-  - export CHECKPATCH_OPTIONS="--terse --no-tree --max-line-length=80 --ignore ARRAY_SIZE,VOLATILE,LEADING_SPACE"
   - ./scripts/setup_libopencm3.sh
 
 script:
-  - ./scripts/check_format.sh
-  - ./checkpatch.pl $CHECKPATCH_OPTIONS --file src/*
+  - ./scripts/checkformat_clang.sh
+  - ./scripts/checkformat_checkpatch.sh
   - cd src/ && make
   - cd ../ && pytest -sv
-
-after_script:
-  - rm checkpatch.pl
