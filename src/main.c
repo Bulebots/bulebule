@@ -6,6 +6,7 @@
 #include "hmi.h"
 #include "logging.h"
 #include "motor.h"
+#include "move.h"
 #include "serial.h"
 #include "setup.h"
 
@@ -35,13 +36,23 @@ int main(void)
 
 	while (1) {
 		if (button_left_read()) {
-			led_left_on();
-			each(200, log_sensors_distance, 1000);
-			led_left_off();
+			sleep_ticks(2000);
+			turn_right_static();
+			sleep_ticks(500);
+			turn_right_static();
+			sleep_ticks(500);
+			turn_right_static();
+			sleep_ticks(500);
+			turn_right_static();
+			sleep_ticks(500);
 		}
 		if (button_right_read()) {
-			log_battery_voltage();
-			sleep_ticks(500);
+			sleep_ticks(5000);
+			move_straight_out_of_cell();
+			move_straight();
+			move_right();
+			move_straight();
+			move_stop();
 		}
 		execute_commands();
 	}

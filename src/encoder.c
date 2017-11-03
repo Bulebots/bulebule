@@ -92,6 +92,14 @@ int32_t get_encoder_right_micrometers(void)
 }
 
 /**
+ * @brief Read the average travelled distance in micrometers.
+ */
+int32_t get_encoder_average_micrometers(void)
+{
+	return (left_micrometers + right_micrometers) / 2;
+}
+
+/**
  * @brief Read left motor speed in meters per second.
  */
 float get_encoder_left_speed(void)

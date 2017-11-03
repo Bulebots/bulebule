@@ -7,8 +7,9 @@ static struct data_buffer {
 	uint32_t size;
 } buffer;
 
-static bool run_linear_speed_profile_signal;
 static bool run_angular_speed_profile_signal;
+static bool run_linear_speed_profile_signal;
+static bool run_static_turn_right_profile_signal;
 
 /**
  * @brief Push a single char to the serial received buffer.
@@ -56,6 +57,8 @@ static void process_command(void)
 		run_linear_speed_profile_signal = true;
 	} else if (!strcmp(buffer.data, "run angular_speed_profile")) {
 		run_angular_speed_profile_signal = true;
+	} else if (!strcmp(buffer.data, "run static_turn_right_profile")) {
+		run_static_turn_right_profile_signal = true;
 	} else if (!strncmp(buffer.data, "set kp_angular ",
 			    strlen("set kp_angular "))) {
 		set_kp_angular(parse_float("set kp_angular "));
@@ -99,5 +102,8 @@ void execute_commands(void)
 	} else if (run_angular_speed_profile_signal) {
 		run_angular_speed_profile_signal = false;
 		run_angular_speed_profile();
+	} else if (run_static_turn_right_profile_signal) {
+		run_static_turn_right_profile_signal = false;
+		run_static_turn_right_profile();
 	}
 }

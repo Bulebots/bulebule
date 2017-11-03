@@ -98,7 +98,11 @@ class Theseus(cmd.Cmd):
     prompt = '>>> '
     LOG_SUBCOMMANDS = ['all', 'clear']
     PLOT_SUBCOMMANDS = ['linear_speed_profile', 'angular_speed_profile']
-    RUN_SUBCOMMANDS = ['linear_speed_profile', 'angular_speed_profile']
+    RUN_SUBCOMMANDS = [
+        'angular_speed_profile',
+        'linear_speed_profile',
+        'static_turn_right_profile'
+    ]
     SET_SUBCOMMANDS = ['kp_linear ', 'kd_linear ', 'kp_angular ',
                        'kd_angular ']
 
@@ -166,10 +170,8 @@ class Theseus(cmd.Cmd):
 
     def do_run(self, extra):
         """Run different procedures on the mouse."""
-        if extra == 'linear_speed_profile':
-            self.proxy.send('run linear_speed_profile\0')
-        elif extra == 'angular_speed_profile':
-            self.proxy.send('run angular_speed_profile\0')
+        if extra in self.RUN_SUBCOMMANDS:
+            self.proxy.send('run %s\0' % extra)
         else:
             print('Please, specify what to run!')
 

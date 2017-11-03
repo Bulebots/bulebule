@@ -12,6 +12,7 @@
 /** Universal constants */
 #define MICROMETERS_PER_METER 1000000
 #define PI 3.1415
+#define CELL_DIMENSION 0.18
 
 /** System clock frequency is set in `setup_clock` */
 #define SYSCLK_FREQUENCY_HZ 72000000
@@ -20,7 +21,7 @@
 
 /** Encoder-related constants */
 #define MICROMETERS_PER_COUNT 8.4189
-#define WHEELS_SEPARATION 0.073
+#define WHEELS_SEPARATION 0.079
 
 /**
  * Maximum acceleration and deceleration.
@@ -28,10 +29,10 @@
  * - Linear acceleration is defined in meters per second squared.
  * - Angular acceleration is defined in radians per second squared.
  */
-#define MAX_LINEAR_ACCELERATION 1.
-#define MAX_LINEAR_DECELERATION 1.
-#define MAX_ANGULAR_ACCELERATION (1. * PI)
-#define MAX_ANGULAR_DECELERATION (1. * PI)
+#define MAX_LINEAR_ACCELERATION 3.
+#define MAX_LINEAR_DECELERATION 3.
+#define MAX_ANGULAR_ACCELERATION (32. * PI)
+#define MAX_ANGULAR_DECELERATION (32. * PI)
 
 /**
  * Maximum PWM period (should be <= DRIVER_PWM_PERIOD).
@@ -40,7 +41,7 @@
  * in order to protect the locomotion system and avoid reaching uncontrolled
  * speeds.
  */
-#define MAX_PWM_PERIOD 300
+#define MAX_PWM_PERIOD 512
 
 /**
  * Maximum time period allowed with saturated PWM output.
