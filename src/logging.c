@@ -87,3 +87,20 @@ void log_sensors_distance(void)
 
 	LOG_INFO("%f,%f,%f,%f", sl_dist, sr_dist, fl_dist, fr_dist);
 }
+
+/**
+ * @brief Log encoder counts.
+ */
+void log_sensors_raw(void)
+{
+	uint16_t off[NUM_SENSOR];
+	uint16_t on[NUM_SENSOR];
+
+	get_sensors_raw(off, on);
+
+	LOG_INFO("OFF-ON,%d,%d,%d,%d,%d,%d,%d,%d", off[SENSOR_SIDE_LEFT_ID],
+		 off[SENSOR_SIDE_RIGHT_ID], off[SENSOR_FRONT_LEFT_ID],
+		 off[SENSOR_FRONT_RIGHT_ID], on[SENSOR_SIDE_LEFT_ID],
+		 on[SENSOR_SIDE_RIGHT_ID], on[SENSOR_FRONT_LEFT_ID],
+		 on[SENSOR_FRONT_RIGHT_ID]);
+}
