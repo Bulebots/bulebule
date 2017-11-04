@@ -7,6 +7,7 @@ from bluetooth import (
     BluetoothSocket,
     RFCOMM,
 )
+from bluetooth.btcommon import BluetoothError
 import matplotlib
 from matplotlib import pyplot
 from osbrain import (
@@ -82,8 +83,9 @@ class Proxy(Agent):
             self.rfcomm.settimeout(0.01)
             received = self.rfcomm.recv(1024)
             self.process_received(received)
-        except Exception:
-            pass
+        except BluetoothError as error:
+            if str(error) != 'timed out':
+                raise
 
     def tail(self, N):
         return self.log[-N:]
