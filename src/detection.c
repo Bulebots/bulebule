@@ -240,10 +240,11 @@ float get_side_right_distance(void)
 float get_sensors_error(void)
 {
 	float sensors_error;
+
 	if ((distance[SENSOR_SIDE_LEFT_ID] > MIDDLE_MAZE_DISTANCE) &&
 	    (distance[SENSOR_SIDE_RIGHT_ID] < MIDDLE_MAZE_DISTANCE)) {
 		sensors_error =
-		    MIDDLE_MAZE_DISTANCE - distance[SENSOR_SIDE_RIGHT_ID];
+		    distance[SENSOR_SIDE_RIGHT_ID] - MIDDLE_MAZE_DISTANCE;
 	} else if ((distance[SENSOR_SIDE_RIGHT_ID] > MIDDLE_MAZE_DISTANCE) &&
 		   (distance[SENSOR_SIDE_LEFT_ID] < MIDDLE_MAZE_DISTANCE)) {
 		sensors_error =

@@ -10,6 +10,7 @@
 #include "serial.h"
 #include "setup.h"
 
+static bool motor_control_enable;
 /**
  * @brief Handle the SysTick interruptions.
  */
@@ -20,7 +21,8 @@ void sys_tick_handler(void)
 		update_ideal_speed();
 		update_encoder_readings();
 		update_distance_readings();
-		motor_control();
+		if (motor_control_enable)
+			motor_control();
 	} else {
 		drive_off();
 		led_left_on();
@@ -33,26 +35,23 @@ void sys_tick_handler(void)
 int main(void)
 {
 	setup();
-
 	while (1) {
 		if (button_left_read()) {
-			sleep_ticks(2000);
-			turn_right_static();
-			sleep_ticks(500);
-			turn_right_static();
-			sleep_ticks(500);
-			turn_right_static();
-			sleep_ticks(500);
-			turn_right_static();
-			sleep_ticks(500);
+			led_left_on();
+			motor_control_enable = true;
+			sleep_ticks(200);
+			led_left_off();
 		}
 		if (button_right_read()) {
-			sleep_ticks(5000);
-			move_straight_out_of_cell();
+			led_right_on();
+			sleep_ticks(1000);
 			move_straight();
-			move_right();
+			move_straight();
 			move_straight();
 			move_stop();
+			sleep_ticks(1000);
+			motor_control_enable = false;
+			led_right_off();
 		}
 		execute_commands();
 	}

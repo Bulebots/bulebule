@@ -1,6 +1,7 @@
 #ifndef __CONTROL_H
 #define __CONTROL_H
 
+#include "detection.h"
 #include "encoder.h"
 #include "hmi.h"
 #include "motor.h"
@@ -12,6 +13,8 @@ float get_linear_deceleration(void);
 void set_linear_deceleration(float value);
 float get_angular_acceleration(void);
 void set_angular_acceleration(float value);
+float get_sensors_error_factor(void);
+void set_sensors_error_factor(float value);
 float get_kp_linear(void);
 void set_kp_linear(float value);
 float get_kd_linear(void);
@@ -20,6 +23,8 @@ float get_kp_angular(void);
 void set_kp_angular(float value);
 float get_kd_angular(void);
 void set_kd_angular(float value);
+float get_ki_angular(void);
+void set_ki_angular(float value);
 bool collision_detected(void);
 float get_left_pwm(void);
 float get_right_pwm(void);

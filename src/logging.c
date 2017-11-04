@@ -20,6 +20,8 @@ void log_control_variables(void)
 	float kd_linear = get_kd_linear();
 	float kp_angular = get_kp_angular();
 	float kd_angular = get_kd_angular();
+	float ki_angular = get_kd_angular();
+	float sensors_error_factor = get_sensors_error_factor();
 
 	LOG_INFO("{\"linear_acceleration\":%f,"
 		 "\"linear_deceleration\":%f,"
@@ -27,9 +29,12 @@ void log_control_variables(void)
 		 "\"kp_linear\":%f,"
 		 "\"kd_linear\":%f,"
 		 "\"kp_angular\":%f,"
-		 "\"kd_angular\":%f}",
+		 "\"kd_angular\":%f,"
+		 "\"ki_angular\":%f,"
+		 "\"sensors_error_factor\":%f}",
 		 linear_acceleration, linear_deceleration, angular_acceleration,
-		 kp_linear, kd_linear, kp_angular, kd_angular);
+		 kp_linear, kd_linear, kp_angular, kd_angular, ki_angular,
+		 sensors_error_factor);
 }
 
 /**
@@ -89,7 +94,7 @@ void log_sensors_distance(void)
 }
 
 /**
- * @brief Log encoder counts.
+ * @brief Log all sensors raw readings.
  */
 void log_sensors_raw(void)
 {

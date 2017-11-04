@@ -19,6 +19,8 @@ static volatile float kp_linear = 1600.;
 static volatile float kd_linear = 100.;
 static volatile float kp_angular = 30.;
 static volatile float kd_angular = 50.;
+static volatile float ki_angular = 40.;
+static volatile float sensors_error_factor = 50.;
 
 static volatile int32_t pwm_left;
 static volatile int32_t pwm_right;
@@ -53,6 +55,16 @@ float get_angular_acceleration(void)
 void set_angular_acceleration(float value)
 {
 	angular_acceleration = value;
+}
+
+float get_sensors_error_factor(void)
+{
+	return sensors_error_factor;
+}
+
+void set_sensors_error_factor(float value)
+{
+	sensors_error_factor = value;
 }
 
 float get_kp_linear(void)
@@ -92,6 +104,16 @@ float get_kd_angular(void)
 void set_kd_angular(float value)
 {
 	kd_angular = value;
+}
+
+float get_ki_angular(void)
+{
+	return ki_angular;
+}
+
+void set_ki_angular(float value)
+{
+	ki_angular = value;
 }
 
 /**
@@ -213,6 +235,7 @@ void motor_control(void)
 	static float angular_error;
 	static float last_linear_error;
 	static float last_angular_error;
+	static float sensors_integral;
 
 	float left_speed;
 	float right_speed;
@@ -220,19 +243,23 @@ void motor_control(void)
 	float encoder_feedback_angular;
 	float linear_pwm;
 	float angular_pwm;
+	float sensors_feedback;
 
 	left_speed = get_encoder_left_speed();
 	right_speed = get_encoder_right_speed();
 	encoder_feedback_linear = (left_speed + right_speed) / 2.;
 	encoder_feedback_angular = get_encoder_angular_speed();
+	sensors_feedback = get_sensors_error() * sensors_error_factor;
 
 	linear_error += ideal_linear_speed - encoder_feedback_linear;
 	angular_error += ideal_angular_speed - encoder_feedback_angular;
+	sensors_integral += sensors_feedback;
 
 	linear_pwm = kp_linear * linear_error +
 		     kd_linear * (linear_error - last_linear_error);
-	angular_pwm = kp_angular * angular_error +
-		      kd_angular * (angular_error - last_angular_error);
+	angular_pwm = kp_angular * (angular_error + sensors_feedback) +
+		      kd_angular * (angular_error - last_angular_error) +
+		      ki_angular * sensors_integral;
 
 	pwm_left = (int32_t)(linear_pwm + angular_pwm);
 	pwm_right = (int32_t)(linear_pwm - angular_pwm);

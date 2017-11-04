@@ -108,6 +108,10 @@ static void process_command(void)
 		set_kp_angular(parse_float("set kp_angular "));
 	else if (starts_with("set kd_angular "))
 		set_kd_angular(parse_float("set kd_angular "));
+	else if (starts_with("set ki_angular "))
+		set_ki_angular(parse_spaced_float(2));
+	else if (starts_with("set sensors_error_factor "))
+		set_sensors_error_factor(parse_spaced_float(2));
 	else
 		LOG_WARNING("Unknown command: `%s`!", buffer.data);
 	clear_received();
