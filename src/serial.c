@@ -59,6 +59,12 @@ static void process_command(void)
 		run_angular_speed_profile_signal = true;
 	} else if (!strcmp(buffer.data, "run static_turn_right_profile")) {
 		run_static_turn_right_profile_signal = true;
+	} else if (!strncmp(buffer.data, "set kp_linear ",
+			    strlen("set kp_linear "))) {
+		set_kp_linear(parse_float("set kp_linear "));
+	} else if (!strncmp(buffer.data, "set kd_linear ",
+			    strlen("set kd_linear "))) {
+		set_kd_linear(parse_float("set kd_linear "));
 	} else if (!strncmp(buffer.data, "set kp_angular ",
 			    strlen("set kp_angular "))) {
 		set_kp_angular(parse_float("set kp_angular "));

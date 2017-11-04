@@ -142,7 +142,10 @@ class Theseus(cmd.Cmd):
 
     def do_set(self, line):
         """Set robot variables."""
-        self.proxy.send('set ' + line + '\0')
+        if extra in self.SET_SUBCOMMANDS:
+            self.proxy.send('set %s\0' % line)
+        else:
+            print('Invalid set command "%s"!' % line)
 
     def do_clear(self, *args):
         """Clear screen."""
