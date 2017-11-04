@@ -13,12 +13,23 @@ void log_battery_voltage(void)
  */
 void log_control_variables(void)
 {
+	float linear_acceleration = get_linear_acceleration();
+	float linear_deceleration = get_linear_deceleration();
+	float angular_acceleration = get_angular_acceleration();
 	float kp_linear = get_kp_linear();
 	float kd_linear = get_kd_linear();
 	float kp_angular = get_kp_angular();
 	float kd_angular = get_kd_angular();
 
-	LOG_INFO("%f,%f,%f,%f", kp_linear, kd_linear, kp_angular, kd_angular);
+	LOG_INFO("{\"linear_acceleration\":%f,"
+		 "\"linear_deceleration\":%f,"
+		 "\"angular_acceleration\":%f,"
+		 "\"kp_linear\":%f,"
+		 "\"kd_linear\":%f,"
+		 "\"kp_angular\":%f,"
+		 "\"kd_angular\":%f}",
+		 linear_acceleration, linear_deceleration, angular_acceleration,
+		 kp_linear, kd_linear, kp_angular, kd_angular);
 }
 
 /**

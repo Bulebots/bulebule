@@ -103,10 +103,17 @@ class Theseus(cmd.Cmd):
     RUN_SUBCOMMANDS = [
         'angular_speed_profile',
         'linear_speed_profile',
-        'static_turn_right_profile'
+        'static_turn_right_profile',
     ]
-    SET_SUBCOMMANDS = ['kp_linear ', 'kd_linear ', 'kp_angular ',
-                       'kd_angular ']
+    SET_SUBCOMMANDS = [
+        'linear_acceleration ',
+        'linear_deceleration ',
+        'angular_acceleration ',
+        'kp_linear ',
+        'kd_linear ',
+        'kp_angular ',
+        'kd_angular ',
+    ]
 
     def cmdloop(self, intro=None):
         """Modified cmdloop() to handle keyboard interruptions."""
@@ -144,7 +151,7 @@ class Theseus(cmd.Cmd):
 
     def do_set(self, line):
         """Set robot variables."""
-        if extra in self.SET_SUBCOMMANDS:
+        if any(line.startswith(x) for x in self.SET_SUBCOMMANDS):
             self.proxy.send('set %s\0' % line)
         else:
             print('Invalid set command "%s"!' % line)

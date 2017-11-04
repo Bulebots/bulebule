@@ -24,17 +24,6 @@
 #define WHEELS_SEPARATION 0.079
 
 /**
- * Maximum acceleration and deceleration.
- *
- * - Linear acceleration is defined in meters per second squared.
- * - Angular acceleration is defined in radians per second squared.
- */
-#define MAX_LINEAR_ACCELERATION 3.
-#define MAX_LINEAR_DECELERATION 3.
-#define MAX_ANGULAR_ACCELERATION (32. * PI)
-#define MAX_ANGULAR_DECELERATION (32. * PI)
-
-/**
  * Maximum PWM period (should be <= DRIVER_PWM_PERIOD).
  *
  * Usually it should be set to DRIVER_PWM_PERIOD except for testing purposes

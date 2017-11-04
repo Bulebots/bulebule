@@ -6,6 +6,12 @@
 #include "motor.h"
 #include "setup.h"
 
+float get_linear_acceleration(void);
+void set_linear_acceleration(float value);
+float get_linear_deceleration(void);
+void set_linear_deceleration(float value);
+float get_angular_acceleration(void);
+void set_angular_acceleration(float value);
 float get_kp_linear(void);
 void set_kp_linear(float value);
 float get_kd_linear(void);

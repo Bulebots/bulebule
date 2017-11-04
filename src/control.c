@@ -1,5 +1,15 @@
 #include "control.h"
 
+/**
+ * Maximum acceleration and deceleration.
+ *
+ * - Linear acceleration is defined in meters per second squared.
+ * - Angular acceleration is defined in radians per second squared.
+ */
+static volatile float linear_acceleration = 3.;
+static volatile float linear_deceleration = 3.;
+static volatile float angular_acceleration = 32. * PI;
+
 static volatile float target_linear_speed;
 static volatile float target_angular_speed;
 static volatile float ideal_linear_speed;
@@ -14,6 +24,36 @@ static volatile int32_t pwm_left;
 static volatile int32_t pwm_right;
 
 static volatile bool collision_detected_signal;
+
+float get_linear_acceleration(void)
+{
+	return linear_acceleration;
+}
+
+void set_linear_acceleration(float value)
+{
+	linear_acceleration = value;
+}
+
+float get_linear_deceleration(void)
+{
+	return linear_deceleration;
+}
+
+void set_linear_deceleration(float value)
+{
+	linear_deceleration = value;
+}
+
+float get_angular_acceleration(void)
+{
+	return angular_acceleration;
+}
+
+void set_angular_acceleration(float value)
+{
+	angular_acceleration = value;
+}
 
 float get_kp_linear(void)
 {
@@ -136,23 +176,23 @@ void update_ideal_speed(void)
 {
 	if (ideal_linear_speed < target_linear_speed) {
 		ideal_linear_speed +=
-		    MAX_LINEAR_ACCELERATION / SYSTICK_FREQUENCY_HZ;
+		    linear_acceleration / SYSTICK_FREQUENCY_HZ;
 		if (ideal_linear_speed > target_linear_speed)
 			ideal_linear_speed = target_linear_speed;
 	} else if (ideal_linear_speed > target_linear_speed) {
 		ideal_linear_speed -=
-		    MAX_LINEAR_DECELERATION / SYSTICK_FREQUENCY_HZ;
+		    linear_acceleration / SYSTICK_FREQUENCY_HZ;
 		if (ideal_linear_speed < target_linear_speed)
 			ideal_linear_speed = target_linear_speed;
 	}
 	if (ideal_angular_speed < target_angular_speed) {
 		ideal_angular_speed +=
-		    MAX_ANGULAR_ACCELERATION / SYSTICK_FREQUENCY_HZ;
+		    angular_acceleration / SYSTICK_FREQUENCY_HZ;
 		if (ideal_angular_speed > target_angular_speed)
 			ideal_angular_speed = target_angular_speed;
 	} else if (ideal_angular_speed > target_angular_speed) {
 		ideal_angular_speed -=
-		    MAX_ANGULAR_DECELERATION / SYSTICK_FREQUENCY_HZ;
+		    angular_acceleration / SYSTICK_FREQUENCY_HZ;
 		if (ideal_angular_speed < target_angular_speed)
 			ideal_angular_speed = target_angular_speed;
 	}
