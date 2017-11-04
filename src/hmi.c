@@ -41,6 +41,14 @@ void led_left_off(void)
 }
 
 /**
+ * @brief Function to power OFF the right LED.
+ */
+void led_right_off(void)
+{
+	gpio_clear(GPIOB, GPIO5);
+}
+
+/**
  * @brief Function to read button left.
  */
 bool button_left_read(void)
