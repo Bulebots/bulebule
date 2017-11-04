@@ -46,13 +46,12 @@ int main(void)
 			led_left_off();
 		}
 		if (button_right_read()) {
-			led_right_on();
-			sleep_ticks(2000);
-			front_sensors_control(false);
-			side_sensors_control(true);
-			motor_control_enable = true;
-			sleep_ticks(1000);
-			led_right_off();
+			sleep_ticks(5000);
+			move_straight_out_of_cell();
+			move_straight();
+			move_straight();
+			move_straight();
+			move_straight_stop_head_front_wall();
 		}
 		execute_commands();
 	}

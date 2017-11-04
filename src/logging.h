@@ -8,7 +8,7 @@
 #include "formatting.h"
 
 void log_battery_voltage(void);
-void log_control_variables(void);
+void log_configuration_variables(void);
 void log_linear_speed(void);
 void log_angular_speed(void);
 void log_sensors_distance(void);

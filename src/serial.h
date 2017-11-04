@@ -7,6 +7,8 @@
 #include <libopencm3/stm32/usart.h>
 
 #include "calibration.h"
+#include "control.h"
+#include "encoder.h"
 #include "logging.h"
 
 void execute_commands(void);

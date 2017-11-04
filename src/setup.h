@@ -13,16 +13,15 @@
 #define MICROMETERS_PER_METER 1000000
 #define PI 3.1415
 #define CELL_DIMENSION 0.18
-#define MIDDLE_MAZE_DISTANCE 0.084
+#define WALL_WIDTH 0.012
+#define MOUSE_TAIL 0.036
+#define MOUSE_HEAD 0.057
+#define MIDDLE_MAZE_DISTANCE ((CELL_DIMENSION - WALL_WIDTH) / 2.)
 
 /** System clock frequency is set in `setup_clock` */
 #define SYSCLK_FREQUENCY_HZ 72000000
 #define SYSTICK_FREQUENCY_HZ 1000
 #define DRIVER_PWM_PERIOD 1024
-
-/** Encoder-related constants */
-#define MICROMETERS_PER_COUNT 8.4189
-#define WHEELS_SEPARATION 0.079
 
 /**
  * Maximum PWM period (should be <= DRIVER_PWM_PERIOD).

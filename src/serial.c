@@ -86,14 +86,18 @@ static void process_command(void)
 {
 	if (!strcmp(buffer.data, "battery"))
 		log_battery_voltage();
-	else if (!strcmp(buffer.data, "control_variables"))
-		log_control_variables();
+	else if (!strcmp(buffer.data, "configuration_variables"))
+		log_configuration_variables();
 	else if (!strcmp(buffer.data, "run linear_speed_profile"))
 		run_linear_speed_profile_signal = true;
 	else if (!strcmp(buffer.data, "run angular_speed_profile"))
 		run_angular_speed_profile_signal = true;
 	else if (!strcmp(buffer.data, "run static_turn_right_profile"))
 		run_static_turn_right_profile_signal = true;
+	else if (starts_with("set micrometers_per_count "))
+		set_micrometers_per_count(parse_spaced_float(2));
+	else if (starts_with("set wheels_separation "))
+		set_wheels_separation(parse_spaced_float(2));
 	else if (starts_with("set linear_acceleration "))
 		set_linear_acceleration(parse_spaced_float(2));
 	else if (starts_with("set linear_deceleration "))

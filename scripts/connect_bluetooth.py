@@ -106,6 +106,8 @@ class Theseus(cmd.Cmd):
         'static_turn_right_profile',
     ]
     SET_SUBCOMMANDS = [
+        'micrometers_per_count ',
+        'wheels_separation ',
         'linear_acceleration ',
         'linear_deceleration ',
         'angular_acceleration ',
@@ -149,9 +151,9 @@ class Theseus(cmd.Cmd):
         """Get battery voltage."""
         self.proxy.send('battery\0')
 
-    def do_control_variables(self, *args):
-        """Get control variables."""
-        self.proxy.send('control_variables\0')
+    def do_configuration_variables(self, *args):
+        """Get configuration variables."""
+        self.proxy.send('configuration_variables\0')
 
     def do_set(self, line):
         """Set robot variables."""

@@ -10,6 +10,8 @@ void move_straight_distance(float distance);
 void move_straight(void);
 void move_straight_out_of_cell(void);
 void move_stop(void);
+void move_straight_stop_end(void);
+void move_straight_stop_head_front_wall(void);
 void turn_right_static(void);
 void move_right(void);
 

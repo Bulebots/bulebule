@@ -7,6 +7,10 @@
 
 #include "setup.h"
 
+float get_micrometers_per_count(void);
+void set_micrometers_per_count(float value);
+float get_wheels_separation(void);
+void set_wheels_separation(float value);
 int32_t get_encoder_left_diff_count(void);
 int32_t get_encoder_right_diff_count(void);
 int32_t get_encoder_left_total_count(void);
