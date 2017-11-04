@@ -1,10 +1,13 @@
 #include "detection.h"
 
+/**/
+#define MIDDLE_MAZE_DISTANCE 0.084
+
 /* Calibration constants for sensors*/
-#define SENSOR_SIDE_LEFT_A 3.084
-#define SENSOR_SIDE_LEFT_B 0.375
-#define SENSOR_SIDE_RIGHT_A 2.870
-#define SENSOR_SIDE_RIGHT_B 0.361
+#define SENSOR_SIDE_LEFT_A 2.731
+#define SENSOR_SIDE_LEFT_B 0.279
+#define SENSOR_SIDE_RIGHT_A 2.371
+#define SENSOR_SIDE_RIGHT_B 0.235
 #define SENSOR_FRONT_LEFT_A 2.411
 #define SENSOR_FRONT_LEFT_B 0.278
 #define SENSOR_FRONT_RIGHT_A 2.462
@@ -225,4 +228,28 @@ float get_side_left_distance(void)
 float get_side_right_distance(void)
 {
 	return distance[SENSOR_SIDE_RIGHT_ID];
+}
+
+/**
+ * @brief Calculate and return the side sensors error.
+ *
+ * Taking into account that the walls are parallel to the robot, this function
+ * returns the distance that the robot is moved from the center parallel line
+ * of the maze.
+ */
+float get_sensors_error(void)
+{
+	float sensors_error;
+	if ((distance[SENSOR_SIDE_LEFT_ID] > MIDDLE_MAZE_DISTANCE) &&
+	    (distance[SENSOR_SIDE_RIGHT_ID] < MIDDLE_MAZE_DISTANCE)) {
+		sensors_error =
+		    MIDDLE_MAZE_DISTANCE - distance[SENSOR_SIDE_RIGHT_ID];
+	} else if ((distance[SENSOR_SIDE_RIGHT_ID] > MIDDLE_MAZE_DISTANCE) &&
+		   (distance[SENSOR_SIDE_LEFT_ID] < MIDDLE_MAZE_DISTANCE)) {
+		sensors_error =
+		    MIDDLE_MAZE_DISTANCE - distance[SENSOR_SIDE_LEFT_ID];
+	} else {
+		sensors_error = 0;
+	}
+	return sensors_error;
 }
