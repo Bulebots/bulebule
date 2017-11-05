@@ -113,8 +113,10 @@ class Theseus(cmd.Cmd):
         'kd_linear ',
         'kp_angular ',
         'kd_angular ',
-        'ki_angular ',
-        'sensors_error_factor ',
+        'ki_angular_side ',
+        'ki_angular_front ',
+        'side_sensors_error_factor ',
+        'front_sensors_error_factor ',
     ]
 
     def cmdloop(self, intro=None):

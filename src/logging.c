@@ -20,8 +20,10 @@ void log_control_variables(void)
 	float kd_linear = get_kd_linear();
 	float kp_angular = get_kp_angular();
 	float kd_angular = get_kd_angular();
-	float ki_angular = get_kd_angular();
-	float sensors_error_factor = get_sensors_error_factor();
+	float ki_angular_side = get_ki_angular_side();
+	float ki_angular_front = get_ki_angular_front();
+	float side_sensors_error_factor = get_side_sensors_error_factor();
+	float front_sensors_error_factor = get_front_sensors_error_factor();
 
 	LOG_INFO("{\"linear_acceleration\":%f,"
 		 "\"linear_deceleration\":%f,"
@@ -30,11 +32,14 @@ void log_control_variables(void)
 		 "\"kd_linear\":%f,"
 		 "\"kp_angular\":%f,"
 		 "\"kd_angular\":%f,"
-		 "\"ki_angular\":%f,"
-		 "\"sensors_error_factor\":%f}",
+		 "\"ki_angular_side\":%f,"
+		 "\"ki_angular_front\":%f,"
+		 "\"side_sensors_error_factor\":%f,"
+		 "\"front_sensors_error_factor\":%f}",
 		 linear_acceleration, linear_deceleration, angular_acceleration,
-		 kp_linear, kd_linear, kp_angular, kd_angular, ki_angular,
-		 sensors_error_factor);
+		 kp_linear, kd_linear, kp_angular, kd_angular, ki_angular_side,
+		 ki_angular_front, side_sensors_error_factor,
+		 front_sensors_error_factor);
 }
 
 /**
@@ -108,4 +113,34 @@ void log_sensors_raw(void)
 		 off[SENSOR_FRONT_RIGHT_ID], on[SENSOR_SIDE_LEFT_ID],
 		 on[SENSOR_SIDE_RIGHT_ID], on[SENSOR_FRONT_LEFT_ID],
 		 on[SENSOR_FRONT_RIGHT_ID]);
+}
+
+/**
+ * @brief Log front sensors distances and error.
+ */
+void log_front_sensors_error(void)
+{
+	float sensors_error = get_front_sensors_error();
+	float fl_dist = get_front_left_distance();
+	float fr_dist = get_front_right_distance();
+
+	LOG_INFO("{\"front_sensors_error\":%f,"
+		 "\"front_left_distance\":%f,"
+		 "\"front_right_distance\":%f}",
+		 sensors_error, fl_dist, fr_dist);
+}
+
+/**
+ * @brief Log side sensors distances and error.
+ */
+void log_side_sensors_error(void)
+{
+	float sensors_error = get_side_sensors_error();
+	float sl_dist = get_side_left_distance();
+	float sr_dist = get_side_right_distance();
+
+	LOG_INFO("{\"front_sensors_error\":%f,"
+		 "\"side_left_distance\":%f,"
+		 "\"side_right_distance\":%f}",
+		 sensors_error, sl_dist, sr_dist);
 }

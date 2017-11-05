@@ -13,6 +13,7 @@
 #define MICROMETERS_PER_METER 1000000
 #define PI 3.1415
 #define CELL_DIMENSION 0.18
+#define MIDDLE_MAZE_DISTANCE 0.084
 
 /** System clock frequency is set in `setup_clock` */
 #define SYSCLK_FREQUENCY_HZ 72000000

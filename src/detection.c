@@ -1,8 +1,5 @@
 #include "detection.h"
 
-/**/
-#define MIDDLE_MAZE_DISTANCE 0.084
-
 static volatile uint16_t sensors_off[NUM_SENSOR], sensors_on[NUM_SENSOR];
 static volatile float distance[NUM_SENSOR];
 const float sensors_calibration_a[NUM_SENSOR] = {
@@ -226,10 +223,10 @@ float get_side_right_distance(void)
  * @brief Calculate and return the side sensors error.
  *
  * Taking into account that the walls are parallel to the robot, this function
- * returns the distance that the robot is moved from the center parallel line
- * of the maze.
+ * returns the distance that the robot is moved from the center of the
+ * corridor..
  */
-float get_sensors_error(void)
+float get_side_sensors_error(void)
 {
 	float sensors_error;
 
@@ -245,4 +242,15 @@ float get_sensors_error(void)
 		sensors_error = 0;
 	}
 	return sensors_error;
+}
+
+/**
+ * @brief Calculate and return the front sensors error.
+ *
+ * Taking into account that robot is approaching to a perpendicular wall, this
+ * function returns the difference between the front sensors distances
+ */
+float get_front_sensors_error(void)
+{
+	return distance[SENSOR_FRONT_LEFT_ID] - distance[SENSOR_FRONT_RIGHT_ID];
 }

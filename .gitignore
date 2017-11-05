@@ -9,7 +9,6 @@ __pycache__/
 *.out
 *.stylecheck
 *.swp
-config.h
 const_structs.checkpatch
 checkpatch.pl
 libopencm3.rules.mk

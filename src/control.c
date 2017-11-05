@@ -19,13 +19,19 @@ static volatile float kp_linear = 1600.;
 static volatile float kd_linear = 100.;
 static volatile float kp_angular = 30.;
 static volatile float kd_angular = 50.;
-static volatile float ki_angular = 40.;
-static volatile float sensors_error_factor = 50.;
+static volatile float ki_angular_front = 50.;
+static volatile float ki_angular_side = 40.;
+static volatile float side_sensors_error_factor = 50.;
+static volatile float front_sensors_error_factor = 20.;
 
 static volatile int32_t pwm_left;
 static volatile int32_t pwm_right;
 
 static volatile bool collision_detected_signal;
+static volatile bool side_sensors_control_enabled;
+static volatile bool front_sensors_control_enabled;
+static volatile float side_sensors_integral;
+static volatile float front_sensors_integral;
 
 float get_linear_acceleration(void)
 {
@@ -57,14 +63,24 @@ void set_angular_acceleration(float value)
 	angular_acceleration = value;
 }
 
-float get_sensors_error_factor(void)
+float get_side_sensors_error_factor(void)
 {
-	return sensors_error_factor;
+	return side_sensors_error_factor;
 }
 
-void set_sensors_error_factor(float value)
+void set_side_sensors_error_factor(float value)
 {
-	sensors_error_factor = value;
+	side_sensors_error_factor = value;
+}
+
+float get_front_sensors_error_factor(void)
+{
+	return front_sensors_error_factor;
+}
+
+void set_front_sensors_error_factor(float value)
+{
+	front_sensors_error_factor = value;
 }
 
 float get_kp_linear(void)
@@ -106,14 +122,48 @@ void set_kd_angular(float value)
 	kd_angular = value;
 }
 
-float get_ki_angular(void)
+float get_ki_angular_side(void)
 {
-	return ki_angular;
+	return ki_angular_side;
 }
 
-void set_ki_angular(float value)
+void set_ki_angular_side(float value)
 {
-	ki_angular = value;
+	ki_angular_side = value;
+}
+
+float get_ki_angular_front(void)
+{
+	return ki_angular_front;
+}
+
+void set_ki_angular_front(float value)
+{
+	ki_angular_front = value;
+}
+
+/**
+ * @brief Enable or disable the side sensors control.
+ *
+ * The integral variable is initialized to 0 on disable.
+ */
+void side_sensors_control(bool value)
+{
+	side_sensors_control_enabled = value;
+	if (value == false)
+		side_sensors_integral = 0;
+}
+
+/**
+ * @brief Enable or disable the front sensors control.
+ *
+ * The integral variable is initialized to 0 on disable.
+ */
+void front_sensors_control(bool value)
+{
+	front_sensors_control_enabled = value;
+	if (value == false)
+		front_sensors_integral = 0;
 }
 
 /**
@@ -235,7 +285,6 @@ void motor_control(void)
 	static float angular_error;
 	static float last_linear_error;
 	static float last_angular_error;
-	static float sensors_integral;
 
 	float left_speed;
 	float right_speed;
@@ -243,23 +292,43 @@ void motor_control(void)
 	float encoder_feedback_angular;
 	float linear_pwm;
 	float angular_pwm;
-	float sensors_feedback;
+	float side_sensors_feedback;
+	float front_sensors_feedback;
 
 	left_speed = get_encoder_left_speed();
 	right_speed = get_encoder_right_speed();
 	encoder_feedback_linear = (left_speed + right_speed) / 2.;
 	encoder_feedback_angular = get_encoder_angular_speed();
-	sensors_feedback = get_sensors_error() * sensors_error_factor;
+
+	if (side_sensors_control_enabled) {
+		side_sensors_feedback =
+		    get_side_sensors_error() * side_sensors_error_factor;
+		side_sensors_integral += side_sensors_feedback;
+	} else {
+		side_sensors_feedback = 0;
+		side_sensors_integral = 0;
+	}
+
+	if (front_sensors_control_enabled) {
+		front_sensors_feedback =
+		    get_front_sensors_error() * front_sensors_error_factor;
+		front_sensors_integral += front_sensors_feedback;
+
+	} else {
+		front_sensors_feedback = 0;
+		front_sensors_integral = 0;
+	}
 
 	linear_error += ideal_linear_speed - encoder_feedback_linear;
 	angular_error += ideal_angular_speed - encoder_feedback_angular;
-	sensors_integral += sensors_feedback;
 
 	linear_pwm = kp_linear * linear_error +
 		     kd_linear * (linear_error - last_linear_error);
-	angular_pwm = kp_angular * (angular_error + sensors_feedback) +
+	angular_pwm = kp_angular * (angular_error + side_sensors_feedback +
+				    front_sensors_feedback) +
 		      kd_angular * (angular_error - last_angular_error) +
-		      ki_angular * sensors_integral;
+		      ki_angular_side * side_sensors_integral +
+		      ki_angular_front * front_sensors_integral;
 
 	pwm_left = (int32_t)(linear_pwm + angular_pwm);
 	pwm_right = (int32_t)(linear_pwm - angular_pwm);
