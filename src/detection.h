@@ -9,6 +9,7 @@
 #include <libopencm3/stm32/gpio.h>
 #include <libopencm3/stm32/timer.h>
 
+#include "config.h"
 #include "setup.h"
 
 /* Sensors IDs*/

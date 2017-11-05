@@ -3,16 +3,6 @@
 /**/
 #define MIDDLE_MAZE_DISTANCE 0.084
 
-/* Calibration constants for sensors*/
-#define SENSOR_SIDE_LEFT_A 2.731
-#define SENSOR_SIDE_LEFT_B 0.279
-#define SENSOR_SIDE_RIGHT_A 2.371
-#define SENSOR_SIDE_RIGHT_B 0.235
-#define SENSOR_FRONT_LEFT_A 2.411
-#define SENSOR_FRONT_LEFT_B 0.278
-#define SENSOR_FRONT_RIGHT_A 2.462
-#define SENSOR_FRONT_RIGHT_B 0.293
-
 static volatile uint16_t sensors_off[NUM_SENSOR], sensors_on[NUM_SENSOR];
 static volatile float distance[NUM_SENSOR];
 const float sensors_calibration_a[NUM_SENSOR] = {
@@ -185,6 +175,8 @@ void get_sensors_raw(uint16_t *off, uint16_t *on)
 
 /**
  * @brief Calculate and update the distance from each sensor.
+ *
+ * @note The distances are calculated from the center of the robot.
  */
 void update_distance_readings(void)
 {
