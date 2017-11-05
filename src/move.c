@@ -1,16 +1,39 @@
 #include "move.h"
 
+static volatile float linear_speed = .6;
+
 /* Assume the mouse tail is initially touching a wall */
 static int32_t cell_shift_micrometers =
     (WALL_WIDTH / 2 + MOUSE_TAIL) * MICROMETERS_PER_METER;
 static int32_t current_cell_start_micrometers;
 
+float get_linear_speed(void)
+{
+	return linear_speed;
+}
+
+void set_linear_speed(float value)
+{
+	linear_speed = value;
+}
+
+/**
+ * @brief Mark the beginning of a new cell.
+ *
+ * This should be executed right after entering a new cell.
+ */
 static void entered_next_cell(void)
 {
 	current_cell_start_micrometers = get_encoder_average_micrometers();
 	led_left_toggle();
 }
 
+/**
+ * @brief Calculate the required micrometers to stop.
+ *
+ * This functions assumes the current speed is the target speed and takes into
+ * account the configured linear deceleration.
+ */
 static int32_t required_micrometers_to_stop(void)
 {
 	float target_speed = get_target_linear_speed();
@@ -20,11 +43,23 @@ static int32_t required_micrometers_to_stop(void)
 			 MICROMETERS_PER_METER);
 }
 
+/**
+ * @brief Calculate the required time to stop, in seconds.
+ *
+ * This functions assumes the current speed is the target speed and takes into
+ * account the configured linear deceleration.
+ */
 static float required_time_to_stop(void)
 {
 	return get_target_linear_speed() / get_linear_deceleration();
 }
 
+/**
+ * @brief Calculate the required ticks to stop, in system ticks.
+ *
+ * This functions assumes the current speed is the target speed and takes into
+ * account the configured linear deceleration.
+ */
 static uint32_t required_ticks_to_stop(void)
 {
 	float required_seconds = required_time_to_stop();
@@ -46,7 +81,7 @@ void move_straight_out_of_cell(void)
 			  (int32_t)(CELL_DIMENSION * MICROMETERS_PER_METER) -
 			  cell_shift_micrometers;
 	set_target_angular_speed(0.);
-	set_target_linear_speed(.5);
+	set_target_linear_speed(linear_speed);
 	while (get_encoder_average_micrometers() < target_distance)
 		;
 	entered_next_cell();
@@ -64,7 +99,7 @@ void move_straight_stop_end(void)
 			  (int32_t)(CELL_DIMENSION * MICROMETERS_PER_METER) -
 			  required_micrometers_to_stop();
 	set_target_angular_speed(0.);
-	set_target_linear_speed(.5);
+	set_target_linear_speed(linear_speed);
 	target_ticks = required_ticks_to_stop();
 	while (get_encoder_average_micrometers() < target_distance)
 		;
@@ -88,7 +123,7 @@ void move_straight_stop_head_front_wall(void)
 			  required_micrometers_to_stop() -
 			  MOUSE_HEAD * MICROMETERS_PER_METER;
 	set_target_angular_speed(0.);
-	set_target_linear_speed(.5);
+	set_target_linear_speed(linear_speed);
 	target_ticks = required_ticks_to_stop();
 	while (get_encoder_average_micrometers() < target_distance)
 		;
@@ -111,7 +146,7 @@ void move_straight_stop_middle(void)
 	    (int32_t)(CELL_DIMENSION / 2. * MICROMETERS_PER_METER) -
 	    required_micrometers_to_stop();
 	set_target_angular_speed(0.);
-	set_target_linear_speed(.5);
+	set_target_linear_speed(linear_speed);
 	target_ticks = required_ticks_to_stop();
 	while (get_encoder_average_micrometers() < target_distance)
 		;
@@ -177,7 +212,7 @@ void move_front(void)
 	target_distance = current_cell_start_micrometers +
 			  (int32_t)(CELL_DIMENSION * MICROMETERS_PER_METER);
 	set_target_angular_speed(0.);
-	set_target_linear_speed(.5);
+	set_target_linear_speed(linear_speed);
 	while (get_encoder_average_micrometers() < target_distance)
 		;
 	entered_next_cell();

@@ -10,6 +10,7 @@
 #include "control.h"
 #include "encoder.h"
 #include "logging.h"
+#include "move.h"
 
 void execute_commands(void);
 

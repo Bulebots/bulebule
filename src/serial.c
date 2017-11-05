@@ -98,6 +98,8 @@ static void process_command(void)
 		set_micrometers_per_count(parse_spaced_float(2));
 	else if (starts_with("set wheels_separation "))
 		set_wheels_separation(parse_spaced_float(2));
+	else if (starts_with("set linear_speed "))
+		set_linear_speed(parse_spaced_float(2));
 	else if (starts_with("set linear_acceleration "))
 		set_linear_acceleration(parse_spaced_float(2));
 	else if (starts_with("set linear_deceleration "))

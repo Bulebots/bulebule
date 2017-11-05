@@ -6,6 +6,7 @@
 #include "detection.h"
 #include "encoder.h"
 #include "formatting.h"
+#include "move.h"
 
 void log_battery_voltage(void);
 void log_configuration_variables(void);
