@@ -20,6 +20,18 @@ static int32_t required_micrometers_to_stop(void)
 			 MICROMETERS_PER_METER);
 }
 
+static float required_time_to_stop(void)
+{
+	return get_target_linear_speed() / get_linear_deceleration();
+}
+
+static uint32_t required_ticks_to_stop(void)
+{
+	float required_seconds = required_time_to_stop();
+
+	return (uint32_t)(required_seconds * SYSTICK_FREQUENCY_HZ);
+}
+
 /**
  * @brief Move straight to get out of the current cell.
  *
@@ -41,37 +53,25 @@ void move_straight_out_of_cell(void)
 }
 
 /**
- * @brief Move straight into the next cell.
- */
-void move_straight(void)
-{
-	int32_t target_distance;
-
-	target_distance = current_cell_start_micrometers +
-			  (int32_t)(CELL_DIMENSION * MICROMETERS_PER_METER);
-	set_target_angular_speed(0.);
-	set_target_linear_speed(.5);
-	while (get_encoder_average_micrometers() < target_distance)
-		;
-	entered_next_cell();
-}
-
-/**
  * @brief Move straight and stop at the end of the current cell.
  */
 void move_straight_stop_end(void)
 {
 	int32_t target_distance;
+	uint32_t target_ticks;
 
 	target_distance = current_cell_start_micrometers +
 			  (int32_t)(CELL_DIMENSION * MICROMETERS_PER_METER) -
 			  required_micrometers_to_stop();
 	set_target_angular_speed(0.);
 	set_target_linear_speed(.5);
+	target_ticks = required_ticks_to_stop();
 	while (get_encoder_average_micrometers() < target_distance)
 		;
 	set_target_linear_speed(.0);
-	// TODO: sleep enough...
+	target_ticks += get_clock_ticks();
+	while (get_clock_ticks() < target_ticks)
+		;
 	entered_next_cell();
 }
 
@@ -81,6 +81,7 @@ void move_straight_stop_end(void)
 void move_straight_stop_head_front_wall(void)
 {
 	int32_t target_distance;
+	uint32_t target_ticks;
 
 	target_distance = current_cell_start_micrometers +
 			  (int32_t)(CELL_DIMENSION * MICROMETERS_PER_METER) -
@@ -88,11 +89,37 @@ void move_straight_stop_head_front_wall(void)
 			  MOUSE_HEAD * MICROMETERS_PER_METER;
 	set_target_angular_speed(0.);
 	set_target_linear_speed(.5);
+	target_ticks = required_ticks_to_stop();
 	while (get_encoder_average_micrometers() < target_distance)
 		;
 	set_target_linear_speed(.0);
-	// TODO: sleep enough...
-	entered_next_cell();
+	target_ticks += get_clock_ticks();
+	while (get_clock_ticks() < target_ticks)
+		;
+}
+
+/**
+ * @brief Move straight and stop at the middle of the current cell.
+ */
+void move_straight_stop_middle(void)
+{
+	int32_t target_distance;
+	uint32_t target_ticks;
+
+	target_distance =
+	    current_cell_start_micrometers +
+	    (int32_t)(CELL_DIMENSION / 2. * MICROMETERS_PER_METER) -
+	    required_micrometers_to_stop();
+	set_target_angular_speed(0.);
+	set_target_linear_speed(.5);
+	target_ticks = required_ticks_to_stop();
+	while (get_encoder_average_micrometers() < target_distance)
+		;
+	set_target_linear_speed(.0);
+	target_ticks += get_clock_ticks();
+	while (get_clock_ticks() < target_ticks)
+		;
+	cell_shift_micrometers = (CELL_DIMENSION / 2) * MICROMETERS_PER_METER;
 }
 
 /**
@@ -102,6 +129,24 @@ void move_stop(void)
 {
 	set_target_angular_speed(0.);
 	set_target_linear_speed(0.);
+}
+
+/**
+ * @brief Turn left statically (90-degree turn with zero linear speed).
+ */
+void turn_left_static(void)
+{
+	uint32_t starting_time = get_clock_ticks();
+
+	set_target_angular_speed(-4 * PI);
+	set_target_linear_speed(0.);
+	while (get_clock_ticks() - starting_time < 125)
+		;
+	set_target_angular_speed(0);
+	set_target_linear_speed(0.);
+	while (get_clock_ticks() - starting_time < 125)
+		;
+	led_left_toggle();
 }
 
 /**
@@ -123,16 +168,37 @@ void turn_right_static(void)
 }
 
 /**
+ * @brief Move front into the next cell.
+ */
+void move_front(void)
+{
+	int32_t target_distance;
+
+	target_distance = current_cell_start_micrometers +
+			  (int32_t)(CELL_DIMENSION * MICROMETERS_PER_METER);
+	set_target_angular_speed(0.);
+	set_target_linear_speed(.5);
+	while (get_encoder_average_micrometers() < target_distance)
+		;
+	entered_next_cell();
+}
+
+/**
+ * @brief Move left into the next cell.
+ */
+void move_left(void)
+{
+	move_straight_stop_middle();
+	turn_left_static();
+	move_straight_out_of_cell();
+}
+
+/**
  * @brief Move right into the next cell.
  */
 void move_right(void)
 {
-	uint32_t starting_time = get_clock_ticks();
-
-	set_target_angular_speed(4 * PI);
-	while (get_clock_ticks() - starting_time < 125)
-		;
-	set_target_angular_speed(0);
-	while (get_clock_ticks() - starting_time < 125)
-		;
+	move_straight_stop_middle();
+	turn_right_static();
+	move_straight_out_of_cell();
 }

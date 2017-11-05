@@ -5,14 +5,18 @@
 #include "control.h"
 #include "hmi.h"
 #include "logging.h"
+#include "setup.h"
 
 void move_straight_distance(float distance);
-void move_straight(void);
 void move_straight_out_of_cell(void);
-void move_stop(void);
 void move_straight_stop_end(void);
 void move_straight_stop_head_front_wall(void);
+void move_straight_stop_middle(void);
+void move_stop(void);
+void turn_left_static(void);
 void turn_right_static(void);
+void move_front(void);
+void move_left(void);
 void move_right(void);
 
 #endif /* __MOVE_H */

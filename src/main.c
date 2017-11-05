@@ -48,9 +48,10 @@ int main(void)
 		if (button_right_read()) {
 			sleep_ticks(5000);
 			move_straight_out_of_cell();
-			move_straight();
-			move_straight();
-			move_straight();
+			move_right();
+			move_left();
+			move_right();
+			move_left();
 			move_straight_stop_head_front_wall();
 		}
 		execute_commands();
