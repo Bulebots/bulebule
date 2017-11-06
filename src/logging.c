@@ -15,7 +15,7 @@ void log_configuration_variables(void)
 {
 	float micrometers_per_count = get_micrometers_per_count();
 	float wheels_separation = get_wheels_separation();
-	float linear_speed = get_linear_speed();
+	float max_linear_speed = get_max_linear_speed();
 	float linear_acceleration = get_linear_acceleration();
 	float linear_deceleration = get_linear_deceleration();
 	float angular_acceleration = get_angular_acceleration();
@@ -30,7 +30,7 @@ void log_configuration_variables(void)
 
 	LOG_INFO("{\"micrometers_per_count\":%f,"
 		 "\"wheels_separation\":%f,"
-		 "\"linear_speed\":%f,"
+		 "\"max_linear_speed\":%f,"
 		 "\"linear_acceleration\":%f,"
 		 "\"linear_deceleration\":%f,"
 		 "\"angular_acceleration\":%f,"
@@ -42,7 +42,7 @@ void log_configuration_variables(void)
 		 "\"ki_angular_front\":%f,"
 		 "\"side_sensors_error_factor\":%f,"
 		 "\"front_sensors_error_factor\":%f}",
-		 micrometers_per_count, wheels_separation, linear_speed,
+		 micrometers_per_count, wheels_separation, max_linear_speed,
 		 linear_acceleration, linear_deceleration, angular_acceleration,
 		 kp_linear, kd_linear, kp_angular, kd_angular, ki_angular_side,
 		 ki_angular_front, side_sensors_error_factor,

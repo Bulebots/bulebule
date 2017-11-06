@@ -36,23 +36,20 @@ int main(void)
 {
 	setup();
 	while (1) {
+		motor_control_enable = true;
 		if (button_left_read()) {
-			led_left_on();
-			sleep_ticks(2000);
-			side_sensors_control(false);
-			front_sensors_control(true);
-			motor_control_enable = true;
-			sleep_ticks(200);
-			led_left_off();
+			sleep_ticks(5000);
+			move_out();
+			stop_end();
 		}
 		if (button_right_read()) {
 			sleep_ticks(5000);
-			move_straight_out_of_cell();
+			move_out();
 			move_right();
 			move_left();
 			move_right();
 			move_left();
-			move_straight_stop_head_front_wall();
+			stop_head_front_wall();
 		}
 		execute_commands();
 	}

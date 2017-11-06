@@ -108,7 +108,7 @@ class Theseus(cmd.Cmd):
     SET_SUBCOMMANDS = [
         'micrometers_per_count ',
         'wheels_separation ',
-        'linear_speed ',
+        'max_linear_speed ',
         'linear_acceleration ',
         'linear_deceleration ',
         'angular_acceleration ',
