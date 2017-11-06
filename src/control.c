@@ -6,8 +6,8 @@
  * - Linear acceleration is defined in meters per second squared.
  * - Angular acceleration is defined in radians per second squared.
  */
-static volatile float linear_acceleration = 6.;
-static volatile float linear_deceleration = 6.;
+static volatile float linear_acceleration = 5.;
+static volatile float linear_deceleration = 5.;
 static volatile float angular_acceleration = 32. * PI;
 
 static volatile float target_linear_speed;
