@@ -20,8 +20,8 @@ static volatile float kd_linear = 100.;
 static volatile float kp_angular = 60.;
 static volatile float kd_angular = 50.;
 static volatile float ki_angular_front = 50.;
-static volatile float ki_angular_side = 40.;
-static volatile float side_sensors_error_factor = 50.;
+static volatile float ki_angular_side = 50.;
+static volatile float side_sensors_error_factor = 25.;
 static volatile float front_sensors_error_factor = 20.;
 
 static volatile int32_t pwm_left;

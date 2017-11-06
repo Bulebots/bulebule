@@ -151,3 +151,16 @@ void log_side_sensors_error(void)
 		 "\"side_right_distance\":%f}",
 		 sensors_error, sl_dist, sr_dist);
 }
+
+/**
+ * @brief Log the result of walls detection.
+ */
+void log_walls_detection(void)
+{
+	struct Walls_info walls = walls_detection();
+
+	LOG_INFO("{\"wall_left\":%d,"
+		 "\"wall_right\":%d,"
+		 "\"wall_front\":%d}",
+		 walls.left, walls.right, walls.front);
+}

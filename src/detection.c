@@ -1,5 +1,8 @@
 #include "detection.h"
 
+#define SIDE_WALL_DETECTION (CELL_DIMENSION * 0.75)
+#define FRONT_WALL_DETECTION (CELL_DIMENSION * 1.25)
+
 static volatile uint16_t sensors_off[NUM_SENSOR], sensors_on[NUM_SENSOR];
 static volatile float distance[NUM_SENSOR];
 const float sensors_calibration_a[NUM_SENSOR] = {
@@ -253,4 +256,26 @@ float get_side_sensors_error(void)
 float get_front_sensors_error(void)
 {
 	return distance[SENSOR_FRONT_LEFT_ID] - distance[SENSOR_FRONT_RIGHT_ID];
+}
+
+/**
+ * @brief Detect and return the walls and the spaces around the robot.
+ */
+struct Walls_info walls_detection(void)
+{
+	struct Walls_info walls_around;
+
+	walls_around.left =
+	    (distance[SENSOR_SIDE_LEFT_ID] < SIDE_WALL_DETECTION) ? true
+								  : false;
+	walls_around.right =
+	    (distance[SENSOR_SIDE_RIGHT_ID] < SIDE_WALL_DETECTION) ? true
+								   : false;
+	walls_around.front =
+	    ((distance[SENSOR_FRONT_LEFT_ID] < FRONT_WALL_DETECTION) &&
+	     (distance[SENSOR_FRONT_RIGHT_ID] < FRONT_WALL_DETECTION))
+		? true
+		: false;
+
+	return walls_around;
 }

@@ -37,6 +37,7 @@ int main(void)
 	setup();
 	while (1) {
 		motor_control_enable = true;
+		each(250, log_walls_detection, 1000);
 		if (button_left_read()) {
 			sleep_ticks(5000);
 			move_out();

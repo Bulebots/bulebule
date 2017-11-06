@@ -19,6 +19,12 @@
 #define SENSOR_FRONT_RIGHT_ID 3
 #define NUM_SENSOR 4
 
+struct Walls_info {
+	bool left : 1;
+	bool front : 1;
+	bool right : 1;
+};
+
 void get_gyro_raw(uint16_t *vo, uint16_t *vref);
 void get_sensors_raw(uint16_t *off, uint16_t *on);
 void update_distance_readings(void);
@@ -28,5 +34,6 @@ float get_front_left_distance(void);
 float get_front_right_distance(void);
 float get_side_sensors_error(void);
 float get_front_sensors_error(void);
+struct Walls_info walls_detection(void);
 
 #endif /* __DETECTION_H */
