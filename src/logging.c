@@ -157,10 +157,12 @@ void log_side_sensors_error(void)
  */
 void log_walls_detection(void)
 {
-	struct Walls_info walls = walls_detection();
+	bool front_wall = front_wall_detection();
+	bool right_wall = right_wall_detection();
+	bool left_wall = left_wall_detection();
 
 	LOG_INFO("{\"wall_left\":%d,"
 		 "\"wall_right\":%d,"
 		 "\"wall_front\":%d}",
-		 walls.left, walls.right, walls.front);
+		 left_wall, right_wall, front_wall);
 }
