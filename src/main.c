@@ -40,7 +40,10 @@ int main(void)
 		if (button_left_read()) {
 			sleep_ticks(5000);
 			move_out();
-			stop_end();
+			move_front();
+			move_front();
+			move_front();
+			stop_head_front_wall();
 		}
 		if (button_right_read()) {
 			sleep_ticks(5000);

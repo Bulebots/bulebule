@@ -159,10 +159,10 @@ void turn_left(void)
 	uint32_t starting_time = get_clock_ticks();
 
 	set_target_angular_speed(-4 * PI);
-	while (get_clock_ticks() - starting_time < 125)
+	while (get_clock_ticks() - starting_time <= 125)
 		;
 	set_target_angular_speed(0);
-	while (get_clock_ticks() - starting_time < 250)
+	while (get_clock_ticks() - starting_time <= 250)
 		;
 }
 
@@ -174,10 +174,10 @@ void turn_right(void)
 	uint32_t starting_time = get_clock_ticks();
 
 	set_target_angular_speed(4 * PI);
-	while (get_clock_ticks() - starting_time < 125)
+	while (get_clock_ticks() - starting_time <= 125)
 		;
 	set_target_angular_speed(0);
-	while (get_clock_ticks() - starting_time < 250)
+	while (get_clock_ticks() - starting_time <= 250)
 		;
 }
 
@@ -208,9 +208,9 @@ void move_front(void)
  */
 void move_left(void)
 {
-	decelerate(current_cell_start_micrometers, 0.04, 0.335);
+	decelerate(current_cell_start_micrometers, 0.03, 0.404);
 	turn_left();
-	accelerate(get_encoder_average_micrometers(), 0.04);
+	accelerate(get_encoder_average_micrometers(), 0.03);
 	entered_next_cell();
 }
 
@@ -219,8 +219,8 @@ void move_left(void)
  */
 void move_right(void)
 {
-	decelerate(current_cell_start_micrometers, 0.04, 0.335);
+	decelerate(current_cell_start_micrometers, 0.03, 0.404);
 	turn_right();
-	accelerate(get_encoder_average_micrometers(), 0.04);
+	accelerate(get_encoder_average_micrometers(), 0.03);
 	entered_next_cell();
 }

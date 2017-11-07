@@ -30,7 +30,7 @@
  * in order to protect the locomotion system and avoid reaching uncontrolled
  * speeds.
  */
-#define MAX_PWM_PERIOD 512
+#define MAX_PWM_PERIOD 1024
 
 /**
  * Maximum time period allowed with saturated PWM output.
