@@ -259,23 +259,29 @@ float get_front_sensors_error(void)
 }
 
 /**
- * @brief Detect and return the walls and the spaces around the robot.
+ * @brief Detect the existance or absence of the left wall.
  */
-struct Walls_info walls_detection(void)
+bool left_wall_detection(void)
 {
-	struct Walls_info walls_around;
+	return (distance[SENSOR_SIDE_LEFT_ID] < SIDE_WALL_DETECTION) ? true
+								     : false;
+}
+/**
+ * @brief Detect the existance or absence of the right wall.
+ */
+bool right_wall_detection(void)
+{
+	return (distance[SENSOR_SIDE_RIGHT_ID] < SIDE_WALL_DETECTION) ? true
+								      : false;
+}
 
-	walls_around.left =
-	    (distance[SENSOR_SIDE_LEFT_ID] < SIDE_WALL_DETECTION) ? true
-								  : false;
-	walls_around.right =
-	    (distance[SENSOR_SIDE_RIGHT_ID] < SIDE_WALL_DETECTION) ? true
-								   : false;
-	walls_around.front =
-	    ((distance[SENSOR_FRONT_LEFT_ID] < FRONT_WALL_DETECTION) &&
-	     (distance[SENSOR_FRONT_RIGHT_ID] < FRONT_WALL_DETECTION))
-		? true
-		: false;
-
-	return walls_around;
+/**
+ * @brief Detect the existance or absence of the front wall.
+ */
+bool front_wall_detection(void)
+{
+	return ((distance[SENSOR_FRONT_LEFT_ID] < FRONT_WALL_DETECTION) &&
+		(distance[SENSOR_FRONT_RIGHT_ID] < FRONT_WALL_DETECTION))
+		   ? true
+		   : false;
 }

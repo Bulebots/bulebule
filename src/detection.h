@@ -19,9 +19,8 @@
 #define SENSOR_FRONT_RIGHT_ID 3
 #define NUM_SENSOR 4
 
-struct Walls_info {
+struct sides_info {
 	bool left : 1;
-	bool front : 1;
 	bool right : 1;
 };
 
@@ -34,6 +33,8 @@ float get_front_left_distance(void);
 float get_front_right_distance(void);
 float get_side_sensors_error(void);
 float get_front_sensors_error(void);
-struct Walls_info walls_detection(void);
+bool front_wall_detection(void);
+bool right_wall_detection(void);
+bool left_wall_detection(void);
 
 #endif /* __DETECTION_H */
