@@ -7,8 +7,10 @@
 #include "logging.h"
 #include "motor.h"
 #include "move.h"
+#include "search.h"
 #include "serial.h"
 #include "setup.h"
+#include "solve.h"
 
 static bool motor_control_enable;
 /**
@@ -29,6 +31,7 @@ void sys_tick_handler(void)
 		led_right_on();
 	}
 }
+
 /**
  * @brief Initial setup and infinite wait.
  */
@@ -37,14 +40,12 @@ int main(void)
 	setup();
 	while (1) {
 		motor_control_enable = true;
-		each(250, log_walls_detection, 1000);
 		if (button_left_read()) {
 			sleep_ticks(5000);
-			move_out();
-			move_front();
-			move_front();
-			move_front();
-			stop_head_front_wall();
+			led_left_on();
+			solve();
+			led_left_off();
+			led_right_on();
 		}
 		if (button_right_read()) {
 			sleep_ticks(5000);
