@@ -266,6 +266,7 @@ bool left_wall_detection(void)
 	return (distance[SENSOR_SIDE_LEFT_ID] < SIDE_WALL_DETECTION) ? true
 								     : false;
 }
+
 /**
  * @brief Detect the existance or absence of the right wall.
  */
