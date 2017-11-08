@@ -77,6 +77,33 @@ static uint32_t required_ticks_to_speed(float speed)
 }
 
 /**
+ * @brief Activation and deactivation of sensors control depending
+ * on walls around.
+ */
+static void enable_walls_control(void)
+{
+	if (right_wall_detection() && left_wall_detection()) {
+		front_sensors_control(false);
+		side_sensors_control(true);
+	} else if (front_wall_detection()) {
+		side_sensors_control(false);
+		front_sensors_control(true);
+	} else {
+		side_sensors_control(false);
+		front_sensors_control(false);
+	}
+}
+
+/**
+ * @brief Disable sensors control depending on walls around.
+ */
+static void disable_walls_control(void)
+{
+	side_sensors_control(false);
+	front_sensors_control(false);
+}
+
+/**
  * @brief Accelerate from a starting point and travel a defined distance.
  *
  * The acceleration will always try to reach `max_linear_speed`.
@@ -125,7 +152,9 @@ void decelerate(int32_t start, float distance, float speed)
  */
 void stop_end(void)
 {
+	enable_walls_control();
 	decelerate(current_cell_start_micrometers, CELL_DIMENSION, 0.);
+	disable_walls_control();
 	entered_next_cell();
 }
 
@@ -136,7 +165,9 @@ void stop_head_front_wall(void)
 {
 	float distance = CELL_DIMENSION - WALL_WIDTH / 2. - MOUSE_HEAD;
 
+	enable_walls_control();
 	decelerate(current_cell_start_micrometers, distance, 0.);
+	disable_walls_control();
 	cell_shift = distance;
 }
 
@@ -147,7 +178,9 @@ void stop_middle(void)
 {
 	float distance = CELL_DIMENSION / 2.;
 
+	enable_walls_control();
 	decelerate(current_cell_start_micrometers, distance, 0.);
+	disable_walls_control();
 	cell_shift = distance;
 }
 
@@ -189,6 +222,7 @@ void turn_right(void)
  */
 void move_out(void)
 {
+	enable_walls_control();
 	accelerate(get_encoder_average_micrometers(),
 		   CELL_DIMENSION - cell_shift);
 	entered_next_cell();
@@ -199,6 +233,7 @@ void move_out(void)
  */
 void move_front(void)
 {
+	enable_walls_control();
 	accelerate(current_cell_start_micrometers, CELL_DIMENSION);
 	entered_next_cell();
 }
@@ -208,8 +243,11 @@ void move_front(void)
  */
 void move_left(void)
 {
+	enable_walls_control();
 	decelerate(current_cell_start_micrometers, 0.03, 0.404);
+	disable_walls_control();
 	turn_left();
+	enable_walls_control();
 	accelerate(get_encoder_average_micrometers(), 0.03);
 	entered_next_cell();
 }
@@ -219,8 +257,11 @@ void move_left(void)
  */
 void move_right(void)
 {
+	enable_walls_control();
 	decelerate(current_cell_start_micrometers, 0.03, 0.404);
+	disable_walls_control();
 	turn_right();
+	enable_walls_control();
 	accelerate(get_encoder_average_micrometers(), 0.03);
 	entered_next_cell();
 }
