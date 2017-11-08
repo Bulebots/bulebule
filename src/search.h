@@ -7,7 +7,7 @@
 #include <unistd.h>
 
 #define MAZE_SIZE 16
-#define MAZE_AREA 16 * 16
+#define MAZE_AREA (16 * 16)
 
 #define VISITED_BIT 1
 #define EAST_BIT 2
@@ -22,16 +22,7 @@ enum compass_direction {
 	NORTH = MAZE_SIZE,
 };
 
-enum step_direction {
-	NONE = -1,
-	LEFT = 0,
-	FRONT = 1,
-	RIGHT = 2,
-	BACK = 3
-};
-
-uint8_t distances[MAZE_SIZE * MAZE_SIZE];
-uint8_t walls[MAZE_SIZE * MAZE_SIZE];
+enum step_direction { NONE = -1, LEFT = 0, FRONT = 1, RIGHT = 2, BACK = 3 };
 
 enum compass_direction search_direction(void);
 void move_search_position(enum step_direction step);
@@ -39,7 +30,11 @@ enum step_direction best_neighbor_step(void);
 uint8_t search_position(void);
 uint8_t search_distance(void);
 enum step_direction search_step(bool left, bool front, bool right);
+void initialize_maze_walls(void);
 void initialize_search(void);
+void initialize_distances_standard(void);
+void initialize_distances_coordinate(int x, int y);
+void initialize_distances_unique(void);
 void search_update(bool left, bool front, bool right);
 
 #endif /* __SEARCH_H */

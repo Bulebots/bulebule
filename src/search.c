@@ -1,5 +1,8 @@
 #include "search.h"
 
+uint8_t distances[MAZE_SIZE * MAZE_SIZE];
+uint8_t walls[MAZE_SIZE * MAZE_SIZE];
+
 enum compass_direction initial_direction = NORTH;
 
 uint8_t current_position;
@@ -20,7 +23,7 @@ void *requester;
 /**
  * @brief Push a cell to the stack.
  */
-void push_cell(uint8_t cell)
+static void push_cell(uint8_t cell)
 {
 	stack.data[stack.size++] = cell;
 }
@@ -28,19 +31,19 @@ void push_cell(uint8_t cell)
 /**
  * @brief Pop a cell from the stack.
  */
-uint8_t pop_cell(void)
+static uint8_t pop_cell(void)
 {
 	return stack.data[--stack.size];
 }
 
-void set_current_walls(bool left, bool front, bool right)
+static void set_current_walls(bool left, bool front, bool right)
 {
 	current_walls.left = left;
 	current_walls.front = front;
 	current_walls.right = right;
 }
 
-enum compass_direction next_compass_direction(enum step_direction step)
+static enum compass_direction next_compass_direction(enum step_direction step)
 {
 	if (step == LEFT) {
 		if (current_direction == EAST)
@@ -51,9 +54,6 @@ enum compass_direction next_compass_direction(enum step_direction step)
 			return SOUTH;
 		return WEST;
 	}
-	if (step == FRONT) {
-		return current_direction;
-	}
 	if (step == RIGHT) {
 		if (current_direction == EAST)
 			return SOUTH;
@@ -63,23 +63,25 @@ enum compass_direction next_compass_direction(enum step_direction step)
 			return NORTH;
 		return EAST;
 	}
+	if (step == FRONT)
+		return current_direction;
 	return -current_direction;
 }
 
 /**
  * @brief Return the position after a given step.
  */
-uint8_t next_step_position(enum step_direction step)
+static uint8_t next_step_position(enum step_direction step)
 {
 	return current_position + next_compass_direction(step);
 }
 
-bool wall_exists(uint8_t position, uint8_t bit)
+static bool wall_exists(uint8_t position, uint8_t bit)
 {
 	return (walls[position] & bit);
 }
 
-void build_wall(uint8_t position, uint8_t bit)
+static void build_wall(uint8_t position, uint8_t bit)
 {
 	walls[position] |= bit;
 	switch (bit) {
@@ -115,7 +117,7 @@ void build_wall(uint8_t position, uint8_t bit)
  *
  * @return Whether the wall was built or not (i.e.: if it existed before).
  */
-bool place_wall(uint8_t bit)
+static bool place_wall(uint8_t bit)
 {
 	if (!wall_exists(current_position, bit)) {
 		build_wall(current_position, bit);
@@ -124,9 +126,9 @@ bool place_wall(uint8_t bit)
 	return false;
 }
 
-void update_walls(void)
+static void update_walls(void)
 {
-	bool windrose[4];
+	bool windrose[4] = {false, false, false, false};
 
 	switch (current_direction) {
 	case EAST:
@@ -183,17 +185,17 @@ uint8_t search_distance(void)
 	return distances[current_position];
 }
 
-uint8_t left_distance(void)
+static uint8_t left_distance(void)
 {
 	return distances[next_step_position(LEFT)];
 }
 
-uint8_t front_distance(void)
+static uint8_t front_distance(void)
 {
 	return distances[next_step_position(FRONT)];
 }
 
-uint8_t right_distance(void)
+static uint8_t right_distance(void)
 {
 	return distances[next_step_position(RIGHT)];
 }
@@ -205,14 +207,14 @@ uint8_t right_distance(void)
  * in the initial location according to the initial direction of the mouse,
  * which can be "north" or "east".
  */
-static void initialize_maze_walls(void)
+void initialize_maze_walls(void)
 {
 	int i;
 
-	for (i=0; i<MAZE_SIZE*MAZE_SIZE; i++)
+	for (i = 0; i < MAZE_SIZE * MAZE_SIZE; i++)
 		walls[i] = 0;
 
-	for (i=0; i<MAZE_SIZE; i++) {
+	for (i = 0; i < MAZE_SIZE; i++) {
 		walls[MAZE_SIZE - 1 + i * MAZE_SIZE] |= EAST_BIT;
 		walls[i] |= SOUTH_BIT;
 		walls[i * MAZE_SIZE] |= WEST_BIT;
@@ -228,15 +230,15 @@ static void initialize_maze_walls(void)
  *
  * The center is considered to be a 2x2 area in the exact middle of the maze.
  */
-static void initialize_distances_standard(void)
+void initialize_distances_standard(void)
 {
 	int i;
 	int j;
 
-	for (i=0; i<MAZE_SIZE; i++) {
-		for (j=0; j<MAZE_SIZE; j++) {
-			distances[i + j * MAZE_SIZE] = abs(i - MAZE_SIZE / 2) +
-						       abs(j - MAZE_SIZE / 2);
+	for (i = 0; i < MAZE_SIZE; i++) {
+		for (j = 0; j < MAZE_SIZE; j++) {
+			distances[i + j * MAZE_SIZE] =
+			    abs(i - MAZE_SIZE / 2) + abs(j - MAZE_SIZE / 2);
 			if (i < MAZE_SIZE / 2)
 				distances[i + j * MAZE_SIZE] -= 1;
 			if (j < MAZE_SIZE / 2)
@@ -248,24 +250,24 @@ static void initialize_distances_standard(void)
 /**
  * @brief Initialize maze distances with respect to a given single coordinate.
  */
-static void initialize_distances_coordinate(int x, int y)
+void initialize_distances_coordinate(int x, int y)
 {
 	int i;
 	int j;
 
-	for (i=0; i<MAZE_SIZE; i++)
-		for (j=0; j<MAZE_SIZE; j++)
+	for (i = 0; i < MAZE_SIZE; i++)
+		for (j = 0; j < MAZE_SIZE; j++)
 			distances[i + j * MAZE_SIZE] = abs(i - x) + abs(j - y);
 }
 
 /**
  * @brief Initialize maze distances with unique values (for testing).
  */
-static void initialize_distances_unique()
+void initialize_distances_unique(void)
 {
 	int i;
 
-	for (i=0; i<MAZE_SIZE*MAZE_SIZE; i++)
+	for (i = 0; i < MAZE_SIZE * MAZE_SIZE; i++)
 		distances[i] = 255 - i;
 }
 
@@ -280,7 +282,7 @@ enum step_direction best_neighbor_step(void)
 	return BACK;
 }
 
-uint8_t minimum_open_neighbor_distance(uint8_t cell)
+static uint8_t minimum_open_neighbor_distance(uint8_t cell)
 {
 	uint8_t minimum = 255;
 	uint8_t neighbor;
@@ -305,7 +307,7 @@ uint8_t minimum_open_neighbor_distance(uint8_t cell)
 	return minimum;
 }
 
-void push_open_neighbors(uint8_t cell)
+static void push_open_neighbors(uint8_t cell)
 {
 	if (!wall_exists(cell, EAST_BIT))
 		push_cell(cell + EAST);
@@ -317,7 +319,7 @@ void push_open_neighbors(uint8_t cell)
 		push_cell(cell + NORTH);
 }
 
-void update_distances(void)
+static void update_distances(void)
 {
 	uint8_t cell;
 	uint8_t minimum;
@@ -374,16 +376,3 @@ enum step_direction search_step(bool left, bool front, bool right)
 
 	return step;
 }
-
-/*
-void solve(void)
-{
-	initialize_search();
-
-	while (search_distance() > 0) {
-		search_step();
-		// move...
-	}
-	search_update();
-}
-*/
