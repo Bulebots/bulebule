@@ -12,4 +12,5 @@ __pycache__/
 const_structs.checkpatch
 checkpatch.pl
 libopencm3.rules.mk
+simulation_client
 spelling.txt
