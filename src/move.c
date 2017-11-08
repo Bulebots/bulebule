@@ -224,3 +224,33 @@ void move_right(void)
 	accelerate(get_encoder_average_micrometers(), 0.03);
 	entered_next_cell();
 }
+
+/**
+ * @brief Move back into the previous cell.
+ */
+void move_back(void)
+{
+	stop_middle();
+	turn_right();
+	turn_right();
+	move_out();
+}
+
+/**
+ * @brief Move into the next cell according to a movement direction.
+ *
+ * @param[in] direction Movement direction.
+ */
+void move(enum step_direction direction)
+{
+	if (direction == LEFT)
+		move_left();
+	else if (direction == RIGHT)
+		move_right();
+	else if (direction == FRONT)
+		move_front();
+	else if (direction == BACK)
+		move_back();
+	else
+		stop_middle();
+}

@@ -4,6 +4,7 @@
 #include "clock.h"
 #include "control.h"
 #include "hmi.h"
+#include "search.h"
 #include "setup.h"
 
 float get_max_linear_speed(void);
@@ -19,5 +20,7 @@ void move_out(void);
 void move_front(void);
 void move_left(void);
 void move_right(void);
+void move_back(void);
+void move(enum step_direction direction);
 
 #endif /* __MOVE_H */
