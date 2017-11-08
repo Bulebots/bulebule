@@ -2,9 +2,12 @@
 
 #define SIDE_WALL_DETECTION (CELL_DIMENSION * 0.75)
 #define FRONT_WALL_DETECTION (CELL_DIMENSION * 1.25)
+#define SIDE_CALIBRATION_READINGS 20
+#define SENSORS_SM_TICKS 4
 
 static volatile uint16_t sensors_off[NUM_SENSOR], sensors_on[NUM_SENSOR];
 static volatile float distance[NUM_SENSOR];
+static volatile float calibration_factor[NUM_SENSOR];
 const float sensors_calibration_a[NUM_SENSOR] = {
     SENSOR_SIDE_LEFT_A, SENSOR_SIDE_RIGHT_A, SENSOR_FRONT_LEFT_A,
     SENSOR_FRONT_RIGHT_A};
@@ -187,6 +190,8 @@ void update_distance_readings(void)
 		    (sensors_calibration_a[i] /
 			 log((float)(sensors_on[i] - sensors_off[i])) -
 		     sensors_calibration_b[i]);
+		if ((i == SENSOR_SIDE_LEFT_ID) || (i == SENSOR_SIDE_RIGHT_ID))
+			distance[i] -= calibration_factor[i];
 	}
 }
 
@@ -284,4 +289,24 @@ bool front_wall_detection(void)
 		(distance[SENSOR_FRONT_RIGHT_ID] < FRONT_WALL_DETECTION))
 		   ? true
 		   : false;
+}
+
+/**
+ * @brief Calibration for side sensors.
+ */
+void side_sensors_calibration(void)
+{
+	float right_temp = 0;
+	float left_temp = 0;
+	int i;
+
+	for (i = 0; i < SIDE_CALIBRATION_READINGS; i++) {
+		left_temp += distance[SENSOR_SIDE_LEFT_ID];
+		right_temp += distance[SENSOR_SIDE_RIGHT_ID];
+		sleep_ticks(SENSORS_SM_TICKS);
+	}
+	calibration_factor[SENSOR_SIDE_LEFT_ID] =
+	    (left_temp / SIDE_CALIBRATION_READINGS) - MIDDLE_MAZE_DISTANCE;
+	calibration_factor[SENSOR_SIDE_RIGHT_ID] =
+	    (right_temp / SIDE_CALIBRATION_READINGS) - MIDDLE_MAZE_DISTANCE;
 }

@@ -9,6 +9,7 @@
 #include <libopencm3/stm32/gpio.h>
 #include <libopencm3/stm32/timer.h>
 
+#include "clock.h"
 #include "config.h"
 #include "setup.h"
 
@@ -31,5 +32,6 @@ float get_front_sensors_error(void);
 bool front_wall_detection(void);
 bool right_wall_detection(void);
 bool left_wall_detection(void);
+void side_sensors_calibration(void);
 
 #endif /* __DETECTION_H */

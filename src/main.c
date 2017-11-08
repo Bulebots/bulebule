@@ -49,6 +49,7 @@ int main(void)
 			led_left_on();
 			led_right_on();
 			sleep_ticks(1000);
+			side_sensors_calibration();
 			led_left_off();
 			led_right_off();
 			solve();
