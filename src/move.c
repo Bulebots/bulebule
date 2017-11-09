@@ -24,11 +24,21 @@ void set_max_linear_speed(float value)
 /**
  * @brief Mark the beginning of a new cell.
  *
- * This should be executed right after entering a new cell.
+ * It should be executed right after entering a new cell.
+ *
+ * Takes into account a possible front-wall longitudinal correction.
  */
 static void entered_next_cell(void)
 {
+	int32_t front_wall_correction;
+
 	current_cell_start_micrometers = get_encoder_average_micrometers();
+	if (front_wall_detection()) {
+		front_wall_correction =
+		    (int32_t)((get_front_wall_distance() - CELL_DIMENSION) *
+			      MICROMETERS_PER_METER);
+		current_cell_start_micrometers += front_wall_correction;
+	}
 	cell_shift = 0.;
 	led_left_toggle();
 }

@@ -1,7 +1,7 @@
 #include "detection.h"
 
 #define SIDE_WALL_DETECTION (CELL_DIMENSION * 0.75)
-#define FRONT_WALL_DETECTION (CELL_DIMENSION * 1.25)
+#define FRONT_WALL_DETECTION (CELL_DIMENSION * 1.5)
 #define SIDE_CALIBRATION_READINGS 20
 #define SENSORS_SM_TICKS 4
 
@@ -261,6 +261,16 @@ float get_side_sensors_error(void)
 float get_front_sensors_error(void)
 {
 	return distance[SENSOR_FRONT_LEFT_ID] - distance[SENSOR_FRONT_RIGHT_ID];
+}
+
+/**
+ * @brief Return the front wall distance, in meters.
+ */
+float get_front_wall_distance(void)
+{
+	return (distance[SENSOR_FRONT_LEFT_ID] +
+		distance[SENSOR_FRONT_RIGHT_ID]) /
+	       2.;
 }
 
 /**
