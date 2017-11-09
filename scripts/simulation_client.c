@@ -15,6 +15,9 @@ bool left_wall;
 bool front_wall;
 bool right_wall;
 
+extern uint8_t walls[];
+extern uint8_t distances[];
+
 void wait_response()
 {
 	char buffer[256] = { 0 };
@@ -69,7 +72,7 @@ void read_walls()
 	right_wall = (bool)buffer[2];
 }
 
-int main (void)
+int main(void)
 {
 	int rc;
 	void *context = zmq_ctx_new();
