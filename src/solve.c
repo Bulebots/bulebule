@@ -47,8 +47,8 @@ void solve(void)
 		move_search_position(step);
 		move(step);
 	}
-	search_update(left_wall_detection(), front_wall_detection(),
-		      right_wall_detection());
 	stop_middle();
 	solved = true;
+	search_update(left_wall_detection(), front_wall_detection(),
+		      right_wall_detection());
 }
