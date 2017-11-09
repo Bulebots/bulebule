@@ -150,8 +150,6 @@ void set_ki_angular_front(float value)
 void side_sensors_control(bool value)
 {
 	side_sensors_control_enabled = value;
-	if (value == false)
-		side_sensors_integral = 0;
 }
 
 /**
@@ -162,8 +160,6 @@ void side_sensors_control(bool value)
 void front_sensors_control(bool value)
 {
 	front_sensors_control_enabled = value;
-	if (value == false)
-		front_sensors_integral = 0;
 }
 
 /**
@@ -306,7 +302,6 @@ void motor_control(void)
 		side_sensors_integral += side_sensors_feedback;
 	} else {
 		side_sensors_feedback = 0;
-		side_sensors_integral = 0;
 	}
 
 	if (front_sensors_control_enabled) {
@@ -316,7 +311,6 @@ void motor_control(void)
 
 	} else {
 		front_sensors_feedback = 0;
-		front_sensors_integral = 0;
 	}
 
 	linear_error += ideal_linear_speed - encoder_feedback_linear;
