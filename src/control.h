@@ -31,6 +31,7 @@ float get_ki_angular_front(void);
 void set_ki_angular_front(float value);
 void side_sensors_control(bool value);
 void front_sensors_control(bool value);
+void reset_control(void);
 bool collision_detected(void);
 float get_left_pwm(void);
 float get_right_pwm(void);
@@ -42,5 +43,6 @@ void motor_control(void);
 void set_target_linear_speed(float speed);
 void set_target_angular_speed(float speed);
 void update_ideal_speed(void);
+
 
 #endif /* __CONTROL_H */

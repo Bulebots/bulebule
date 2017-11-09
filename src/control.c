@@ -23,6 +23,10 @@ static volatile float ki_angular_front = 50.;
 static volatile float ki_angular_side = 50.;
 static volatile float side_sensors_error_factor = 25.;
 static volatile float front_sensors_error_factor = 20.;
+static volatile float linear_error;
+static volatile float angular_error;
+static volatile float last_linear_error;
+static volatile float last_angular_error;
 
 static volatile int32_t pwm_left;
 static volatile int32_t pwm_right;
@@ -144,8 +148,6 @@ void set_ki_angular_front(float value)
 
 /**
  * @brief Enable or disable the side sensors control.
- *
- * The integral variable is initialized to 0 on disable.
  */
 void side_sensors_control(bool value)
 {
@@ -154,14 +156,26 @@ void side_sensors_control(bool value)
 
 /**
  * @brief Enable or disable the front sensors control.
- *
- * The integral variable is initialized to 0 on disable.
  */
 void front_sensors_control(bool value)
 {
 	front_sensors_control_enabled = value;
 }
 
+/**
+ * @brief Reset control variables.
+ *
+ * The static variables are initialized to 0.
+ */
+void reset_control(void)
+{
+	side_sensors_integral = 0;
+	front_sensors_integral = 0;
+	linear_error = 0;
+	angular_error = 0;
+	last_linear_error = 0;
+	last_angular_error = 0;
+}
 /**
  * @brief Returns true if a collision was detected.
  */
@@ -277,11 +291,6 @@ void update_ideal_speed(void)
  */
 void motor_control(void)
 {
-	static float linear_error;
-	static float angular_error;
-	static float last_linear_error;
-	static float last_angular_error;
-
 	float left_speed;
 	float right_speed;
 	float encoder_feedback_linear;

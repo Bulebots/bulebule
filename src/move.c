@@ -170,6 +170,7 @@ void stop_end(void)
 	enable_walls_control();
 	decelerate(current_cell_start_micrometers, CELL_DIMENSION, 0.);
 	disable_walls_control();
+	reset_control();
 	entered_next_cell();
 }
 
@@ -183,6 +184,7 @@ void stop_head_front_wall(void)
 	enable_walls_control();
 	decelerate(current_cell_start_micrometers, distance, 0.);
 	disable_walls_control();
+	reset_control();
 	cell_shift = distance;
 }
 
@@ -196,6 +198,7 @@ void stop_middle(void)
 	enable_walls_control();
 	decelerate(current_cell_start_micrometers, distance, 0.);
 	disable_walls_control();
+	reset_control();
 	cell_shift = distance;
 }
 
