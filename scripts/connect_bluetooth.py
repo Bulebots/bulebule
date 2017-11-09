@@ -1,5 +1,6 @@
 import os
 import cmd
+from collections import namedtuple
 from pprint import pprint
 import time
 from traceback import print_exc
@@ -22,6 +23,9 @@ import pandas
 matplotlib.interactive(True)
 
 
+LogFilter = namedtuple('LogFilter', 'level,function')
+
+
 def complete_subcommands(text, subcommands):
     if not text:
         return subcommands
@@ -41,16 +45,44 @@ def explode_csv_series(series):
     return series.apply(x).apply(pandas.Series)
 
 
+def log_matches_filter(log, log_filter):
+    if not log_filter:
+        return False
+    if log_filter.level and log_filter.level != log[1]:
+        return False
+    if log_filter.function and log_filter.function != log[3]:
+        return False
+    return True
+
+
 class Proxy(Agent):
     def on_init(self):
         self.log = []
         self.buffer = b''
+        self.log_filter = None
+        self.filtered = None
 
     def setup(self, address, port):
         self.rfcomm = BluetoothSocket(RFCOMM)
         self.rfcomm.connect((address, port))
         self.rfcomm.settimeout(0.01)
         self.each(0, 'receive')
+
+    def filter_next(self, level=None, function=None):
+        self.log_filter = LogFilter(level=level, function=function)
+
+    def wait_filtered(self, timeout=0.5):
+        t0 = time.time()
+        while True:
+            self.receive()
+            if self.filtered:
+                print(self.filtered)
+                break
+            if time.time() - t0 > timeout:
+                print('`wait_filtered` timed out!')
+                break
+        self.filtered = None
+        self.log_filter = None
 
     def process_received(self, received):
         self.buffer += received
@@ -69,6 +101,9 @@ class Proxy(Agent):
             log = tuple(log + [body])
             if log[1] == 'ERROR':
                 print(log)
+            if log_matches_filter(log, self.log_filter):
+                self.filtered = log
+                self.log_filter = None
             self.log.append(log)
         self.buffer = splits[-1]
         return len(splits) - 1
@@ -170,16 +205,21 @@ class Theseus(cmd.Cmd):
 
     def do_battery(self, *args):
         """Get battery voltage."""
+        self.proxy.filter_next(function='log_battery_voltage')
         self.proxy.send('battery\0')
+        self.proxy.wait_filtered()
 
     def do_configuration_variables(self, *args):
         """Get configuration variables."""
+        self.proxy.filter_next(function='log_configuration_variables')
         self.proxy.send('configuration_variables\0')
+        self.proxy.wait_filtered()
 
     def do_set(self, line):
         """Set robot variables."""
         if any(line.startswith(x) for x in self.SET_SUBCOMMANDS):
             self.proxy.send('set %s\0' % line)
+            self.do_configuration_variables()
         else:
             print('Invalid set command "%s"!' % line)
 
