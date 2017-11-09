@@ -84,6 +84,8 @@ static bool starts_with(char *start_string)
  */
 static void process_command(void)
 {
+	LOG_DEBUG("Processing \"%s\"", buffer.data);
+
 	if (!strcmp(buffer.data, "battery"))
 		log_battery_voltage();
 	else if (!strcmp(buffer.data, "configuration_variables"))
@@ -124,6 +126,7 @@ static void process_command(void)
 		set_front_sensors_error_factor(parse_spaced_float(2));
 	else
 		LOG_WARNING("Unknown command: `%s`!", buffer.data);
+
 	clear_received();
 }
 

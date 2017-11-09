@@ -1,6 +1,7 @@
 import os
 import cmd
 from pprint import pprint
+import time
 from traceback import print_exc
 
 from bluetooth import (
@@ -54,7 +55,7 @@ class Proxy(Agent):
     def process_received(self, received):
         self.buffer += received
         if b'\n' not in self.buffer:
-            return
+            return 0
         splits = self.buffer.split(b'\n')
         for message in splits[:-1]:
             fields = message.split(b',')
@@ -66,26 +67,45 @@ class Proxy(Agent):
             else:
                 raise NotImplementedError()
             log = tuple(log + [body])
-            if log[1] != 'INFO':
+            if log[1] == 'ERROR':
                 print(log)
             self.log.append(log)
         self.buffer = splits[-1]
+        return len(splits) - 1
 
     def send(self, message):
-        try:
-            self.rfcomm.settimeout(1.)
-            self.rfcomm.send(message)
-        except Exception as error:
-            print_exc()
+        for retry in range(10):
+            try:
+                self.rfcomm.settimeout(1.)
+                self.rfcomm.send(message)
+            except Exception as error:
+                print_exc()
+            # Wait for the robot ACK
+            t0 = time.time()
+            while (time.time() - t0 < 0.1):
+                received = self.receive()
+                for i in range(received):
+                    log = self.log[-1 - i]
+                    body = log[-1]
+                    if log[1] != 'DEBUG':
+                        continue
+                    if 'Processing' not in body:
+                        continue
+                    if body != 'Processing "%s"' % message.strip('\0'):
+                        break
+                    return True
+        print('Command "%s" unsuccessful!' % message)
+        return False
 
     def receive(self):
         try:
             self.rfcomm.settimeout(0.01)
             received = self.rfcomm.recv(1024)
-            self.process_received(received)
+            return self.process_received(received)
         except BluetoothError as error:
             if str(error) != 'timed out':
                 raise
+        return 0
 
     def tail(self, N):
         return self.log[-N:]
