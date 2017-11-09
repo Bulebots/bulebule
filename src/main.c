@@ -39,13 +39,20 @@ void sys_tick_handler(void)
 int main(void)
 {
 	setup();
+	initialize_solver_direction();
+	motor_control_enable = true;
 	while (1) {
-		motor_control_enable = true;
 		if (button_left_read()) {
+			led_left_off();
+			led_right_off();
 			sleep_ticks(5000);
 			led_left_on();
-			solve();
+			led_right_on();
+			sleep_ticks(1000);
 			led_left_off();
+			led_right_off();
+			solve();
+			led_left_on();
 			led_right_on();
 		}
 		if (button_right_read()) {

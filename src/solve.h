@@ -6,5 +6,6 @@
 #include "search.h"
 
 void solve(void);
+void initialize_solver_direction(void);
 
 #endif /* __SOLVE_H */

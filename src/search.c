@@ -43,6 +43,11 @@ static void set_current_walls(bool left, bool front, bool right)
 	current_walls.right = right;
 }
 
+void set_search_initial_direction(enum compass_direction direction)
+{
+	initial_direction = direction;
+}
+
 void set_search_initial_state(void)
 {
 	current_position = 0;

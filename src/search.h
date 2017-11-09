@@ -24,6 +24,7 @@ enum compass_direction {
 
 enum step_direction { NONE = -1, LEFT = 0, FRONT = 1, RIGHT = 2, BACK = 3 };
 
+void set_search_initial_direction(enum compass_direction direction);
 void set_search_initial_state(void);
 enum compass_direction search_direction(void);
 void move_search_position(enum step_direction step);

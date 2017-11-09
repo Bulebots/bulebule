@@ -3,6 +3,26 @@
 static bool solved;
 
 /**
+ * @brief Set initial search direction for the solver.
+ */
+void initialize_solver_direction(void)
+{
+	while (1) {
+		if (button_left_read()) {
+			set_search_initial_direction(NORTH);
+			led_left_on();
+			break;
+		}
+		if (button_right_read()) {
+			set_search_initial_direction(EAST);
+			led_right_on();
+			break;
+		}
+	}
+	sleep_ticks(1000);
+}
+
+/**
  * @brief Solve an unknown maze.
  */
 void solve(void)
