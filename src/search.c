@@ -43,6 +43,15 @@ static void set_current_walls(bool left, bool front, bool right)
 	current_walls.right = right;
 }
 
+void set_search_initial_state(void)
+{
+	current_position = 0;
+	current_direction = initial_direction;
+	current_walls.front = 0;
+	current_walls.left = 1;
+	current_walls.right = 1;
+}
+
 static enum compass_direction next_compass_direction(enum step_direction step)
 {
 	if (step == LEFT) {
@@ -352,11 +361,7 @@ void initialize_search(void)
 {
 	initialize_maze_walls();
 	initialize_distances_standard();
-	current_position = 0;
-	current_direction = initial_direction;
-	current_walls.front = 0;
-	current_walls.left = 1;
-	current_walls.right = 1;
+	set_search_initial_state();
 }
 
 void search_update(bool left, bool front, bool right)

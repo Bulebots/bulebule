@@ -6,6 +6,11 @@ static volatile float max_linear_speed = .6;
 static float cell_shift = WALL_WIDTH / 2 + MOUSE_TAIL;
 static int32_t current_cell_start_micrometers;
 
+void set_starting_position(void)
+{
+	cell_shift = WALL_WIDTH / 2 + MOUSE_TAIL;
+}
+
 float get_max_linear_speed(void)
 {
 	return max_linear_speed;

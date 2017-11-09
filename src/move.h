@@ -7,6 +7,7 @@
 #include "search.h"
 #include "setup.h"
 
+void set_starting_position(void);
 float get_max_linear_speed(void);
 void set_max_linear_speed(float value);
 void accelerate(int32_t start, float distance);

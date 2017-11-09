@@ -13,6 +13,7 @@
 #include "solve.h"
 
 static bool motor_control_enable;
+
 /**
  * @brief Handle the SysTick interruptions.
  */

@@ -1,18 +1,23 @@
 #include "solve.h"
 
+static bool solved;
+
 /**
  * @brief Solve an unknown maze.
  */
-void solve_search(void)
+void solve(void)
 {
 	enum step_direction step;
 
-	initialize_search();
+	if (!solved)
+		initialize_search();
 
+	set_search_initial_state();
 	search_update(left_wall_detection(), front_wall_detection(),
 		      right_wall_detection());
 	step = best_neighbor_step();
 	move_search_position(step);
+	set_starting_position();
 	move_out();
 
 	while (search_distance() > 0) {
@@ -25,4 +30,5 @@ void solve_search(void)
 	search_update(left_wall_detection(), front_wall_detection(),
 		      right_wall_detection());
 	stop_middle();
+	solved = true;
 }
