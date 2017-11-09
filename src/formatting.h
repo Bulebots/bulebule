@@ -10,8 +10,9 @@
 
 #include "clock.h"
 
-enum { LOG_LEVEL_INFO, LOG_LEVEL_WARNING, LOG_LEVEL_ERROR };
-static const char *const log_level_strings[] = {"INFO", "WARNING", "ERROR"};
+enum { LOG_LEVEL_DEBUG, LOG_LEVEL_INFO, LOG_LEVEL_WARNING, LOG_LEVEL_ERROR };
+static const char *const log_level_strings[] = {"DEBUG", "INFO", "WARNING",
+						"ERROR"};
 
 int _write(int file, char *ptr, int len);
 
@@ -23,6 +24,7 @@ int _write(int file, char *ptr, int len);
 		       ##arg);                                                 \
 	} while (0)
 
+#define LOG_DEBUG(format, arg...) LOG_MESSAGE(LOG_LEVEL_DEBUG, format, ##arg)
 #define LOG_INFO(format, arg...) LOG_MESSAGE(LOG_LEVEL_INFO, format, ##arg)
 #define LOG_WARNING(format, arg...)                                            \
 	LOG_MESSAGE(LOG_LEVEL_WARNING, format, ##arg)
