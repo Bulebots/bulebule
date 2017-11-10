@@ -1,6 +1,7 @@
 import os
 import cmd
 from collections import namedtuple
+import pickle
 from pprint import pprint
 import time
 from traceback import print_exc
@@ -153,7 +154,7 @@ class Proxy(Agent):
 
 class Theseus(cmd.Cmd):
     prompt = '>>> '
-    LOG_SUBCOMMANDS = ['all', 'clear']
+    LOG_SUBCOMMANDS = ['all', 'clear', 'save']
     PLOT_SUBCOMMANDS = ['linear_speed_profile', 'angular_speed_profile']
     RUN_SUBCOMMANDS = [
         'angular_speed_profile',
@@ -234,6 +235,10 @@ class Theseus(cmd.Cmd):
             pprint(self.proxy.get_attr('log'))
         elif extra == 'clear':
             self.proxy.set_attr(log=[])
+        elif extra == 'save':
+            fname = 'log.pkl'
+            pickle.dump(self.proxy.get_attr('log'), open(fname, 'wb'))
+            print('Saved log as "%s".' % fname)
         elif extra.isnumeric():
             pprint(self.proxy.tail(int(extra)))
         else:
