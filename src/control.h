@@ -44,5 +44,4 @@ void set_target_linear_speed(float speed);
 void set_target_angular_speed(float speed);
 void update_ideal_speed(void);
 
-
 #endif /* __CONTROL_H */
