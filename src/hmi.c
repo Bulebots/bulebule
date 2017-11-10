@@ -49,6 +49,23 @@ void led_right_off(void)
 }
 
 /**
+ * @brief Blink both LEDs a couple of times.
+ */
+void blink_burst(void)
+{
+	int i;
+
+	for (i = 0; i < 10; i++) {
+		led_left_on();
+		led_right_on();
+		sleep_ticks(100);
+		led_left_off();
+		led_right_off();
+		sleep_ticks(100);
+	}
+}
+
+/**
  * @brief Function to read button left.
  */
 bool button_left_read(void)
@@ -62,4 +79,54 @@ bool button_left_read(void)
 bool button_right_read(void)
 {
 	return (bool)(gpio_get(GPIOA, GPIO12));
+}
+
+/**
+ * @brief Read left button, requiring consecutive positive reads.
+ *
+ * Readings are performed each system clock tick.
+ *
+ * @param[in] count Required number of positive reads.
+ */
+bool button_left_read_consecutive(uint32_t count)
+{
+	uint32_t initial_ticks = get_clock_ticks();
+
+	while (get_clock_ticks() - initial_ticks < count) {
+		if (!gpio_get(GPIOA, GPIO11))
+			return false;
+	}
+	return true;
+}
+
+/**
+ * @brief Read right button, requiring consecutive positive reads.
+ *
+ * Readings are performed each system clock tick.
+ *
+ * @param[in] count Required number of positive reads.
+ */
+bool button_right_read_consecutive(uint32_t count)
+{
+	uint32_t initial_ticks = get_clock_ticks();
+
+	while (get_clock_ticks() - initial_ticks < count) {
+		if (!gpio_get(GPIOA, GPIO12))
+			return false;
+	}
+	return true;
+}
+
+/**
+ * @brief Wait for a close front sensor signal.
+ *
+ * @param[in] close_distance Distance to be considered as close, in meters.
+ */
+void wait_front_sensor_close_signal(float close_distance)
+{
+	while (1) {
+		if (get_front_right_distance() < close_distance ||
+		    get_front_left_distance() < close_distance)
+			break;
+	}
 }

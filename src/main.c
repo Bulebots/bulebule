@@ -42,28 +42,18 @@ int main(void)
 	initialize_solver_direction();
 	motor_control_enable = true;
 	while (1) {
-		if (button_left_read()) {
-			led_left_off();
-			led_right_off();
+		if (button_left_read_consecutive(500)) {
+			blink_burst();
 			sleep_ticks(5000);
 			led_left_on();
 			led_right_on();
-			sleep_ticks(1000);
+			wait_front_sensor_close_signal(0.12);
+			led_left_off();
+			led_right_off();
+			sleep_ticks(2000);
 			side_sensors_calibration();
-			led_left_off();
-			led_right_off();
 			solve();
-			led_left_on();
-			led_right_on();
-		}
-		if (button_right_read()) {
-			sleep_ticks(5000);
-			move_out();
-			move_right();
-			move_left();
-			move_right();
-			move_left();
-			stop_head_front_wall();
+			blink_burst();
 		}
 		execute_commands();
 	}

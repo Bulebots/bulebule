@@ -8,18 +8,18 @@ static bool solved;
 void initialize_solver_direction(void)
 {
 	while (1) {
-		if (button_left_read()) {
+		if (button_left_read_consecutive(500)) {
 			set_search_initial_direction(NORTH);
 			led_left_on();
 			break;
 		}
-		if (button_right_read()) {
+		if (button_right_read_consecutive(500)) {
 			set_search_initial_direction(EAST);
 			led_right_on();
 			break;
 		}
 	}
-	sleep_ticks(1000);
+	sleep_ticks(2000);
 }
 
 /**
