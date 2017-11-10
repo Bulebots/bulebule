@@ -11,5 +11,6 @@ void drive_off(void);
 uint32_t pwm_saturation(void);
 void power_left(int32_t power);
 void power_right(int32_t power);
+void reset_pwm_saturation(void);
 
 #endif /* __MOTOR_H */

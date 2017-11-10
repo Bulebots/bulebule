@@ -104,3 +104,12 @@ uint32_t pwm_saturation(void)
 		return saturated_right;
 	return saturated_left;
 }
+
+/**
+ * @brief Reset the PWM saturation counters.
+ */
+void reset_pwm_saturation(void)
+{
+	saturated_left = 0;
+	saturated_right = 0;
+}

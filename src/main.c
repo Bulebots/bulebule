@@ -12,25 +12,16 @@
 #include "setup.h"
 #include "solve.h"
 
-static bool motor_control_enable;
-
 /**
  * @brief Handle the SysTick interruptions.
  */
 void sys_tick_handler(void)
 {
 	clock_tick();
-	if (!collision_detected()) {
-		update_ideal_speed();
-		update_encoder_readings();
-		update_distance_readings();
-		if (motor_control_enable)
-			motor_control();
-	} else {
-		drive_off();
-		led_left_on();
-		led_right_on();
-	}
+	update_ideal_speed();
+	update_encoder_readings();
+	update_distance_readings();
+	motor_control();
 }
 
 /**
@@ -40,9 +31,11 @@ int main(void)
 {
 	setup();
 	initialize_solver_direction();
-	motor_control_enable = true;
 	while (1) {
 		if (button_left_read_consecutive(500)) {
+			reset_motion();
+			disable_walls_control();
+			enable_motor_control();
 			blink_burst();
 			sleep_ticks(5000);
 			led_left_on();
@@ -53,7 +46,13 @@ int main(void)
 			sleep_ticks(2000);
 			side_sensors_calibration();
 			solve();
-			blink_burst();
+			if (collision_detected()) {
+				reset_motion();
+				blink_collision();
+			} else {
+				blink_burst();
+			}
+			reset_motion();
 		}
 		execute_commands();
 	}

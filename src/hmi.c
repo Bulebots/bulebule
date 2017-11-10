@@ -90,6 +90,24 @@ void blink_burst(void)
 }
 
 /**
+ * @brief Blink both LEDs alternately to report collision detection.
+ */
+void blink_collision(void)
+{
+	int i;
+
+	for (i = 0; i < 10; i++) {
+		led_left_on();
+		led_right_off();
+		sleep_ticks(200);
+		led_left_off();
+		led_right_on();
+		sleep_ticks(200);
+	}
+	led_right_off();
+}
+
+/**
  * @brief Function to read button left.
  */
 bool button_left_read(void)

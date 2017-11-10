@@ -32,6 +32,7 @@ static volatile int32_t pwm_left;
 static volatile int32_t pwm_right;
 
 static volatile bool collision_detected_signal;
+static volatile bool motor_control_enabled_signal;
 static volatile bool side_sensors_control_enabled;
 static volatile bool front_sensors_control_enabled;
 static volatile float side_sensors_integral;
@@ -163,11 +164,40 @@ void front_sensors_control(bool value)
 }
 
 /**
- * @brief Reset control variables.
+ * @brief Set collision detected signal.
  *
- * The static variables are initialized to 0.
+ * It also automatically disables the motor control.
  */
-void reset_control(void)
+static void set_collision_detected(void)
+{
+	collision_detected_signal = true;
+	motor_control_enabled_signal = false;
+}
+
+/**
+ * @brief Returns true if a collision was detected.
+ */
+bool collision_detected(void)
+{
+	return collision_detected_signal;
+}
+
+/**
+ * @brief Reset the collision detection signal.
+ *
+ * This will also reset the PWM saturation counters, used for collision
+ * detection.
+ */
+void reset_collision_detection(void)
+{
+	collision_detected_signal = false;
+	reset_pwm_saturation();
+}
+
+/**
+ * @brief Reset control error variables.
+ */
+void reset_control_errors(void)
 {
 	side_sensors_integral = 0;
 	front_sensors_integral = 0;
@@ -176,12 +206,54 @@ void reset_control(void)
 	last_linear_error = 0;
 	last_angular_error = 0;
 }
+
 /**
- * @brief Returns true if a collision was detected.
+ * @brief Reset control speed variables.
  */
-bool collision_detected(void)
+void reset_control_speed(void)
 {
-	return collision_detected_signal;
+	target_linear_speed = 0.;
+	target_angular_speed = 0.;
+	ideal_linear_speed = 0.;
+	ideal_angular_speed = 0.;
+}
+
+/**
+ * @brief Reset all control variables.
+ *
+ * In particular:
+ *
+ * - Reset control errors.
+ * - Reset control speed.
+ * - Reset collision detection.
+ */
+void reset_control_all(void)
+{
+	reset_control_errors();
+	reset_control_speed();
+	reset_collision_detection();
+}
+
+/**
+ * @brief Enable the motor control.
+ *
+ * This means the motor control function will be executed the PWM output will be
+ * generated.
+ */
+void enable_motor_control(void)
+{
+	motor_control_enabled_signal = true;
+}
+
+/**
+ * @brief Disable the motor control.
+ *
+ * This means the motor control function will not be executed and no PWM output
+ * will be generated.
+ */
+void disable_motor_control(void)
+{
+	motor_control_enabled_signal = false;
 }
 
 /**
@@ -300,6 +372,9 @@ void motor_control(void)
 	float side_sensors_feedback;
 	float front_sensors_feedback;
 
+	if (!motor_control_enabled_signal)
+		return;
+
 	left_speed = get_encoder_left_speed();
 	right_speed = get_encoder_right_speed();
 	encoder_feedback_linear = (left_speed + right_speed) / 2.;
@@ -343,5 +418,5 @@ void motor_control(void)
 	last_angular_error = angular_error;
 
 	if (pwm_saturation() > MAX_PWM_SATURATION_PERIOD * SYSTICK_FREQUENCY_HZ)
-		collision_detected_signal = true;
+		set_collision_detected();
 }

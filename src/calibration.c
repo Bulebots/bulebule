@@ -3,13 +3,15 @@
 /**
  * @brief Run a full linear profile test.
  *
- * The robot will accelerate, maintain the target speed for a while and then
+ * The robot will accelerate and maintain the target speed for 0.5 m and then
  * decelerate back to zero speed. There is no angular speed in this test, only
  * linear movement. During all this test information about the relevant linear
  * speed variables is logged periodically for later analysis.
  */
 void run_linear_speed_profile(void)
 {
+	disable_walls_control();
+	enable_motor_control();
 	each(10, log_linear_speed, 1000);
 	set_target_angular_speed(0.);
 	set_target_linear_speed(.5);
@@ -17,6 +19,7 @@ void run_linear_speed_profile(void)
 	set_target_angular_speed(0.);
 	set_target_linear_speed(0.);
 	each(10, log_linear_speed, 2000);
+	reset_motion();
 }
 
 /**
@@ -33,6 +36,8 @@ void run_angular_speed_profile(void)
 {
 	float target_angular_speed = 4 * PI;
 
+	disable_walls_control();
+	enable_motor_control();
 	each(10, log_angular_speed, 1000);
 	set_target_angular_speed(target_angular_speed);
 	set_target_linear_speed(0.);
@@ -40,6 +45,7 @@ void run_angular_speed_profile(void)
 	set_target_angular_speed(0.);
 	set_target_linear_speed(0.);
 	each(10, log_angular_speed, 2000);
+	reset_motion();
 }
 
 /**
@@ -70,6 +76,8 @@ void run_static_turn_right_profile(void)
 {
 	float target_angular_speed = 4 * PI;
 
+	disable_walls_control();
+	enable_motor_control();
 	each(10, log_angular_speed, 1000);
 	set_target_angular_speed(target_angular_speed);
 	set_target_linear_speed(0.);
@@ -77,6 +85,7 @@ void run_static_turn_right_profile(void)
 	set_target_angular_speed(0);
 	set_target_linear_speed(0.);
 	each(10, log_angular_speed, 200);
+	reset_motion();
 }
 
 /**
@@ -95,6 +104,9 @@ void run_front_sensors_calibration(void)
 	int32_t target_micrometers;
 	int32_t micrometers_to_stop;
 
+	disable_walls_control();
+	enable_motor_control();
+
 	set_linear_acceleration(4.);
 
 	target_micrometers = get_encoder_average_micrometers() +
@@ -110,4 +122,6 @@ void run_front_sensors_calibration(void)
 	each(2, log_front_sensors_calibration, 200);
 
 	set_linear_acceleration(linear_acceleration);
+
+	reset_motion();
 }

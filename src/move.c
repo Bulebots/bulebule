@@ -112,7 +112,7 @@ static void enable_walls_control(void)
 /**
  * @brief Disable sensors control depending on walls around.
  */
-static void disable_walls_control(void)
+void disable_walls_control(void)
 {
 	side_sensors_control(false);
 	front_sensors_control(false);
@@ -170,7 +170,7 @@ void stop_end(void)
 	enable_walls_control();
 	decelerate(current_cell_start_micrometers, CELL_DIMENSION, 0.);
 	disable_walls_control();
-	reset_control();
+	reset_control_errors();
 	entered_next_cell();
 }
 
@@ -184,7 +184,7 @@ void stop_head_front_wall(void)
 	enable_walls_control();
 	decelerate(current_cell_start_micrometers, distance, 0.);
 	disable_walls_control();
-	reset_control();
+	reset_control_errors();
 	cell_shift = distance;
 }
 
@@ -198,7 +198,7 @@ void stop_middle(void)
 	enable_walls_control();
 	decelerate(current_cell_start_micrometers, distance, 0.);
 	disable_walls_control();
-	reset_control();
+	reset_control_errors();
 	cell_shift = distance;
 }
 
@@ -312,4 +312,20 @@ void move(enum step_direction direction)
 		move_back();
 	else
 		stop_middle();
+}
+
+/**
+ * @brief Reset motion to an iddle state.
+ *
+ * - Disable motor control.
+ * - Disable walls control.
+ * - Turn the motor driver off.
+ * - Reset control state.
+ */
+void reset_motion(void)
+{
+	disable_motor_control();
+	disable_walls_control();
+	drive_off();
+	reset_control_all();
 }

@@ -32,6 +32,9 @@ void solve(void)
 	if (!solved)
 		initialize_search();
 
+	reset_motion();
+	enable_motor_control();
+
 	set_search_initial_state();
 	search_update(left_wall_detection(), front_wall_detection(),
 		      right_wall_detection());
@@ -46,6 +49,8 @@ void solve(void)
 		step = best_neighbor_step();
 		move_search_position(step);
 		move(step);
+		if (collision_detected())
+			return;
 	}
 	stop_middle();
 	solved = true;

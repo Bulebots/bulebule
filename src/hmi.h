@@ -16,6 +16,7 @@ void led_left_off(void);
 void led_right_off(void);
 void led_bluepill_off(void);
 void blink_burst(void);
+void blink_collision(void);
 bool button_left_read(void);
 bool button_right_read(void);
 bool button_left_read_consecutive(uint32_t count);
