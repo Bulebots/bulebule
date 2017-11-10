@@ -78,3 +78,36 @@ void run_static_turn_right_profile(void)
 	set_target_linear_speed(0.);
 	each(10, log_angular_speed, 200);
 }
+
+/**
+ * @brief Front sensors calibration funtion.
+ *
+ * Assumes the robot is positioned at the start of a cell, with its tail
+ * touching the back wall. It will accelerate in a straight line and will stop
+ * touching its nose with the next cell's front wall.
+ *
+ * During this movement the robot will be logging information about the front
+ * sensors.
+ */
+void run_front_sensors_calibration(void)
+{
+	float linear_acceleration = get_linear_acceleration();
+	int32_t target_micrometers;
+	int32_t micrometers_to_stop;
+
+	set_linear_acceleration(4.);
+
+	target_micrometers = get_encoder_average_micrometers() +
+			     1.3 * CELL_DIMENSION * MICROMETERS_PER_METER;
+	set_target_angular_speed(0.);
+	set_target_linear_speed(.3);
+	micrometers_to_stop = (int32_t)required_micrometers_to_speed(0.);
+	while (get_encoder_average_micrometers() <
+	       target_micrometers - micrometers_to_stop)
+		log_front_sensors_calibration();
+	set_target_angular_speed(0.);
+	set_target_linear_speed(0.);
+	each(2, log_front_sensors_calibration, 200);
+
+	set_linear_acceleration(linear_acceleration);
+}

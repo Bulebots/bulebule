@@ -123,6 +123,34 @@ void log_sensors_raw(void)
 }
 
 /**
+ * @brief Log front sensors variables for calibration.
+ */
+void log_front_sensors_calibration(void)
+{
+	float sensors_error = get_front_sensors_error();
+	float left_distance = get_front_left_distance();
+	float right_distance = get_front_right_distance();
+	uint16_t off[NUM_SENSOR];
+	uint16_t on[NUM_SENSOR];
+	int32_t micrometers = get_encoder_average_micrometers();
+
+	get_sensors_raw(off, on);
+
+	LOG_INFO("{\"micrometers\":%d,"
+		 "\"left_raw_on\":%d,"
+		 "\"left_raw_off\":%d,"
+		 "\"right_raw_on\":%d,"
+		 "\"right_raw_off\":%d,"
+		 "\"left_distance\":%f,"
+		 "\"right_distance\":%f,"
+		 "\"distance_error\":%f}",
+		 micrometers, on[SENSOR_FRONT_LEFT_ID],
+		 off[SENSOR_FRONT_LEFT_ID], on[SENSOR_FRONT_RIGHT_ID],
+		 off[SENSOR_FRONT_RIGHT_ID], left_distance, right_distance,
+		 sensors_error);
+}
+
+/**
  * @brief Log front sensors distances and error.
  */
 void log_front_sensors_error(void)

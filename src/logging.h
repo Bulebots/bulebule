@@ -16,6 +16,7 @@ void log_sensors_distance(void);
 void log_encoders_counts(void);
 void log_sensors_raw(void);
 void log_side_sensors_error(void);
+void log_front_sensors_calibration(void);
 void log_front_sensors_error(void);
 void log_walls_detection(void);
 

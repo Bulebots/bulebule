@@ -49,7 +49,7 @@ static void entered_next_cell(void)
  * This functions assumes the current speed is the target speed and takes into
  * account the configured linear deceleration.
  */
-static uint32_t required_micrometers_to_speed(float speed)
+uint32_t required_micrometers_to_speed(float speed)
 {
 	float acceleration;
 	float target_speed = get_target_linear_speed();
@@ -67,7 +67,7 @@ static uint32_t required_micrometers_to_speed(float speed)
  * This functions assumes the current speed is the target speed and takes into
  * account the configured linear deceleration.
  */
-static float required_time_to_speed(float speed)
+float required_time_to_speed(float speed)
 {
 	float acceleration;
 	float target_speed = get_target_linear_speed();
@@ -84,7 +84,7 @@ static float required_time_to_speed(float speed)
  * This functions assumes the current speed is the target speed and takes into
  * account the configured linear deceleration.
  */
-static uint32_t required_ticks_to_speed(float speed)
+uint32_t required_ticks_to_speed(float speed)
 {
 	float required_seconds = required_time_to_speed(speed);
 

@@ -159,6 +159,7 @@ class Theseus(cmd.Cmd):
         'angular_speed_profile',
         'linear_speed_profile',
         'static_turn_right_profile',
+        'front_sensors_calibration',
     ]
     SET_SUBCOMMANDS = [
         'micrometers_per_count ',
