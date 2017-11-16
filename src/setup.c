@@ -336,7 +336,11 @@ static void setup_adc2(void)
  * - Configure the base time (no clock division ratio, no aligned mode,
  *   direction up).
  * - Set clock division, prescaler and period parameters to get an update
- *   event with a frequency of 100 KHz.
+ *   event with a frequency of 16 KHz. 16 interruptions by ms, 4 sensors with
+ *   4 states.
+ *
+ *   \f$frequency = \frac{timerclock}{(preescaler + 1)(period + 1)}\f$
+ *
  * - Enable the TIM1.
  * - Enable the interruption of type update event on the TIM1.
  *
@@ -350,8 +354,8 @@ static void setup_timer1(void)
 	timer_set_mode(TIM1, TIM_CR1_CKD_CK_INT, TIM_CR1_CMS_EDGE,
 		       TIM_CR1_DIR_UP);
 	timer_set_clock_division(TIM1, 0x00);
-	timer_set_prescaler(TIM1, (rcc_apb2_frequency / 100));
-	timer_set_period(TIM1, 0x1);
+	timer_set_prescaler(TIM1, (rcc_apb2_frequency / 160000 - 1));
+	timer_set_period(TIM1, 10 - 1);
 	timer_enable_counter(TIM1);
 	timer_enable_irq(TIM1, TIM_DIER_UIE);
 }
