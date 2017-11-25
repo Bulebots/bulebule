@@ -45,7 +45,7 @@ void led_right_on(void)
  */
 void led_bluepill_on(void)
 {
-	gpio_set(GPIOC, GPIO13);
+	gpio_clear(GPIOC, GPIO13);
 }
 
 /**
@@ -69,7 +69,7 @@ void led_right_off(void)
  */
 void led_bluepill_off(void)
 {
-	gpio_clear(GPIOC, GPIO13);
+	gpio_set(GPIOC, GPIO13);
 }
 
 /**
