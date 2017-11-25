@@ -8,10 +8,13 @@
 
 void led_left_toggle(void);
 void led_right_toggle(void);
+void led_bluepill_toggle(void);
 void led_left_on(void);
 void led_right_on(void);
+void led_bluepill_on(void);
 void led_left_off(void);
 void led_right_off(void);
+void led_bluepill_off(void);
 void blink_burst(void);
 bool button_left_read(void);
 bool button_right_read(void);

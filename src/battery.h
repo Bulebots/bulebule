@@ -7,6 +7,7 @@
 
 #include "common.h"
 #include "formatting.h"
+#include "hmi.h"
 #include "setup.h"
 
 float get_battery_voltage(void);

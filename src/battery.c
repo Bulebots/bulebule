@@ -13,7 +13,7 @@ void adc1_2_isr(void)
 	if (adc_get_flag(ADC2, ADC_SR_AWD)) {
 		adc_clear_flag(ADC2, ADC_SR_AWD);
 		LOG_WARNING("Battery low!");
-		gpio_toggle(GPIOC, GPIO13);
+		led_bluepill_toggle();
 		adc_disable_analog_watchdog_injected(ADC2);
 	}
 }
