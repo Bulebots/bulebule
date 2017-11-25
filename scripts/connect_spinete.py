@@ -19,11 +19,12 @@ while True:
             print(data)
             if data[1] == 'INFO':
                 now = datetime.datetime.utcnow()
-                vo = int(data[4])*3.3/4096
-                vref = int(data[5])*3.3/4096
+                vo = int(data[5])*3.3/4096
+                vref = int(data[6])*3.3/4096
                 vdiff = vo - vref
                 #0.67 mv/dps * 10 (op. amp)
-                dps = (vdiff)/0.0067
+                #dps = (vdiff)/0.0067
+                dps = (vdiff)/(0.00067*2)
                 degrees = dps*(now.timestamp() - last_time)
                 integ_pc = integ_pc - degrees
                 publisher.send_pyobj(('D', now.timestamp(),

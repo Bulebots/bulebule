@@ -194,3 +194,16 @@ void log_walls_detection(void)
 		 "\"wall_front\":%d}",
 		 left_wall, right_wall, front_wall);
 }
+
+/**
+ * @brief Log gyroscope raw readings.
+ */
+void log_gyro_raw(void)
+{
+	uint16_t vo;
+	uint16_t vref;
+
+	get_gyro_raw(&vo, &vref);
+
+	LOG_INFO("OUT-REF,%d,%d", vo, vref);
+}
