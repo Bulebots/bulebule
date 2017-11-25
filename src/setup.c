@@ -71,11 +71,6 @@ static void setup_nvic(void)
  */
 static void setup_gpio(void)
 {
-	/* Battery level*/
-	gpio_set_mode(GPIOC, GPIO_MODE_OUTPUT_50_MHZ, GPIO_CNF_OUTPUT_PUSHPULL,
-		      GPIO13);
-	gpio_set(GPIOC, GPIO13);
-
 	/* TIM2 remap for the quadrature encoder */
 	gpio_primary_remap(AFIO_MAPR_SWJ_CFG_JTAG_OFF_SW_ON,
 			   AFIO_MAPR_TIM2_REMAP_FULL_REMAP);
@@ -101,6 +96,11 @@ static void setup_gpio(void)
 	gpio_set_mode(GPIOB, GPIO_MODE_OUTPUT_2_MHZ, GPIO_CNF_OUTPUT_PUSHPULL,
 		      GPIO4 | GPIO5);
 	gpio_clear(GPIOB, GPIO4 | GPIO5);
+
+	/* Blue pill LED*/
+	gpio_set_mode(GPIOC, GPIO_MODE_OUTPUT_50_MHZ, GPIO_CNF_OUTPUT_PUSHPULL,
+		      GPIO13);
+	gpio_set(GPIOC, GPIO13);
 
 	/*Buttons*/
 	gpio_set_mode(GPIOA, GPIO_MODE_INPUT, GPIO_CNF_INPUT_PULL_UPDOWN,

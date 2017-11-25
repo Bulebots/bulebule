@@ -17,6 +17,14 @@ void led_right_toggle(void)
 }
 
 /**
+ * @brief Function to toggle the Bluepill board LED.
+ */
+void led_bluepill_toggle(void)
+{
+	gpio_toggle(GPIOC, GPIO13);
+}
+
+/**
  * @brief Function to power ON the left LED.
  */
 void led_left_on(void)
@@ -33,6 +41,14 @@ void led_right_on(void)
 }
 
 /**
+ * @brief Function to power ON the Bluepill board LED.
+ */
+void led_bluepill_on(void)
+{
+	gpio_clear(GPIOC, GPIO13);
+}
+
+/**
  * @brief Function to power OFF the left LED.
  */
 void led_left_off(void)
@@ -46,6 +62,14 @@ void led_left_off(void)
 void led_right_off(void)
 {
 	gpio_clear(GPIOB, GPIO5);
+}
+
+/**
+ * @brief Function to power OFF the Bluepill board LED.
+ */
+void led_bluepill_off(void)
+{
+	gpio_set(GPIOC, GPIO13);
 }
 
 /**
