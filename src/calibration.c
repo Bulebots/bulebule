@@ -10,15 +10,21 @@
  */
 void run_linear_speed_profile(void)
 {
+	int32_t start_micrometers;
+
 	disable_walls_control();
 	enable_motor_control();
 	each(10, log_linear_speed, 1000);
 	set_target_angular_speed(0.);
-	set_target_linear_speed(.5);
-	each(10, log_linear_speed, 1000);
+	set_target_linear_speed(get_max_linear_speed());
+	start_micrometers = get_encoder_average_micrometers();
+	while (get_encoder_average_micrometers() - start_micrometers < 500000) {
+		log_linear_speed();
+		sleep_ticks(1);
+	}
 	set_target_angular_speed(0.);
 	set_target_linear_speed(0.);
-	each(10, log_linear_speed, 2000);
+	each(1, log_linear_speed, 2000);
 	reset_motion();
 }
 
