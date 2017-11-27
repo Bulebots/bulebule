@@ -136,7 +136,7 @@ void log_front_sensors_calibration(void)
 
 	get_sensors_raw(off, on);
 
-	LOG_INFO("{\"micrometers\":%d,"
+	LOG_INFO("{\"micrometers\":%" PRId32 ","
 		 "\"left_raw_on\":%d,"
 		 "\"left_raw_off\":%d,"
 		 "\"right_raw_on\":%d,"
