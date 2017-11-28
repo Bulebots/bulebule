@@ -316,8 +316,8 @@ void side_sensors_calibration(void)
 		right_temp += distance[SENSOR_SIDE_RIGHT_ID];
 		sleep_ticks(SENSORS_SM_TICKS);
 	}
-	calibration_factor[SENSOR_SIDE_LEFT_ID] =
+	calibration_factor[SENSOR_SIDE_LEFT_ID] +=
 	    (left_temp / SIDE_CALIBRATION_READINGS) - MIDDLE_MAZE_DISTANCE;
-	calibration_factor[SENSOR_SIDE_RIGHT_ID] =
+	calibration_factor[SENSOR_SIDE_RIGHT_ID] +=
 	    (right_temp / SIDE_CALIBRATION_READINGS) - MIDDLE_MAZE_DISTANCE;
 }
