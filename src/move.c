@@ -92,25 +92,16 @@ uint32_t required_ticks_to_speed(float speed)
 }
 
 /**
- * @brief Activation and deactivation of sensors control depending
- * on walls around.
+ * @brief Activation of sensors control depending on walls around.
  */
 static void enable_walls_control(void)
 {
-	if (front_wall_detection()) {
-		side_sensors_control(false);
-		front_sensors_control(true);
-	} else if (right_wall_detection() && left_wall_detection()) {
-		front_sensors_control(false);
-		side_sensors_control(true);
-	} else {
-		side_sensors_control(false);
-		front_sensors_control(false);
-	}
+	front_sensors_control(front_wall_detection());
+	side_sensors_control((right_wall_detection() || left_wall_detection()));
 }
 
 /**
- * @brief Disable sensors control depending on walls around.
+ * @brief Disable sensors control.
  */
 void disable_walls_control(void)
 {
