@@ -21,6 +21,7 @@
 #define NUM_SENSOR 4
 
 void get_gyro_raw(uint16_t *vo, uint16_t *vref);
+float get_calibrated_gyro(void);
 void get_sensors_raw(uint16_t *off, uint16_t *on);
 void update_distance_readings(void);
 float get_side_left_distance(void);
