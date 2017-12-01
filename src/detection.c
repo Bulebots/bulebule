@@ -7,6 +7,7 @@
 
 static volatile uint16_t sensors_off[NUM_SENSOR], sensors_on[NUM_SENSOR];
 static volatile float distance[NUM_SENSOR];
+static volatile int32_t gyro_volt_raw;
 static volatile float calibration_factor_sensor[NUM_SENSOR];
 const float sensors_calibration_a[NUM_SENSOR] = {
     SENSOR_SIDE_LEFT_A, SENSOR_SIDE_RIGHT_A, SENSOR_FRONT_LEFT_A,
@@ -101,7 +102,6 @@ static void set_emitter_off(uint8_t emitter)
 static void sm_emitter_adc(void)
 {
 	static uint8_t emitter_status = 1;
-	static int32_t gyro_volt_raw;
 	static uint8_t sensor_index = SENSOR_SIDE_LEFT_ID;
 
 	switch (emitter_status) {
@@ -174,6 +174,14 @@ void get_sensors_raw(uint16_t *off, uint16_t *on)
 		off[i] = sensors_off[i];
 		on[i] = sensors_on[i];
 	}
+}
+
+/**
+ * @brief Get calibrated gyroscope value.
+ */
+float get_calibrated_gyro(void)
+{
+	return gyro_volt_raw;
 }
 
 /**
