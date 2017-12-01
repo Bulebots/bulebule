@@ -3,11 +3,11 @@
 #define SIDE_WALL_DETECTION (CELL_DIMENSION * 0.75)
 #define FRONT_WALL_DETECTION (CELL_DIMENSION * 1.5)
 #define SIDE_CALIBRATION_READINGS 20
-#define SENSORS_SM_TICKS 4
+#define SENSORS_SM_TICKS_SENSOR 4
 
 static volatile uint16_t sensors_off[NUM_SENSOR], sensors_on[NUM_SENSOR];
 static volatile float distance[NUM_SENSOR];
-static volatile float calibration_factor[NUM_SENSOR];
+static volatile float calibration_factor_sensor[NUM_SENSOR];
 const float sensors_calibration_a[NUM_SENSOR] = {
     SENSOR_SIDE_LEFT_A, SENSOR_SIDE_RIGHT_A, SENSOR_FRONT_LEFT_A,
     SENSOR_FRONT_RIGHT_A};
@@ -101,7 +101,7 @@ static void set_emitter_off(uint8_t emitter)
 static void sm_emitter_adc(void)
 {
 	static uint8_t emitter_status = 1;
-	static int32_t gyro_deg_raw;
+	static int32_t gyro_volt_raw;
 	static uint8_t sensor_index = SENSOR_SIDE_LEFT_ID;
 
 	switch (emitter_status) {
@@ -114,7 +114,7 @@ static void sm_emitter_adc(void)
 		break;
 	case 2:
 		adc_start_conversion_injected(ADC1);
-		gyro_deg_raw =
+		gyro_volt_raw =
 		    adc_read_injected(ADC2, 1) - adc_read_injected(ADC2, 2);
 		emitter_status = 3;
 		break;
@@ -127,7 +127,7 @@ static void sm_emitter_adc(void)
 		break;
 	case 4:
 		adc_start_conversion_injected(ADC1);
-		gyro_deg_raw =
+		gyro_volt_raw =
 		    adc_read_injected(ADC2, 1) - adc_read_injected(ADC2, 2);
 		emitter_status = 1;
 		if (sensor_index == (NUM_SENSOR - 1))
@@ -191,7 +191,7 @@ void update_distance_readings(void)
 			 log((float)(sensors_on[i] - sensors_off[i])) -
 		     sensors_calibration_b[i]);
 		if ((i == SENSOR_SIDE_LEFT_ID) || (i == SENSOR_SIDE_RIGHT_ID))
-			distance[i] -= calibration_factor[i];
+			distance[i] -= calibration_factor_sensor[i];
 	}
 }
 
@@ -314,10 +314,10 @@ void side_sensors_calibration(void)
 	for (i = 0; i < SIDE_CALIBRATION_READINGS; i++) {
 		left_temp += distance[SENSOR_SIDE_LEFT_ID];
 		right_temp += distance[SENSOR_SIDE_RIGHT_ID];
-		sleep_ticks(SENSORS_SM_TICKS);
+		sleep_ticks(SENSORS_SM_TICKS_SENSOR);
 	}
-	calibration_factor[SENSOR_SIDE_LEFT_ID] +=
+	calibration_factor_sensor[SENSOR_SIDE_LEFT_ID] =
 	    (left_temp / SIDE_CALIBRATION_READINGS) - MIDDLE_MAZE_DISTANCE;
-	calibration_factor[SENSOR_SIDE_RIGHT_ID] +=
+	calibration_factor_sensor[SENSOR_SIDE_RIGHT_ID] =
 	    (right_temp / SIDE_CALIBRATION_READINGS) - MIDDLE_MAZE_DISTANCE;
 }
