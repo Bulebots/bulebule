@@ -11,7 +11,27 @@ A maze-solving robot.
 Please read the `Theseus documentation`_ for a bit more detailed introduction.
 
 
-.. _`Theseus documentation`: 
+Acknowledgments
+---------------
+
+We truly feel in debt with some people who helped us a lot. This project was
+much faster to develop and enjoyable thanks to:
+
+**Green Ye**
+  Who shares `details about his micromice <http://www.greenye.net/>`_ and posts
+  many useful resources in `micromouseusa.com <http://micromouseusa.com>`_.
+**Peter Harris**
+  Who posts many useful and detailed resources in `micromouseonline.com
+  <http://micromouseonline.com>`_.
+**Kato-san**
+  Who shares `details about his micromice <http://seesaawiki.jp/w/robolabo/>`_
+  and posts some `useful resources <http://blog.livedoor.jp/robolabo/>`_.
+**Ng Beng Kiat**
+  Who shares `details about his micromice
+  <https://sites.google.com/site/ngbengkiat/>`_.
+
+
+.. _`Theseus documentation`:
   https://theseus.readthedocs.io/en/latest/
 
 .. |logo| image:: ./docs/source/logo/logo.svg
