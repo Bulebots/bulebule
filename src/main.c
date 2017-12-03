@@ -23,6 +23,7 @@ void sys_tick_handler(void)
 	update_ideal_speed();
 	update_encoder_readings();
 	update_distance_readings();
+	update_gyro_readings();
 	motor_control();
 }
 
@@ -65,6 +66,7 @@ static void standard_run(void)
 int main(void)
 {
 	setup();
+	gyroscope_calibration();
 	while (1) {
 		log_gyro_raw();
 		execute_commands();
