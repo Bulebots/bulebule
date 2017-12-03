@@ -1,6 +1,6 @@
 #include "move.h"
 
-static volatile float max_linear_speed = .6;
+static volatile float max_linear_speed = .8;
 
 /* Assume the mouse tail is initially touching a wall */
 static float cell_shift = WALL_WIDTH / 2 + MOUSE_TAIL;
@@ -200,11 +200,11 @@ void turn_left(void)
 {
 	uint32_t starting_time = get_clock_ticks();
 
-	set_target_angular_speed(-4 * PI);
-	while (get_clock_ticks() - starting_time <= 125)
+	set_target_angular_speed(-8 * PI);
+	while (get_clock_ticks() - starting_time <= 88)
 		;
 	set_target_angular_speed(0);
-	while (get_clock_ticks() - starting_time <= 250)
+	while (get_clock_ticks() - starting_time <= 176)
 		;
 }
 
@@ -215,11 +215,11 @@ void turn_right(void)
 {
 	uint32_t starting_time = get_clock_ticks();
 
-	set_target_angular_speed(4 * PI);
-	while (get_clock_ticks() - starting_time <= 125)
+	set_target_angular_speed(8 * PI);
+	while (get_clock_ticks() - starting_time <= 88)
 		;
 	set_target_angular_speed(0);
-	while (get_clock_ticks() - starting_time <= 250)
+	while (get_clock_ticks() - starting_time <= 176)
 		;
 }
 
@@ -253,11 +253,11 @@ void move_front(void)
 void move_left(void)
 {
 	enable_walls_control();
-	decelerate(current_cell_start_micrometers, 0.03, 0.404);
+	decelerate(current_cell_start_micrometers, 0.02, 0.666);
 	disable_walls_control();
 	turn_left();
 	enable_walls_control();
-	accelerate(get_encoder_average_micrometers(), 0.03);
+	accelerate(get_encoder_average_micrometers(), 0.02);
 	entered_next_cell();
 }
 
@@ -267,11 +267,11 @@ void move_left(void)
 void move_right(void)
 {
 	enable_walls_control();
-	decelerate(current_cell_start_micrometers, 0.03, 0.404);
+	decelerate(current_cell_start_micrometers, 0.02, 0.666);
 	disable_walls_control();
 	turn_right();
 	enable_walls_control();
-	accelerate(get_encoder_average_micrometers(), 0.03);
+	accelerate(get_encoder_average_micrometers(), 0.02);
 	entered_next_cell();
 }
 

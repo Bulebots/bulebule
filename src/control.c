@@ -8,14 +8,14 @@
  */
 static volatile float linear_acceleration = 5.;
 static volatile float linear_deceleration = 5.;
-static volatile float angular_acceleration = 32. * PI;
+static volatile float angular_acceleration = 64. * PI;
 
 static volatile float target_linear_speed;
 static volatile float target_angular_speed;
 static volatile float ideal_linear_speed;
 static volatile float ideal_angular_speed;
 
-static volatile float kp_linear = 1600.;
+static volatile float kp_linear = 800.;
 static volatile float kd_linear = 100.;
 static volatile float kp_angular = 60.;
 static volatile float kd_angular = 50.;
