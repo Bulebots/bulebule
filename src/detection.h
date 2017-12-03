@@ -28,7 +28,7 @@ float get_side_left_distance(void);
 float get_side_right_distance(void);
 float get_front_left_distance(void);
 float get_front_right_distance(void);
-float get_calibrated_gyro(void);
+float get_gyro_dps(void);
 float get_side_sensors_error(void);
 float get_front_sensors_error(void);
 float get_front_wall_distance(void);
