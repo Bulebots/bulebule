@@ -21,16 +21,16 @@ while True:
                 now = datetime.datetime.utcnow()
                 vo = int(data[5])*3.3/4096
                 vref = int(data[6])*3.3/4096
-                dps = float(data[7])
+                integ_pc = float(data[7])
                 vdiff = vo - vref
                 #0.67 mv/dps * 10 (op. amp)
                 #dps = (vdiff)/0.0067
-                #dps = (vcal)/(0.00067*2)
+                dps = (vdiff)/(0.00067*2)
                 degrees = dps*(now.timestamp() - last_time)
                 integ_pc = integ_pc - degrees
                 publisher.send_pyobj(('D', now.timestamp(),
                 (0, 0, integ_pc)))
-                publisher.send_pyobj(('Vo', now.timestamp(),dps))
+                publisher.send_pyobj(('Vo', now.timestamp(),integ_pc))
                 publisher.send_pyobj(('Vdiff', now.timestamp(),vdiff))
                 last_time = now.timestamp()
     except KeyboardInterrupt:

@@ -10,7 +10,7 @@
 static volatile uint16_t sensors_off[NUM_SENSOR], sensors_on[NUM_SENSOR];
 static volatile float distance[NUM_SENSOR];
 static volatile int32_t gyro_volt_raw;
-static volatile float gyro_dps;
+static volatile float gyro_degrees;
 static volatile float calibration_factor_sensor[NUM_SENSOR];
 static volatile float calibration_factor_gyro;
 const float sensors_calibration_a[NUM_SENSOR] = {
@@ -200,13 +200,14 @@ void update_distance_readings(void)
 }
 
 /**
- * @brief Calculate and update the degrees per second that the robot has
- * rotated.
+ * @brief Calculate and update the degrees per second and degrees that the robot
+ * has rotated.
  */
 void update_gyro_readings(void)
 {
-	gyro_dps =
-	    (gyro_volt_raw - calibration_factor_gyro) * ADC_LSB / GYRO_VOLT_DPS;
+	float gyro_dps;
+	gyro_dps = (gyro_volt_raw - calibration_factor_gyro) * ADC_LSB;
+	gyro_degrees -= (gyro_dps / SYSTICK_FREQUENCY_HZ) / GYRO_VOLT_DEGREES;
 }
 
 /**
@@ -242,11 +243,11 @@ float get_side_right_distance(void)
 }
 
 /**
- * @brief Get the degrees per second from the gyroscope.
+ * @brief Get the degrees from the gyroscope.
  */
-float get_gyro_dps(void)
+float get_gyro_degrees(void)
 {
-	return gyro_dps;
+	return gyro_degrees;
 }
 
 /**
