@@ -23,8 +23,11 @@ while True:
                 vref = int(data[5])*3.3/4096
                 vdiff = vo - vref
                 #0.67 mv/dps * 10 (op. amp)
-                dps = (vdiff)/0.0067
-                degrees = dps*(now.timestamp() - last_time)
+                if abs(vdiff) < 0.06:
+                    degrees = 0
+                else:
+                    dps = (vdiff)/(0.00067*2)
+                    degrees = dps*(now.timestamp() - last_time)
                 integ_pc = integ_pc - degrees
                 publisher.send_pyobj(('D', now.timestamp(),
                 (0, 0, integ_pc)))
