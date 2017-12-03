@@ -196,16 +196,16 @@ void log_walls_detection(void)
 }
 
 /**
- * @brief Log gyroscope raw readings.
+ * @brief Log gyroscope readings.
  */
 void log_gyro_raw(void)
 {
 	uint16_t vo;
 	uint16_t vref;
-	float vcal;
+	float gyro_dps;
 
 	get_gyro_raw(&vo, &vref);
-	vcal = get_calibrated_gyro();
+	gyro_dps = get_gyro_dps();
 
-	LOG_INFO("OUT-REF,%d,%d,%f", vo, vref, vcal);
+	LOG_INFO("OUT-REF,%d,%d,%f", vo, vref, gyro_dps);
 }
