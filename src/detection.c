@@ -3,12 +3,16 @@
 #define SIDE_WALL_DETECTION (CELL_DIMENSION * 0.75)
 #define FRONT_WALL_DETECTION (CELL_DIMENSION * 1.5)
 #define SIDE_CALIBRATION_READINGS 20
+#define GYRO_CALIBRATION_READINGS 200
 #define SENSORS_SM_TICKS_SENSOR 4
+#define SENSORS_SM_TICKS_GYRO 1
 
 static volatile uint16_t sensors_off[NUM_SENSOR], sensors_on[NUM_SENSOR];
 static volatile float distance[NUM_SENSOR];
 static volatile int32_t gyro_volt_raw;
+static volatile float gyro_volt_cal;
 static volatile float calibration_factor_sensor[NUM_SENSOR];
+static volatile float calibration_factor_gyro;
 const float sensors_calibration_a[NUM_SENSOR] = {
     SENSOR_SIDE_LEFT_A, SENSOR_SIDE_RIGHT_A, SENSOR_FRONT_LEFT_A,
     SENSOR_FRONT_RIGHT_A};
@@ -177,14 +181,6 @@ void get_sensors_raw(uint16_t *off, uint16_t *on)
 }
 
 /**
- * @brief Get calibrated gyroscope value.
- */
-float get_calibrated_gyro(void)
-{
-	return gyro_volt_raw;
-}
-
-/**
  * @brief Calculate and update the distance from each sensor.
  *
  * @note The distances are calculated from the center of the robot.
@@ -201,6 +197,14 @@ void update_distance_readings(void)
 		if ((i == SENSOR_SIDE_LEFT_ID) || (i == SENSOR_SIDE_RIGHT_ID))
 			distance[i] -= calibration_factor_sensor[i];
 	}
+}
+
+/**
+ * @brief Apply calibration to gyro response.
+ */
+void update_gyro_readings(void)
+{
+	gyro_volt_cal = gyro_volt_raw - calibration_factor_gyro;
 }
 
 /**
@@ -233,6 +237,14 @@ float get_side_left_distance(void)
 float get_side_right_distance(void)
 {
 	return distance[SENSOR_SIDE_RIGHT_ID];
+}
+
+/**
+ * @brief Get calibrated gyroscope value.
+ */
+float get_calibrated_gyro(void)
+{
+	return gyro_volt_cal;
 }
 
 /**
@@ -328,4 +340,19 @@ void side_sensors_calibration(void)
 	    (left_temp / SIDE_CALIBRATION_READINGS) - MIDDLE_MAZE_DISTANCE;
 	calibration_factor_sensor[SENSOR_SIDE_RIGHT_ID] =
 	    (right_temp / SIDE_CALIBRATION_READINGS) - MIDDLE_MAZE_DISTANCE;
+}
+
+/**
+ * @brief Calibration for gyroscope when it is static.
+ */
+void gyroscope_calibration(void)
+{
+	float temp = 0;
+	int i;
+
+	for (i = 0; i < GYRO_CALIBRATION_READINGS; i++) {
+		temp += gyro_volt_raw;
+		sleep_ticks(SENSORS_SM_TICKS_GYRO);
+	}
+	calibration_factor_gyro = (temp / GYRO_CALIBRATION_READINGS);
 }
