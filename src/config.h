@@ -11,4 +11,7 @@
 #define SENSOR_FRONT_RIGHT_A 2.575
 #define SENSOR_FRONT_RIGHT_B 0.243
 
+/* Calibration constant for gyroscope*/
+#define GYRO_VOLT_DEGREES (0.00067 * 2)
+
 #endif /* _CONFIG_H */

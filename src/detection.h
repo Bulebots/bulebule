@@ -23,10 +23,12 @@
 void get_gyro_raw(uint16_t *vo, uint16_t *vref);
 void get_sensors_raw(uint16_t *off, uint16_t *on);
 void update_distance_readings(void);
+void update_gyro_readings(void);
 float get_side_left_distance(void);
 float get_side_right_distance(void);
 float get_front_left_distance(void);
 float get_front_right_distance(void);
+float get_gyro_degrees(void);
 float get_side_sensors_error(void);
 float get_front_sensors_error(void);
 float get_front_wall_distance(void);
@@ -34,5 +36,6 @@ bool front_wall_detection(void);
 bool right_wall_detection(void);
 bool left_wall_detection(void);
 void side_sensors_calibration(void);
+void gyroscope_calibration(void);
 
 #endif /* __DETECTION_H */

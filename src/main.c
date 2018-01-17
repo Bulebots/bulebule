@@ -12,6 +12,8 @@
 #include "setup.h"
 #include "solve.h"
 
+static void standard_run(void);
+
 /**
  * @brief Handle the SysTick interruptions.
  */
@@ -21,15 +23,15 @@ void sys_tick_handler(void)
 	update_ideal_speed();
 	update_encoder_readings();
 	update_distance_readings();
+	update_gyro_readings();
 	motor_control();
 }
 
 /**
- * @brief Initial setup and infinite wait.
+ * @brief Competition behaviour.
  */
-int main(void)
+static void standard_run(void)
 {
-	setup();
 	initialize_solver_direction();
 	while (1) {
 		if (button_left_read_consecutive(500)) {
@@ -56,6 +58,19 @@ int main(void)
 		}
 		execute_commands();
 	}
+}
 
+/**
+ * @brief Initial setup and infinite wait.
+ */
+int main(void)
+{
+	setup();
+	gyroscope_calibration();
+	while (1) {
+		log_gyro_raw();
+		execute_commands();
+	}
+	standard_run();
 	return 0;
 }
