@@ -9,4 +9,6 @@ pybluez
 pyqtgraph
 pyserial
 pytest
+pytest-flakes
+pytest-pep8
 zmq
