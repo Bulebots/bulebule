@@ -62,6 +62,11 @@ class Proxy(Agent):
         self.buffer = b''
         self.log_filter = None
         self.filtered = None
+        self.spinete_pub = self.bind('PUB',
+                                     alias='spinete',
+                                     transport='tcp',
+                                     serializer='raw',
+                                     addr='127.0.0.1:5000')
 
     def setup(self, address, port):
         self.rfcomm = BluetoothSocket(RFCOMM)
@@ -85,6 +90,16 @@ class Proxy(Agent):
         self.filtered = None
         self.log_filter = None
 
+    def publish(self, log):
+        body = log[-1]
+        if not body.startswith('PUB'):
+            return
+        fields = body.split(',')
+        if fields[1] != 'line':
+            raise NotImplementedError()
+        print(fields)
+        self.send('spinete', pickle.dumps((fields[2], log[0], fields[3])))
+
     def process_received(self, received):
         self.buffer += received
         if b'\n' not in self.buffer:
@@ -93,7 +108,10 @@ class Proxy(Agent):
         for message in splits[:-1]:
             fields = message.split(b',')
             log = [x.decode('utf-8') for x in fields[:4]]
-            log[0] = float(log[0])
+            try:
+                log[0] = float(log[0])
+            except ValueError:
+                pass
             body = b','.join(fields[4:])
             if not body.startswith(b'RAW'):
                 body = body.decode('utf-8')
@@ -106,10 +124,11 @@ class Proxy(Agent):
                 self.filtered = log
                 self.log_filter = None
             self.log.append(log)
+            self.publish(log)
         self.buffer = splits[-1]
         return len(splits) - 1
 
-    def send(self, message):
+    def send_bt(self, message):
         for retry in range(10):
             try:
                 self.rfcomm.settimeout(1.)
@@ -199,7 +218,7 @@ class Bulebule(cmd.Cmd):
         self.interrupted = False
         self.ns = run_nameserver()
         self.proxy = run_agent('proxy', base=Proxy)
-        self.proxy.after(0, 'setup', address='00:21:13:01:D1:59', port=1)
+        self.proxy.after(0, 'setup', address='00:21:13:01:CC:C3', port=1)
 
     def postloop(self):
         if not self.interrupted:
@@ -208,19 +227,19 @@ class Bulebule(cmd.Cmd):
     def do_battery(self, *args):
         """Get battery voltage."""
         self.proxy.filter_next(function='log_battery_voltage')
-        self.proxy.send('battery\0')
+        self.proxy.send_bt('battery\0')
         self.proxy.wait_filtered()
 
     def do_configuration_variables(self, *args):
         """Get configuration variables."""
         self.proxy.filter_next(function='log_configuration_variables')
-        self.proxy.send('configuration_variables\0')
+        self.proxy.send_bt('configuration_variables\0')
         self.proxy.wait_filtered()
 
     def do_set(self, line):
         """Set robot variables."""
         if any(line.startswith(x) for x in self.SET_SUBCOMMANDS):
-            self.proxy.send('set %s\0' % line)
+            self.proxy.send_bt('set %s\0' % line)
             self.do_configuration_variables()
         else:
             print('Invalid set command "%s"!' % line)
@@ -256,7 +275,7 @@ class Bulebule(cmd.Cmd):
     def do_run(self, extra):
         """Run different procedures on the mouse."""
         if extra in self.RUN_SUBCOMMANDS:
-            self.proxy.send('run %s\0' % extra)
+            self.proxy.send_bt('run %s\0' % extra)
         else:
             print('Please, specify what to run!')
 
