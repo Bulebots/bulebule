@@ -130,6 +130,11 @@ We will be using GCC's ARM compiler:
 
    dnf install arm-none-eabi-gcc
 
+We need also to install a C standard library implementation:
+
+.. code-block:: bash
+
+   dnf install arm-none-eabi-newlib
 
 .. index:: flashing
 
