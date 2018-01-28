@@ -80,6 +80,45 @@ PC15  N/A        N/A     N/A
 ====  =========  ======  ==============================
 
 
+.. index:: interruptions
+
+Exceptions
+==========
+
+The configuration for interruptions (IRQ) and SysTick exceptions has been
+deduced taking into account that:
+
+- The priority is configurable, the exception and the IRQ numbers are fixed.
+
+- If the software does not configure any priority, then all exceptions with a
+  configurable priority have a priority of 0. We didn't find any reference on
+  the documentation but for experience it seems that by default SysTick
+  exception has higher priority than any interruption.
+
+- For System Handlers, the lowest priority value has precedence over the
+  lowest exception number value.
+
+- For Interrupt service routines (ISR) the precedence is: lowest group priority
+  value, lowest subpriority value and lowest IRQ number value. For now, there
+  are not any subpriority value configured for this project.
+
+- The preemption happens just for higher priority exceptions (nothing to do
+  with exception number or subpriority).
+
+For more information have a look at the `STM32F10xxx/20xxx/21xxx/L1xxxx
+Cortex®-M3 programming manual`_.
+
+==========  ========  =========  =======  ========  ======================
+Exceptions  Handler   Excep num  IRQ num  Priority  Functionality
+==========  ========  =========  =======  ========  ======================
+SysTick     System    15         -1       1         Control and algorithm
+ADC1_2      ISR       N/A        18       1         Battery low level
+TIM1_UP     ISR       N/A        25       0         Infrared state machine
+USART3      ISR       N/A        39       1         Bluetooth
+==========  ========  =========  =======  ========  ======================
+
+.. index:: references
+
 References
 ==========
 
@@ -91,3 +130,5 @@ References
   https://fmcc.faulhaber.com/resources/img/EN_IE2-1024_DFF.PDF
 .. _`STM32F10xxx Reference Manual`:
   http://www.st.com/resource/en/reference_manual/cd00171190.pdf
+.. _`STM32F10xxx/20xxx/21xxx/L1xxxx Cortex®-M3 programming manual`:
+  http://www.st.com/content/ccc/resource/technical/document/programming_manual/5b/ca/8d/83/56/7f/40/08/CD00228163.pdf/files/CD00228163.pdf/jcr:content/translations/en.CD00228163.pdf

@@ -1,5 +1,8 @@
 #include "setup.h"
 
+/** Exception priorities */
+#define PRIORITY_FACTOR 16
+
 /**
  * @brief Initial clock setup.
  *
@@ -49,16 +52,35 @@ static void setup_clock(void)
 }
 
 /**
- * @brief Initial interruptions configuration.
+ * @brief Exceptions configuration.
+ *
+ * This function configures Nested Vectored Interrupt Controller for IRQ and
+ * System Control Block for system interruptions.
+ *
+ * Exception priorities:
+ *
+ * - Systick priority to 1 with SCB.
+ * - ADC1_2 and USART3 with priority 1 with NVIC.
+ * - TIM1_UP with priority 0.
  *
  * Interruptions enabled:
  *
  * - TIM1 Update interrupt.
  * - ADC1 and ADC2 global interrupt.
  * - USART3 interrupt.
+ *
+ * @note The priority levels are assigned on steps of 16 because the processor
+ * implements only bits[7:4].
+ *
+ * @see Programming Manual (PM0056).
  */
-static void setup_nvic(void)
+static void setup_exceptions(void)
 {
+	nvic_set_priority(NVIC_TIM1_UP_IRQ, 0);
+	nvic_set_priority(NVIC_ADC1_2_IRQ, PRIORITY_FACTOR * 1);
+	nvic_set_priority(NVIC_USART3_IRQ, PRIORITY_FACTOR * 1);
+	nvic_set_priority(NVIC_SYSTICK_IRQ, PRIORITY_FACTOR * 1);
+
 	nvic_enable_irq(NVIC_TIM1_UP_IRQ);
 	nvic_enable_irq(NVIC_ADC1_2_IRQ);
 	nvic_enable_irq(NVIC_USART3_IRQ);
@@ -366,7 +388,7 @@ static void setup_timer1(void)
 void setup(void)
 {
 	setup_clock();
-	setup_nvic();
+	setup_exceptions();
 	setup_gpio();
 	setup_usart();
 	setup_encoders();

@@ -16,6 +16,24 @@ Board
 Microcontroller
 ===============
 
+The microcontroller reference is STM32F103CBT6 LQFP64,
+that means:
+
+STM32
+  ST microcontroller with 32-bit
+
+F1
+  ARM Cortex M3-based, performance line
+
+03
+  72MHz, with motor control, USB and CAN
+
+CB
+  Medium-density up to 1 Mbyte
+
+LQFP64
+  Pinout
+
 
 .. index:: workspace
 
