@@ -1,5 +1,4 @@
-sphinx
-sphinx_rtd_theme
+-r docs/requirements.txt
 cadquery
 numpy
 osbrain
