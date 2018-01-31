@@ -33,12 +33,11 @@ static void setup_clock(void)
 	/* Bluetooth */
 	rcc_periph_clock_enable(RCC_USART3);
 
-	/* Encoders */
+	/* Timers */
+	rcc_periph_clock_enable(RCC_TIM1);
 	rcc_periph_clock_enable(RCC_TIM2);
-	rcc_periph_clock_enable(RCC_TIM4);
-
-	/* PWM */
 	rcc_periph_clock_enable(RCC_TIM3);
+	rcc_periph_clock_enable(RCC_TIM4);
 
 	/* Alternate functions */
 	rcc_periph_clock_enable(RCC_AFIO);
@@ -46,9 +45,6 @@ static void setup_clock(void)
 	/* ADC */
 	rcc_periph_clock_enable(RCC_ADC1);
 	rcc_periph_clock_enable(RCC_ADC2);
-
-	/* TIM1 */
-	rcc_periph_clock_enable(RCC_TIM1);
 }
 
 /**
@@ -97,14 +93,9 @@ static void setup_gpio(void)
 	gpio_primary_remap(AFIO_MAPR_SWJ_CFG_JTAG_OFF_SW_ON,
 			   AFIO_MAPR_TIM2_REMAP_FULL_REMAP);
 
-	/* Motor driver */
-	gpio_set_mode(GPIOB, GPIO_MODE_OUTPUT_50_MHZ, GPIO_CNF_OUTPUT_PUSHPULL,
-		      GPIO12 | GPIO13 | GPIO14 | GPIO15);
-	gpio_clear(GPIOB, GPIO12 | GPIO13 | GPIO14 | GPIO15);
-
 	/* ADC inputs: sensors and battery */
 	gpio_set_mode(GPIOA, GPIO_MODE_INPUT, GPIO_CNF_INPUT_ANALOG,
-		      GPIO4 | GPIO5 | GPIO6 | GPIO7 | GPIO0);
+		      GPIO0 | GPIO2 | GPIO3 | GPIO4 | GPIO5);
 
 	/* Infrared emitter */
 	gpio_set_mode(GPIOA, GPIO_MODE_OUTPUT_2_MHZ, GPIO_CNF_OUTPUT_PUSHPULL,
@@ -119,7 +110,7 @@ static void setup_gpio(void)
 		      GPIO4 | GPIO5);
 	gpio_clear(GPIOB, GPIO4 | GPIO5);
 
-	/* Blue pill LED*/
+	/* Blue pill LED */
 	gpio_set_mode(GPIOC, GPIO_MODE_OUTPUT_50_MHZ, GPIO_CNF_OUTPUT_PUSHPULL,
 		      GPIO13);
 	gpio_set(GPIOC, GPIO13);
@@ -159,11 +150,11 @@ static void setup_usart(void)
  * - Edge-aligned, up-counting timer.
  * - Prescale to increment timer counter at 24 MHz.
  * - Set PWM frequency to 24 kHz.
- * - Configure channels 3 and 4 as output GPIOs.
+ * - Configure channels 1, 2, 3 and 4 as output GPIOs.
  * - Set output compare mode to PWM1 (output is active when the counter is
  *   less than the compare register contents and inactive otherwise.
  * - Reset output compare value (set it to 0).
- * - Enable channels 3 and 4 outputs.
+ * - Enable channels 1, 2, 3 and 4 outputs.
  * - Enable counter for TIM3.
  *
  * @see Reference manual (RM0008) "TIMx functional description" and in
@@ -180,14 +171,23 @@ static void setup_pwm(void)
 	timer_continuous_mode(TIM3);
 	timer_set_period(TIM3, DRIVER_PWM_PERIOD);
 
+	gpio_set_mode(GPIOA, GPIO_MODE_OUTPUT_50_MHZ,
+		      GPIO_CNF_OUTPUT_ALTFN_PUSHPULL,
+		      GPIO_TIM3_CH1 | GPIO_TIM3_CH2);
 	gpio_set_mode(GPIOB, GPIO_MODE_OUTPUT_50_MHZ,
 		      GPIO_CNF_OUTPUT_ALTFN_PUSHPULL,
 		      GPIO_TIM3_CH3 | GPIO_TIM3_CH4);
 
+	timer_set_oc_mode(TIM3, TIM_OC1, TIM_OCM_PWM1);
+	timer_set_oc_mode(TIM3, TIM_OC2, TIM_OCM_PWM1);
 	timer_set_oc_mode(TIM3, TIM_OC3, TIM_OCM_PWM1);
 	timer_set_oc_mode(TIM3, TIM_OC4, TIM_OCM_PWM1);
+	timer_set_oc_value(TIM3, TIM_OC1, 0);
+	timer_set_oc_value(TIM3, TIM_OC2, 0);
 	timer_set_oc_value(TIM3, TIM_OC3, 0);
 	timer_set_oc_value(TIM3, TIM_OC4, 0);
+	timer_enable_oc_output(TIM3, TIM_OC1);
+	timer_enable_oc_output(TIM3, TIM_OC2);
 	timer_enable_oc_output(TIM3, TIM_OC3);
 	timer_enable_oc_output(TIM3, TIM_OC4);
 
@@ -274,7 +274,7 @@ static void setup_adc1(void)
 {
 	int i;
 
-	uint8_t channel_sequence[4] = {ADC_CHANNEL6, ADC_CHANNEL5, ADC_CHANNEL7,
+	uint8_t channel_sequence[4] = {ADC_CHANNEL2, ADC_CHANNEL5, ADC_CHANNEL3,
 				       ADC_CHANNEL4};
 
 	adc_power_off(ADC1);
@@ -291,61 +291,6 @@ static void setup_adc1(void)
 		__asm__("nop");
 	adc_reset_calibration(ADC1);
 	adc_calibrate(ADC1);
-}
-
-/**
- * @brief Setup for ADC 2: One injected channel on scan mode and analog
- * watchdog.
- *
- * - Initialize channel_sequence structure to map physical channels
- *   versus software injected channels. On this case there is only one channel
- *   for battery voltage.
- * - Power off the ADC to be sure that does not run during configuration.
- * - Enable scan mode with single conversion mode triggered by software.
- * - Configure the alignment (right) and the sample time (28.5 cycles of ADC
- *   clock).
- * - Set injected sequence with channel_sequence structure.
- * - Setup for analog watchdog: define the lowest battery level, select
- *   the channels to be enabled (injected channel 0) and activate ADC2
- *   analog watchdog interruption.
- * - Power on the ADC and wait for ADC starting up (at least 3 us).
- * - Calibrate the ADC.
- *
- * @note This ADC reads battery voltage value.
- *
- * @see Reference manual (RM0008) "Analog-to-digital converter" and in
- * particular "Scan mode" section.
- *
- * @see Pinout section from project official documentation
- * (https://theseus.readthedocs.io/)
- */
-static void setup_adc2(void)
-{
-	int i;
-
-	uint8_t channel_sequence[1] = {ADC_CHANNEL0};
-
-	adc_power_off(ADC2);
-	adc_enable_scan_mode(ADC2);
-	adc_set_single_conversion_mode(ADC2);
-	adc_enable_external_trigger_injected(ADC2, ADC_CR2_JEXTSEL_JSWSTART);
-	adc_set_right_aligned(ADC2);
-	adc_set_sample_time_on_all_channels(ADC2, ADC_SMPR_SMP_28DOT5CYC);
-	adc_set_injected_sequence(
-	    ADC2, sizeof(channel_sequence) / sizeof(channel_sequence[0]),
-	    channel_sequence);
-	adc_set_watchdog_low_threshold(
-	    ADC2,
-	    (uint16_t)(BATTERY_LOW_LIMIT_VOLTAGE / VOLT_DIV_FACTOR * ADC_LSB));
-	adc_enable_analog_watchdog_injected(ADC2);
-	adc_enable_analog_watchdog_on_selected_channel(ADC2,
-						       ADC_CR1_AWDCH_CHANNEL0);
-	adc_enable_awd_interrupt(ADC2);
-	adc_power_on(ADC2);
-	for (i = 0; i < 800000; i++)
-		__asm__("nop");
-	adc_reset_calibration(ADC2);
-	adc_calibrate(ADC2);
 }
 
 /**
@@ -396,5 +341,4 @@ void setup(void)
 	setup_systick();
 	setup_timer1();
 	setup_adc1();
-	setup_adc2();
 }

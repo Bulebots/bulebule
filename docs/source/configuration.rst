@@ -42,25 +42,28 @@ on both TI1 and TI2 edges.
 Pinout
 ======
 
+Bluepill
+--------
+
 ====  =========  ======  ==============================
 Pin   Function   Type    Connected to
 ====  =========  ======  ==============================
 PA0   ADC12_IN0  Input   Battery
 PA1   N/A        N/A     N/A
-PA2   ADC12_IN2  Input   Gyroscope Vref
-PA3   ADC12_IN3  Input   Gyroscope Vout
+PA2   ADC12_IN2  Input   Left side phototransistor
+PA3   ADC12_IN3  Input   Left front phototransistor
 PA4   ADC12_IN4  Input   Right front phototransistor
 PA5   ADC12_IN5  Input   Right side phototransistor
-PA6   ADC12_IN6  Input   Left side phototransistor
-PA7   ADC12_IN7  Input   Left front phototransistor
+PA6   TIM3_CH1   Input   Motor driver IN1 (left)
+PA7   TIM3_CH2   Input   Motor driver IN2 (left)
 PA8   GPIO       Output  Left front emitter switch
 PA9   GPIO       Output  Left side emitter switch
 PA10  TIM1_CH3   Output  Speaker PWM
 PA11  GPIO       Input   Left button
 PA12  GPIO       Input   Right button
 PA15  TIM2_CH1   Input   Left motor encoder, channel A
-PB0   TIM3_CH3   Output  Left motor PWM
-PB1   TIM3_CH4   Output  Right motor PWM
+PB0   TIM3_CH3   Output  Motor driver IN3 (right)
+PB1   TIM3_CH4   Output  Motor driver IN4 (right)
 PB3   TIM2_CH2   Input   Left motor encoder, channel B
 PB4   GPIO       Output  Left LED
 PB5   GPIO       Output  Right LED
@@ -70,14 +73,28 @@ PB8   GPIO       Output  Right side emmiter switch
 PB9   GPIO       Output  Right front emmiter switch
 PB10  USART3_TX  Output  Bluetooth RX
 PB11  USART3_RX  Input   Bluetooth TX
-PB12  GPIO       Output  Left motor driver IN1
-PB13  GPIO       Output  Left motor driver IN2
-PB14  GPIO       Output  Right motor driver IN2
-PB15  GPIO       Output  Right motor driver IN1
+PB12  XXXX       ??????  Digital gyro
+PB13  XXXX       ??????  Digital gyro
+PB14  XXXX       ??????  Digital gyro
+PB15  XXXX       ??????  Digital gyro
 PC13  N/A        N/A     N/A
 PC14  N/A        N/A     N/A
 PC15  N/A        N/A     N/A
 ====  =========  ======  ==============================
+
+Motor driver
+------------
+
+====  ==============================
+Pin   Connected to
+====  ==============================
+OUT1  Left motor + (pin 2)
+OUT2  Left motor - (pin 1)
+OUT3  Right motor - (pin 1)
+OUT4  Right motor + (pin 2)
+EEP   3V3 (J2 jumper is open)
+ULT   Not connected
+====  ==============================
 
 
 .. index:: interruptions
