@@ -37,6 +37,28 @@ to the `IE2-512 encoder`_ channels A and B). They are both configured to count
 on both TI1 and TI2 edges.
 
 
+.. index:: gyroscope
+
+Gyroscope
+=========
+
+Gyros are selected as the clock source for accuracy (versus the internal
+relaxation oscillator suitable for lower power consumption when only
+accelerometer is being used).
+
+The MPU-6500 gyro features the following SPI operational features:
+
+- Data is delivered MSB first and LSB last.
+- Data is latched on the rising edge of SCLK.
+- Data should be transitioned on the falling edge of SCLK.
+- The maximum frequency of SCLK is 1 MHz. Although the sensor and interrupt
+  registers may be read using SPI at 20 MHz.
+- Read/write operations are completed in 16+ cycles (2+ bytes).
+- First byte contains the SPI address, and the following the SPI data.
+- First bit of the first byte contains the Read (1) / Write (0) bit.
+- The following 7 bits contain the Register Address.
+- In cases of multiple-byte read/writes, data is two or more bytes.
+
 .. index:: pinout
 
 Pinout
@@ -49,7 +71,7 @@ Bluepill
 Pin   Function   Type    Connected to
 ====  =========  ======  ==============================
 PA0   ADC12_IN0  Input   Battery
-PA1   N/A        N/A     N/A
+PA1   N/A        N/A     *Not connected*
 PA2   ADC12_IN2  Input   Left side phototransistor
 PA3   ADC12_IN3  Input   Left front phototransistor
 PA4   ADC12_IN4  Input   Right front phototransistor
@@ -73,13 +95,13 @@ PB8   GPIO       Output  Right side emmiter switch
 PB9   GPIO       Output  Right front emmiter switch
 PB10  USART3_TX  Output  Bluetooth RX
 PB11  USART3_RX  Input   Bluetooth TX
-PB12  XXXX       ??????  Digital gyro
-PB13  XXXX       ??????  Digital gyro
-PB14  XXXX       ??????  Digital gyro
-PB15  XXXX       ??????  Digital gyro
-PC13  N/A        N/A     N/A
-PC14  N/A        N/A     N/A
-PC15  N/A        N/A     N/A
+PB12  NSS2       Output  Gyroscope NCS (SPI-CS)
+PB13  SCK2       Output  Gyroscope SCL (SPI-SCLK)
+PB14  MISO2      Input   Gyroscope AD0 (SPI-SDO)
+PB15  MOSI2      Output  Gyroscope SDA (SPI-SDI)
+PC13  N/A        N/A     *Not connected*
+PC14  N/A        N/A     *Not connected*
+PC15  N/A        N/A     *Not connected*
 ====  =========  ======  ==============================
 
 Motor driver
@@ -88,6 +110,10 @@ Motor driver
 ====  ==============================
 Pin   Connected to
 ====  ==============================
+IN1   *Defined in Bluepill pinout*
+IN2   *Defined in Bluepill pinout*
+IN3   *Defined in Bluepill pinout*
+IN4   *Defined in Bluepill pinout*
 OUT1  Left motor + (pin 2)
 OUT2  Left motor - (pin 1)
 OUT3  Right motor - (pin 1)
@@ -133,6 +159,22 @@ ADC1_2      ISR       N/A        18       1         Battery low level
 TIM1_UP     ISR       N/A        25       0         Infrared state machine
 USART3      ISR       N/A        39       1         Bluetooth
 ==========  ========  =========  =======  ========  ======================
+
+Gyroscope
+---------
+
+=====  ========  ==============================
+Pin    Function  Connected to
+=====  ========  ==============================
+SCL    SPI-SCLK  *Defined in Bluepill pinout*
+SDA    SPI-SDI   *Defined in Bluepill pinout*
+EDA    N/A       *Not connected*
+ECL    N/A       *Not connected*
+AD0    SPI-SDO   *Defined in Bluepill pinout*
+INT    N/A       *Not connected*
+NCS    SPI-CS    *Defined in Bluepill pinout*
+FSYNC  N/A       *Not connected*
+=====  ========  ==============================
 
 .. index:: references
 

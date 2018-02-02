@@ -33,6 +33,9 @@ static void setup_clock(void)
 	/* Bluetooth */
 	rcc_periph_clock_enable(RCC_USART3);
 
+	/* Gyroscope */
+	rcc_periph_clock_enable(RCC_SPI2);
+
 	/* Timers */
 	rcc_periph_clock_enable(RCC_TIM1);
 	rcc_periph_clock_enable(RCC_TIM2);
@@ -140,6 +143,42 @@ static void setup_usart(void)
 	USART_CR1(USART3) |= USART_CR1_RXNEIE;
 
 	usart_enable(USART3);
+}
+
+/**
+ * @brief Setup SPI for gyroscope communication.
+ *
+ * SPI2 is configured as follows:
+ *
+ * - Master mode.
+ * - Clock baud rate: 72 MHz / 4 / 32 = 0.5625 MHz.
+ * - Clock polarity: 0 (idle low; leading edge is a rising edge).
+ * - Clock phase: 0 (out changes on the trailing edge and input data
+ *   captured on rising edge).
+ * - Data frame format: 8-bits.
+ * - Frame format: MSB first.
+ *
+ * NSS is configured to be managed by software.
+ */
+static void setup_spi(void)
+{
+	gpio_set_mode(GPIOB, GPIO_MODE_OUTPUT_50_MHZ,
+		      GPIO_CNF_OUTPUT_ALTFN_PUSHPULL, GPIO13 | GPIO15);
+	gpio_set_mode(GPIOB, GPIO_MODE_OUTPUT_50_MHZ, GPIO_CNF_OUTPUT_PUSHPULL,
+		      GPIO12);
+	gpio_set_mode(GPIOB, GPIO_MODE_INPUT, GPIO_CNF_INPUT_FLOAT, GPIO14);
+
+	spi_reset(SPI2);
+
+	spi_init_master(SPI2, SPI_CR1_BAUDRATE_FPCLK_DIV_32,
+			SPI_CR1_CPOL_CLK_TO_0_WHEN_IDLE,
+			SPI_CR1_CPHA_CLK_TRANSITION_1, SPI_CR1_DFF_8BIT,
+			SPI_CR1_MSBFIRST);
+
+	spi_enable_software_slave_management(SPI2);
+	spi_set_nss_high(SPI2);
+
+	spi_enable(SPI2);
 }
 
 /**
@@ -336,6 +375,7 @@ void setup(void)
 	setup_exceptions();
 	setup_gpio();
 	setup_usart();
+	setup_spi();
 	setup_encoders();
 	setup_pwm();
 	setup_systick();
