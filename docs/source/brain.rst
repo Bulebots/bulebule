@@ -22,27 +22,27 @@ Microcontroller
 Workspace
 =========
 
-We will be using the `libopencm3`_ firmware library. Our workspace is based on 
+We will be using the `libopencm3`_ firmware library. Our workspace is based on
 the `reuse instructions
 <https://github.com/libopencm3/libopencm3-examples#reuse>`_ from that project.
 
 #. Clone the project including submodules to get libopencm3:
 
    .. code-block:: bash
-  
+
       git clone --recursive git@github.com:Theseus/bulebule.git
 
 #. Setup libopencm3:
 
    .. code-block:: bash
-  
+
       cd bulebule/
       ./scripts/setup_libopencm3.sh
 
 #. Compile Bulebule
-   
+
    .. code-block:: bash
-  
+
       cd src/
       make
 
@@ -77,9 +77,7 @@ GND          GND
    We may need to log out and back in for this change to take effect.
 
    Alternatively we could add some UDEV rules in
-   `/etc/udev/rules.d/99-stlink.rules`:
-
-   .. code-block:: none
+   `/etc/udev/rules.d/99-stlink.rules`::
 
       ATTRS{idVendor}=="0483", ATTRS{idProduct}=="3748", MODE="0666"
 
@@ -105,15 +103,11 @@ We can try and connect to the OpenOCD server with Telnet:
 
    telnet localhost 4444
 
-Then we can, for example, display all registers and their values:
-
-.. code-block:: none
+Then we can, for example, display all registers and their values::
 
    > reg
 
-Or halt and re-run:
-
-.. code-block:: none
+Or halt and re-run::
 
    > reset halt
    > reset run
@@ -142,9 +136,7 @@ Flashing
 ========
 
 We can flash the microcontroller using OpenOCD (assuming we are already
-connected with `telnet`):
-
-.. code-block:: none
+connected with `telnet`)::
 
    > program filename.elf verify reset
 
@@ -160,9 +152,7 @@ command:
    openocd -f interface/stlink-v2.cfg -f target/stm32f1x.cfg \
        -c "program filename.elf verify reset exit"
 
-Binary files need the flash address to be specified:
-
-.. code-block:: none
+Binary files need the flash address to be specified::
 
    > program filename.bin verify reset 0x08000000
 
@@ -179,9 +169,7 @@ We will be using GCC's ARM debugger:
    dnf install arm-none-eabi-gdb
 
 We use `GDB`_ for debugging. Note that we connect to OpenOCD gdbserver using
-the port `3333`, rather than the port `4444` used with `telnet`.
-
-.. code-block:: none
+the port `3333`, rather than the port `4444` used with `telnet`::
 
    $ arm-none-eabi-gdb main.elf
    (gdb) target extended-remote localhost:3333
@@ -190,17 +178,13 @@ the port `3333`, rather than the port `4444` used with `telnet`.
    the same as ``target extended-remote localhost:3333``.
 
 Once we are connected, we can execute OpenOCD commands simply prepending the
-word `monitor`:
-
-.. code-block:: none
+word `monitor`::
 
    (gdb) monitor reset halt
    (gdb) monitor reset run
 
 If we want to load the `.elf` file, we can simply execute the `load` command
-now:
-
-.. code-block:: none
+now::
 
    (gdb) load
 

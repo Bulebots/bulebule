@@ -26,3 +26,5 @@ script:
   - ./scripts/checkformat_checkpatch.sh
   - cd src/ && make
   - cd ../ && pytest -sv --pep8 --flakes
+  - doc8 docs/source/
+  - doc8 README.rst
