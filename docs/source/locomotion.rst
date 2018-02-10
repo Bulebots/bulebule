@@ -70,7 +70,7 @@ and 2.5 mm width).
 Rim
 ===
 
-The rim has been designed with `CadQuery`_. See the `Theseus 3D designs`.
+The rim has been designed with `CadQuery`_. See the `Bulebule 3D designs`.
 
 
 .. index:: mounting
@@ -78,7 +78,7 @@ The rim has been designed with `CadQuery`_. See the `Theseus 3D designs`.
 Mounting
 ========
 
-The mounting has been designed with `CadQuery`_. See the `Theseus 3D designs`.
+The mounting has been designed with `CadQuery`_. See the `Bulebule 3D designs`.
 
 
 References
@@ -98,5 +98,5 @@ References
    http://slot.it/immagini/KitPart/tires/Slot-it_tabella-2015.jpg
 .. _`Tetra locomotion design`:
   https://athena-robots.readthedocs.io/en/latest/tetra.html
-.. _`Theseus 3D designs`:
-  https://github.com/Theseus/theseus/tree/master/3d
+.. _`Bulebule 3D designs`:
+  https://github.com/Theseus/bulebule/tree/master/3d

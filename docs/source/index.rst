@@ -1,14 +1,14 @@
-*******************
-Theseus - |version|
-*******************
+********************
+Bulebule - |version|
+********************
 
 
 .. index:: abstract
 
-What is Theseus?
-----------------
+What is Bulebule?
+-----------------
 
-Theseus is a maze-solving robot.
+Bulebule is a maze-solving robot.
 
 
 How can I build it?

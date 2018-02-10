@@ -30,16 +30,16 @@ the `reuse instructions
 
    .. code-block:: bash
   
-      git clone --recursive git@github.com:Theseus/theseus.git
+      git clone --recursive git@github.com:Theseus/bulebule.git
 
 #. Setup libopencm3:
 
    .. code-block:: bash
   
-      cd theseus/
+      cd bulebule/
       ./scripts/setup_libopencm3.sh
 
-#. Compile Theseus
+#. Compile Bulebule
    
    .. code-block:: bash
   
@@ -48,7 +48,7 @@ the `reuse instructions
 
 .. note:: The makefile on the :code:`src` folder combines the
    :code:`libopencm3.target.mk` file, the board STM32F1 makefile and the
-   Theseus project relative paths.
+   Bulebule project relative paths.
 
 .. index:: programmer
 

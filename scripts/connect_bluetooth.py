@@ -152,7 +152,7 @@ class Proxy(Agent):
         return float(self.log[-1].split(b',')[0])
 
 
-class Theseus(cmd.Cmd):
+class Bulebule(cmd.Cmd):
     prompt = '>>> '
     LOG_SUBCOMMANDS = ['all', 'clear', 'save']
     PLOT_SUBCOMMANDS = ['linear_speed_profile', 'angular_speed_profile']
@@ -331,4 +331,4 @@ class Theseus(cmd.Cmd):
 
 
 if __name__ == '__main__':
-    Theseus().cmdloop()
+    Bulebule().cmdloop()

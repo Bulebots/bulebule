@@ -9,8 +9,8 @@ Utils
 Installing Python dependencies
 ==============================
 
-To install the required dependencies for developing the Python code of Theseus, you can
-make use of the provided ``requirements.txt`` file:
+To install the required dependencies for developing the Python code of
+Bulebule, you can make use of the provided ``requirements.txt`` file:
 
 .. code-block:: bash
 

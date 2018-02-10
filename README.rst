@@ -3,12 +3,12 @@
 |documentation|
 
 
-Theseus
-=======
+Bulebule
+========
 
 A maze-solving robot.
 
-Please read the `Theseus documentation`_ for a bit more detailed introduction.
+Please read the `Bulebule documentation`_ for a bit more detailed introduction.
 
 
 Acknowledgments
@@ -31,8 +31,8 @@ much faster to develop and enjoyable thanks to:
   <https://sites.google.com/site/ngbengkiat/>`_.
 
 
-.. _`Theseus documentation`:
-  https://theseus.readthedocs.io/en/latest/
+.. _`Bulebule documentation`:
+  https://bulebule.readthedocs.io/
 
 .. |logo| image:: ./docs/source/logo/logo.svg
 .. |documentation| image:: https://readthedocs.org/projects/osbrain/badge/?version=stable

@@ -246,7 +246,7 @@ static void setup_systick(void)
  * particular "Scan mode" section.
  *
  * @see Pinout section from project official documentation
- * (https://theseus.readthedocs.io/)
+ * (https://bulebule.readthedocs.io/)
  */
 static void setup_adc1(void)
 {
