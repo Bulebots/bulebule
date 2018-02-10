@@ -28,3 +28,4 @@ script:
   - cd ../ && pytest -sv --pep8 --flakes
   - doc8 docs/source/
   - doc8 README.rst
+  - cd docs/ && make SPHINXOPTS=-W html
