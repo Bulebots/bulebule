@@ -72,7 +72,7 @@ GND          GND
 
    .. code-block:: bash
 
-      usermod -a -G dialout USER_NAME
+      sudo usermod -a -G dialout USER_NAME
 
    We may need to log out and back in for this change to take effect.
 
@@ -200,4 +200,3 @@ References
   https://www.gnu.org/software/gdb/
 .. _`libopencm3`:
   https://github.com/libopencm3/libopencm3
-
