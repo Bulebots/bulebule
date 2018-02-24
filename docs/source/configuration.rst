@@ -70,29 +70,29 @@ Bluepill
 ====  =========  ======  ==============================
 Pin   Function   Type    Connected to
 ====  =========  ======  ==============================
-PA0   ADC12_IN0  Input   Battery
+PA0   ADC12_IN0  Input   Battery voltage
 PA1   N/A        N/A     *Not connected*
-PA2   ADC12_IN2  Input   Left side phototransistor
-PA3   ADC12_IN3  Input   Left front phototransistor
-PA4   ADC12_IN4  Input   Right front phototransistor
-PA5   ADC12_IN5  Input   Right side phototransistor
+PA2   ADC12_IN2  Input   Receiver front right
+PA3   ADC12_IN3  Input   Receiver side right
+PA4   ADC12_IN4  Input   Receiver side left
+PA5   ADC12_IN5  Input   Receiver front left
 PA6   TIM3_CH1   Input   Motor driver IN1 (left)
 PA7   TIM3_CH2   Input   Motor driver IN2 (left)
-PA8   GPIO       Output  Left front emitter switch
-PA9   GPIO       Output  Left side emitter switch
-PA10  TIM1_CH3   Output  Speaker PWM
-PA11  GPIO       Input   Left button
-PA12  GPIO       Input   Right button
-PA15  TIM2_CH1   Input   Left motor encoder, channel A
+PA8   GPIO       Output  Emitter left front
+PA9   GPIO       Output  Emitter left side
+PA10  TIM1_CH3   Output  Speaker signal
+PA11  GPIO       Input   Button left
+PA12  GPIO       Input   Button right
+PA15  TIM2_CH1   Input   Encoder left, channel A
 PB0   TIM3_CH3   Output  Motor driver IN3 (right)
 PB1   TIM3_CH4   Output  Motor driver IN4 (right)
-PB3   TIM2_CH2   Input   Left motor encoder, channel B
-PB4   GPIO       Output  Left LED
-PB5   GPIO       Output  Right LED
-PB6   TIM4_CH1   Input   Right motor encoder, channel B
-PB7   TIM4_CH2   Input   Right motor encoder, channel A
-PB8   GPIO       Output  Right side emmiter switch
-PB9   GPIO       Output  Right front emmiter switch
+PB3   TIM2_CH2   Input   Encoder left, channel B
+PB4   GPIO       Output  LED left
+PB5   GPIO       Output  LED right
+PB6   TIM4_CH1   Input   Encoder right, channel B
+PB7   TIM4_CH2   Input   Encoder right, channel A
+PB8   GPIO       Output  Emitter right side
+PB9   GPIO       Output  Emitter right front
 PB10  USART3_TX  Output  Bluetooth RX
 PB11  USART3_RX  Input   Bluetooth TX
 PB12  NSS2       Output  Gyroscope NCS (SPI-CS)
@@ -107,20 +107,22 @@ PC15  N/A        N/A     *Not connected*
 Motor driver
 ------------
 
-====  ==============================
+====  ========================================
 Pin   Connected to
-====  ==============================
+====  ========================================
 IN1   *Defined in Bluepill pinout*
 IN2   *Defined in Bluepill pinout*
 IN3   *Defined in Bluepill pinout*
 IN4   *Defined in Bluepill pinout*
-OUT1  Left motor + (pin 2)
-OUT2  Left motor - (pin 1)
-OUT3  Right motor - (pin 1)
-OUT4  Right motor + (pin 2)
-EEP   3V3 (J2 jumper is open)
-ULT   Not connected
-====  ==============================
+OUT1  Motor left + (pin 2)
+OUT2  Motor left - (pin 1)
+OUT3  Motor right - (pin 1)
+OUT4  Motor right + (pin 2)
+EEP   50 kΩ pull-up to 5V (J2 jumper is open)
+ULT   *Not connected*
+VCC   Vmot
+GND   GND
+====  ========================================
 
 
 .. index:: interruptions
@@ -174,6 +176,8 @@ AD0    SPI-SDO   *Defined in Bluepill pinout*
 INT    N/A       *Not connected*
 NCS    SPI-CS    *Defined in Bluepill pinout*
 FSYNC  N/A       *Not connected*
+VCC    Power     5V
+GND    Power     GND
 =====  ========  ==============================
 
 .. index:: references
