@@ -20,7 +20,6 @@
 #define SENSOR_FRONT_RIGHT_ID 3
 #define NUM_SENSOR 4
 
-void get_gyro_raw(uint16_t *vo, uint16_t *vref);
 void get_sensors_raw(uint16_t *off, uint16_t *on);
 void update_distance_readings(void);
 float get_side_left_distance(void);

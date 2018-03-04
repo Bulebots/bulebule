@@ -78,30 +78,23 @@ static void set_emitter_off(uint8_t emitter)
  * off. Besides, to avoid undesired interactions between different emitters and
  * phototranistors, the reads will be done one by one.
  *
- * The gyroscope uses interleaved states to give some time to ADC
- * to convert channels.
+ * The battery voltage is also read on the state 1.
  *
  * - State 1 (first because the emitter is OFF on start):
- *         -# Start the gyroscope (ADC2) read.
+ *         -# Start the battery voltage (ADC2) read.
  *         -# Save phototranistors sensors (ADC1) from emitter OFF and
  *            power ON the emitter.
  * - State 2:
  *         -# Start the phototranistors sensors (ADC1) read.
- *         -# Sum and save the difference of output and reference from
-	      gyroscope.
  * - State 3:
- *         -# Start the gyroscope (ADC2) read.
  *         -# Save phototranistors sensors (ADC1) from emitter ON and
  *            power OFF the emitter.
  * - State 4:
  *         -# Start the phototranistors sensors (ADC1) read.
- *         -# Sum and save the difference of output and reference from
- *            gyroscope.
  */
 static void sm_emitter_adc(void)
 {
 	static uint8_t emitter_status = 1;
-	static int32_t gyro_deg_raw;
 	static uint8_t sensor_index = SENSOR_SIDE_LEFT_ID;
 
 	switch (emitter_status) {
@@ -114,12 +107,9 @@ static void sm_emitter_adc(void)
 		break;
 	case 2:
 		adc_start_conversion_injected(ADC1);
-		gyro_deg_raw =
-		    adc_read_injected(ADC2, 1) - adc_read_injected(ADC2, 2);
 		emitter_status = 3;
 		break;
 	case 3:
-		adc_start_conversion_injected(ADC2);
 		sensors_on[sensor_index] =
 		    adc_read_injected(ADC1, (sensor_index + 1));
 		set_emitter_off(sensor_index);
@@ -127,8 +117,6 @@ static void sm_emitter_adc(void)
 		break;
 	case 4:
 		adc_start_conversion_injected(ADC1);
-		gyro_deg_raw =
-		    adc_read_injected(ADC2, 1) - adc_read_injected(ADC2, 2);
 		emitter_status = 1;
 		if (sensor_index == (NUM_SENSOR - 1))
 			sensor_index = 0;
@@ -152,15 +140,6 @@ void tim1_up_isr(void)
 		timer_clear_flag(TIM1, TIM_SR_UIF);
 		sm_emitter_adc();
 	}
-}
-
-/**
- * @brief Get output and references voltages from gyroscope on bits.
- */
-void get_gyro_raw(uint16_t *vo, uint16_t *vref)
-{
-	*vo = adc_read_injected(ADC2, 1);
-	*vref = adc_read_injected(ADC2, 2);
 }
 
 /**

@@ -102,9 +102,9 @@ static void setup_gpio(void)
 		      GPIO12 | GPIO13 | GPIO14 | GPIO15);
 	gpio_clear(GPIOB, GPIO12 | GPIO13 | GPIO14 | GPIO15);
 
-	/* ADC inputs: gyroscope, sensors and battery */
+	/* ADC inputs: sensors and battery */
 	gpio_set_mode(GPIOA, GPIO_MODE_INPUT, GPIO_CNF_INPUT_ANALOG,
-		      GPIO4 | GPIO5 | GPIO6 | GPIO7 | GPIO0 | GPIO2 | GPIO3);
+		      GPIO4 | GPIO5 | GPIO6 | GPIO7 | GPIO0);
 
 	/* Infrared emitter */
 	gpio_set_mode(GPIOA, GPIO_MODE_OUTPUT_2_MHZ, GPIO_CNF_OUTPUT_PUSHPULL,
@@ -294,12 +294,12 @@ static void setup_adc1(void)
 }
 
 /**
- * @brief Setup for ADC 2: Three injected channels on scan mode and an analog
- * watchdog on one channel.
+ * @brief Setup for ADC 2: One injected channel on scan mode and analog
+ * watchdog.
  *
  * - Initialize channel_sequence structure to map physical channels
- *   versus software injected channels.The order of the sequence is: Vout,
- *   Vref, battery.
+ *   versus software injected channels. On this case there is only one channel
+ *   for battery voltage.
  * - Power off the ADC to be sure that does not run during configuration.
  * - Enable scan mode with single conversion mode triggered by software.
  * - Configure the alignment (right) and the sample time (28.5 cycles of ADC
@@ -311,7 +311,7 @@ static void setup_adc1(void)
  * - Power on the ADC and wait for ADC starting up (at least 3 us).
  * - Calibrate the ADC.
  *
- * @note This ADC reads gyroscope outputs.
+ * @note This ADC reads battery voltage value.
  *
  * @see Reference manual (RM0008) "Analog-to-digital converter" and in
  * particular "Scan mode" section.
@@ -323,8 +323,8 @@ static void setup_adc2(void)
 {
 	int i;
 
-	uint8_t channel_sequence[3] = {ADC_CHANNEL3, ADC_CHANNEL2,
-				       ADC_CHANNEL0};
+	uint8_t channel_sequence[1] = {ADC_CHANNEL0};
+
 	adc_power_off(ADC2);
 	adc_enable_scan_mode(ADC2);
 	adc_set_single_conversion_mode(ADC2);
