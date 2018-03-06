@@ -5,6 +5,7 @@ osbrain
 matplotlib
 pandas
 pybluez
+pyqt5
 pyqtgraph
 pyserial
 pytest
