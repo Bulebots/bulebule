@@ -18,7 +18,10 @@ from osbrain import (
     run_agent,
     run_nameserver,
 )
-import pandas
+
+from analysis import explode_csv_series
+from analysis import filter_dataframe
+from analysis import log_as_dataframe
 
 
 matplotlib.interactive(True)
@@ -33,19 +36,6 @@ def complete_subcommands(text, subcommands):
     return [c for c in subcommands if c.startswith(text)]
 
 
-def log_as_dataframe(log):
-    columns = ['timestamp', 'level', 'source', 'function', 'data']
-    df = pandas.DataFrame(log, columns=columns)
-    return df.set_index('timestamp').sort_index()
-
-
-def explode_csv_series(series):
-    def x(row):
-        return [float(x) for x in row.split(',')]
-
-    return series.apply(x).apply(pandas.Series)
-
-
 def log_matches_filter(log, log_filter):
     if not log_filter:
         return False
@@ -54,6 +44,20 @@ def log_matches_filter(log, log_filter):
     if log_filter.function and log_filter.function != log[3]:
         return False
     return True
+
+
+def plot_top_bottom(df, top, bottom):
+    """
+    Plot a DataFrame in two subplots.
+    """
+    fig, (ax1, ax2) = pyplot.subplots(nrows=2, ncols=1, sharex=True)
+    for column in top:
+        ax1.plot(df[column], label=column)
+    for column in bottom:
+        ax2.plot(df[column], label=column)
+    ax1.legend()
+    ax2.legend()
+    pyplot.show(block=False)
 
 
 class Proxy(Agent):
@@ -299,54 +303,29 @@ class Bulebule(cmd.Cmd):
         """Exit shell."""
         return True
 
-    def plot_linear_speed_profile(self):
+    def plot_function_top_bottom(self, function, top, bottom):
         """Plot a linear profile out of the current log data."""
         df = log_as_dataframe(self.proxy.get_attr('log'))
-        if not len(df):
-            print('Empty dataframe...')
-            return
-        df = df[(df['level'] == 'INFO') &
-                (df['function'] == 'log_linear_speed')]
-        if not len(df):
-            print('Empty dataframe...')
-            return
+        match = dict(level='INFO', function=function)
+        df = filter_dataframe(df, match)
         df = explode_csv_series(df['data'])
-        speed_columns = ['target_speed', 'ideal_speed', 'left_speed',
-                         'right_speed']
-        pwm_columns = ['pwm_left', 'pwm_right']
-        df.columns = speed_columns + pwm_columns
-        fig, (ax1, ax2) = pyplot.subplots(nrows=2, ncols=1, sharex=True)
-        for column in speed_columns:
-            ax1.plot(df[column], label=column)
-        for column in pwm_columns:
-            ax2.plot(df[column], label=column)
-        ax1.legend()
-        ax2.legend()
-        pyplot.show(block=False)
+        if not len(df):
+            print('Empty dataframe...')
+            return
+        df.columns = top + bottom
+        plot_top_bottom(df, top, bottom)
+
+    def plot_linear_speed_profile(self):
+        """Plot a linear profile out of the current log data."""
+        top = ['target_speed', 'ideal_speed', 'left_speed', 'right_speed']
+        bottom = ['pwm_left', 'pwm_right']
+        self.plot_function_top_bottom('log_linear_speed', top, bottom)
 
     def plot_angular_speed_profile(self):
         """Plot the angular speed profile with the current log data."""
-        df = log_as_dataframe(self.proxy.get_attr('log'))
-        if not len(df):
-            print('Empty dataframe...')
-            return
-        df = df[(df['level'] == 'INFO') &
-                (df['function'] == 'log_angular_speed')]
-        if not len(df):
-            print('Empty filtered dataframe...')
-            return
-        df = explode_csv_series(df['data'])
-        speed_columns = ['target_speed', 'ideal_speed', 'angular_speed']
-        pwm_columns = ['pwm_left', 'pwm_right']
-        df.columns = speed_columns + pwm_columns
-        fig, (ax1, ax2) = pyplot.subplots(nrows=2, ncols=1, sharex=True)
-        for column in speed_columns:
-            ax1.plot(df[column], label=column)
-        for column in pwm_columns:
-            ax2.plot(df[column], label=column)
-        ax1.legend()
-        ax2.legend()
-        pyplot.show(block=False)
+        top = ['target_speed', 'ideal_speed', 'angular_speed']
+        bottom = ['pwm_left', 'pwm_right']
+        self.plot_function_top_bottom('log_angular_speed', top, bottom)
 
 
 if __name__ == '__main__':
