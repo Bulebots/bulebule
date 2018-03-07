@@ -35,6 +35,24 @@ LQFP64
   Pinout
 
 
+.. index:: dependencies
+
+Dependencies
+============
+
+In order to work with this project we need to install some dependencies first:
+
+- The GCC ARM compiler and debugger.
+- A C standard library implementation.
+- OpenOCD for programing and debugging.
+
+In Fedora we can easily install those dependencies with:
+
+.. code-block:: bash
+
+   dnf install arm-none-eabi-gcc arm-none-eabi-gdb arm-none-eabi-newlib openocd
+
+
 .. index:: workspace
 
 Workspace
@@ -131,23 +149,6 @@ Or halt and re-run::
    > reset run
 
 
-.. index:: compiling
-
-Compiling
-=========
-
-We will be using GCC's ARM compiler:
-
-.. code-block:: bash
-
-   dnf install arm-none-eabi-gcc
-
-We need also to install a C standard library implementation:
-
-.. code-block:: bash
-
-   dnf install arm-none-eabi-newlib
-
 .. index:: flashing
 
 Flashing
@@ -179,12 +180,6 @@ Binary files need the flash address to be specified::
 
 Debugging
 =========
-
-We will be using GCC's ARM debugger:
-
-.. code-block:: bash
-
-   dnf install arm-none-eabi-gdb
 
 We use `GDB`_ for debugging. Note that we connect to OpenOCD gdbserver using
 the port `3333`, rather than the port `4444` used with `telnet`::
