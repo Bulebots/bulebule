@@ -4,6 +4,7 @@ from collections import namedtuple
 import json
 import pickle
 from pprint import pprint
+from textwrap import wrap
 import time
 from traceback import print_exc
 
@@ -47,11 +48,13 @@ def log_matches_filter(log, log_filter):
     return True
 
 
-def plot_top_bottom(df, top, bottom):
+def plot_top_bottom(df, top, bottom, title=''):
     """
     Plot a DataFrame in two subplots.
     """
     fig, (ax1, ax2) = pyplot.subplots(nrows=2, ncols=1, sharex=True)
+    fig.suptitle(title, fontsize=8)
+    fig.subplots_adjust(top=0.85)
     for column in top:
         ax1.plot(df[column], label=column)
     for column in bottom:
@@ -321,7 +324,10 @@ class Bulebule(cmd.Cmd):
             print('Empty dataframe...')
             return
         df.columns = top + bottom
-        plot_top_bottom(df, top, bottom)
+        # Set configuration variables as title
+        config = self.proxy.get_configuration_variables()
+        title = '\n'.join(wrap(str(config), 120))
+        plot_top_bottom(df, top, bottom, title=title)
 
     def plot_linear_speed_profile(self):
         """Plot a linear profile out of the current log data."""
