@@ -1,6 +1,7 @@
 import os
 import cmd
 from collections import namedtuple
+import json
 import pickle
 from pprint import pprint
 import time
@@ -86,13 +87,14 @@ class Proxy(Agent):
         while True:
             self.receive()
             if self.filtered:
-                print(self.filtered)
                 break
             if time.time() - t0 > timeout:
                 print('`wait_filtered` timed out!')
                 break
+        result = self.filtered
         self.filtered = None
         self.log_filter = None
+        return result
 
     def publish(self, log):
         body = log[-1]
@@ -174,6 +176,16 @@ class Proxy(Agent):
             return 0
         return float(self.log[-1].split(b',')[0])
 
+    def get_battery_voltage(self):
+        self.filter_next(function='log_battery_voltage')
+        self.send_bt('battery\0')
+        return float(self.wait_filtered()[-1])
+
+    def get_configuration_variables(self):
+        self.filter_next(function='log_configuration_variables')
+        self.send_bt('configuration_variables\0')
+        return json.loads(self.wait_filtered()[-1])
+
 
 class Bulebule(cmd.Cmd):
     prompt = '>>> '
@@ -230,15 +242,11 @@ class Bulebule(cmd.Cmd):
 
     def do_battery(self, *args):
         """Get battery voltage."""
-        self.proxy.filter_next(function='log_battery_voltage')
-        self.proxy.send_bt('battery\0')
-        self.proxy.wait_filtered()
+        print(self.proxy.get_battery_voltage())
 
     def do_configuration_variables(self, *args):
         """Get configuration variables."""
-        self.proxy.filter_next(function='log_configuration_variables')
-        self.proxy.send_bt('configuration_variables\0')
-        self.proxy.wait_filtered()
+        pprint(self.proxy.get_configuration_variables())
 
     def do_set(self, line):
         """Set robot variables."""
