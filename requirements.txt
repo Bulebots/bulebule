@@ -3,6 +3,7 @@ cadquery
 numpy
 osbrain
 matplotlib
+mmsim
 pandas
 pybluez
 pyqt5

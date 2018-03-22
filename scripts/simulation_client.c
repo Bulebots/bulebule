@@ -23,53 +23,59 @@ void wait_response()
 	char buffer[256] = { 0 };
 
 	zmq_recv(requester, buffer, 256, 0);
-	printf("%s\n", buffer);
 }
 
-void send_discovery()
+char encoded_direction(void)
 {
-	char discovery_state[2 * (MAZE_SIZE * MAZE_SIZE + 2)];
+	if (search_direction() == EAST)
+		return 'E';
+	if (search_direction() == SOUTH)
+		return 'S';
+	if (search_direction() == WEST)
+		return 'W';
+	if (search_direction() == NORTH)
+		return 'N';
+	return 'X';
+}
+
+void send_state()
+{
+	char state[2 * (MAZE_SIZE * MAZE_SIZE + 2) + 3];
 	int x;
 
-	discovery_state[0] = 'D';
+	state[0] = 'S';
+	state[1] = search_position() % MAZE_SIZE;
+	state[2] = search_position() / MAZE_SIZE;
+	state[3] = encoded_direction();
 	for (x=0; x<MAZE_SIZE*MAZE_SIZE; x++) {
-		discovery_state[x + 2] =
+		state[x + 5] =
 		    distances[x];
-		discovery_state[x + 259] =
+		state[x + 262] =
 		    walls[x];
 	}
-	discovery_state[1] = 'C';
-	discovery_state[258] = 'C';
+	state[4] = 'C';
+	state[261] = 'C';
 
-	zmq_send(requester, discovery_state, 515, 0);
+	zmq_send(requester, state, 518, 0);
 	wait_response();
 }
 
 void read_walls()
 {
-	char buffer[3] = { 0 };
+	char walls[3] = { 0 };
 	char position_state[4];
 
-	position_state[0] = 'P';
+	position_state[0] = 'W';
 	position_state[1] = search_position() % MAZE_SIZE;
 	position_state[2] = search_position() / MAZE_SIZE;
-	if (search_direction() == EAST)
-		position_state[3] = 'E';
-	else if (search_direction() == SOUTH)
-		position_state[3] = 'S';
-	else if (search_direction() == WEST)
-		position_state[3] = 'W';
-	else if (search_direction() == NORTH)
-		position_state[3] = 'N';
-	else
-		position_state[3] = 'X';
+	position_state[3] = encoded_direction();
 
 	zmq_send(requester, position_state, 4, 0);
-	zmq_recv(requester, buffer, 3, 0);
+	zmq_recv(requester, walls, 3, 0);
 
-	left_wall = (bool)buffer[0];
-	front_wall = (bool)buffer[1];
-	right_wall = (bool)buffer[2];
+	left_wall = (bool)walls[0];
+	front_wall = (bool)walls[1];
+	right_wall = (bool)walls[2];
 }
 
 int main(void)
@@ -82,27 +88,25 @@ int main(void)
 	requester = zmq_socket(context, ZMQ_REQ);
 	rc = zmq_connect(requester, "tcp://127.0.0.1:6574");
 	assert(rc == 0);
+	zmq_send(requester, "reset", 5, 0);
+	wait_response();
 
 	initialize_search();
 
-	read(STDIN_FILENO, buffer, sizeof(buffer));
 	while (search_distance() > 0) {
 		read_walls();
 
 		search_update(left_wall, front_wall, right_wall);
 
-		send_discovery();
+		send_state();
 
 		step = best_neighbor_step();
-
-		read(STDIN_FILENO, buffer, sizeof(buffer));
-		// usleep(100000);
 
 		move_search_position(step);
 	}
 	read_walls();
 	search_update(left_wall, front_wall, right_wall);
-	send_discovery();
+	send_state();
 
 	return 0;
 }
