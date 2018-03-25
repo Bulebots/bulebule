@@ -51,7 +51,7 @@ Taking into account the target robot size, the design restrictions and also the
 availability of tires and gears in local hobby/slot shops, we decided to go
 with:
 
-- 60 teeth gears (18 mm reference diameter and less than 19 mm external
+- `60 teeth gears`_ (18 mm reference diameter and less than 19 mm external
   diameter).
 - 20 mm tires (`Slot.it PT18`_; suitable for smooth and clean surfaces).
 
@@ -94,6 +94,8 @@ References
   https://athena-robots.readthedocs.io/en/latest/ie2-1024_encoder_family.html
 .. _`MR63ZZ`:
    http://www.rcbearings.com/products/mr63zz-3-x-6-x-2-5-bearing.html
+.. _`60 teeth gears`:
+   http://www.mootio-components.com/engranajes-de-plastico/modulo-0.300/dientes-60z
 .. _`Slot.it PT18`:
    http://slot.it/immagini/KitPart/tires/Slot-it_tabella-2015.jpg
 .. _`Tetra locomotion design`:
