@@ -18,6 +18,11 @@ struct data_stack {
 	uint32_t size;
 } stack;
 
+struct cells_stack {
+	int cells[MAX_GOALS];
+	uint8_t size;
+} goal_cells;
+
 void *requester;
 
 /**
@@ -34,6 +39,25 @@ static void push_cell(uint8_t cell)
 static uint8_t pop_cell(void)
 {
 	return stack.data[--stack.size];
+}
+
+/**
+ * @brief Add new goal coordinates.
+ */
+void add_goal(int x, int y)
+{
+	goal_cells.cells[goal_cells.size++] = x + y * MAZE_SIZE;
+}
+
+/**
+ * @brief Set goal according to the classic micromouse competition rules.
+ */
+void set_goal_classic(void)
+{
+	add_goal(7, 7);
+	add_goal(7, 8);
+	add_goal(8, 7);
+	add_goal(8, 8);
 }
 
 static void set_current_walls(bool left, bool front, bool right)
@@ -239,52 +263,6 @@ void initialize_maze_walls(void)
 	walls[0] |= VISITED_BIT;
 }
 
-/**
- * @brief Initialize maze distances with respect to the center of the maze.
- *
- * The center is considered to be a 2x2 area in the exact middle of the maze.
- */
-void initialize_distances_standard(void)
-{
-	int i;
-	int j;
-
-	for (i = 0; i < MAZE_SIZE; i++) {
-		for (j = 0; j < MAZE_SIZE; j++) {
-			distances[i + j * MAZE_SIZE] =
-			    abs(i - MAZE_SIZE / 2) + abs(j - MAZE_SIZE / 2);
-			if (i < MAZE_SIZE / 2)
-				distances[i + j * MAZE_SIZE] -= 1;
-			if (j < MAZE_SIZE / 2)
-				distances[i + j * MAZE_SIZE] -= 1;
-		}
-	}
-}
-
-/**
- * @brief Initialize maze distances with respect to a given single coordinate.
- */
-void initialize_distances_coordinate(int x, int y)
-{
-	int i;
-	int j;
-
-	for (i = 0; i < MAZE_SIZE; i++)
-		for (j = 0; j < MAZE_SIZE; j++)
-			distances[i + j * MAZE_SIZE] = abs(i - x) + abs(j - y);
-}
-
-/**
- * @brief Initialize maze distances with unique values (for testing).
- */
-void initialize_distances_unique(void)
-{
-	int i;
-
-	for (i = 0; i < MAZE_SIZE * MAZE_SIZE; i++)
-		distances[i] = 255 - i;
-}
-
 enum step_direction best_neighbor_step(void)
 {
 	if (!current_walls.front && (front_distance() < search_distance()))
@@ -350,6 +328,49 @@ static void update_distances(void)
 	}
 }
 
+/**
+ * @brief Set maze distances with respect to a given single cell.
+ */
+void set_distances_cell(uint8_t cell)
+{
+	int i;
+
+	for (i = 0; i < MAZE_AREA; i++)
+		distances[i] = MAZE_AREA - 1;
+	distances[cell] = 0;
+	push_open_neighbors(cell);
+	update_distances();
+}
+
+/**
+ * @brief Set maze distances with respect to the goal.
+ */
+void set_distances_goal(void)
+{
+	int i;
+	int cell;
+
+	for (i = 0; i < MAZE_AREA; i++)
+		distances[i] = MAZE_AREA - 1;
+	for (i = 0; i < goal_cells.size; i++) {
+		cell = goal_cells.cells[i];
+		distances[cell] = 0;
+		push_open_neighbors(cell);
+	}
+	update_distances();
+}
+
+/**
+ * @brief Set maze distances with unique values (for testing).
+ */
+void set_distances_unique(void)
+{
+	int i;
+
+	for (i = 0; i < MAZE_SIZE * MAZE_SIZE; i++)
+		distances[i] = 255 - i;
+}
+
 void move_search_position(enum step_direction step)
 {
 	enum compass_direction next;
@@ -360,12 +381,11 @@ void move_search_position(enum step_direction step)
 }
 
 /**
- * @brief Initialize maze walls, distances and set current initial direction.
+ * @brief Initialize maze walls and set initial search state.
  */
 void initialize_search(void)
 {
 	initialize_maze_walls();
-	initialize_distances_standard();
 	set_search_initial_state();
 }
 
@@ -385,4 +405,11 @@ enum step_direction search_step(bool left, bool front, bool right)
 	move_search_position(step);
 
 	return step;
+}
+
+/**
+ * @brief Find an unexplored and potentially interesting cell.
+ */
+uint8_t find_unexplored_interesting_cell(void) {
+	return 0;
 }

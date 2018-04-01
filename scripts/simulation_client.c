@@ -78,20 +78,8 @@ void read_walls()
 	right_wall = (bool)walls[2];
 }
 
-int main(void)
-{
-	int rc;
-	void *context = zmq_ctx_new();
-	char buffer[256];
+void flood_fill(void) {
 	enum step_direction step;
-
-	requester = zmq_socket(context, ZMQ_REQ);
-	rc = zmq_connect(requester, "tcp://127.0.0.1:6574");
-	assert(rc == 0);
-	zmq_send(requester, "reset", 5, 0);
-	wait_response();
-
-	initialize_search();
 
 	while (search_distance() > 0) {
 		read_walls();
@@ -104,8 +92,33 @@ int main(void)
 
 		move_search_position(step);
 	}
-	read_walls();
-	search_update(left_wall, front_wall, right_wall);
+}
+
+int main(void)
+{
+	int rc;
+	void *context = zmq_ctx_new();
+	char buffer[256];
+	uint8_t cell;
+
+	requester = zmq_socket(context, ZMQ_REQ);
+	rc = zmq_connect(requester, "tcp://127.0.0.1:6574");
+	assert(rc == 0);
+	zmq_send(requester, "reset", 5, 0);
+	wait_response();
+
+	initialize_search();
+	set_goal_classic();
+
+	set_distances_goal();
+	while (true) {
+		flood_fill();
+		cell = find_unexplored_interesting_cell();
+		set_distances_cell(cell);
+		if (search_position() == 0)
+			break;
+	}
+	set_distances_goal();
 	send_state();
 
 	return 0;
