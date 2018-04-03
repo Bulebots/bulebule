@@ -9,23 +9,16 @@
 
 #include <zmq.h>
 
-void *requester;
+static void *requester;
 
-bool left_wall;
-bool front_wall;
-bool right_wall;
-
-extern uint8_t walls[];
-extern uint8_t distances[];
-
-void wait_response()
+static void wait_response()
 {
 	char buffer[256] = { 0 };
 
 	zmq_recv(requester, buffer, 256, 0);
 }
 
-char encoded_direction(void)
+static char encoded_direction(void)
 {
 	if (search_direction() == EAST)
 		return 'E';
@@ -38,7 +31,7 @@ char encoded_direction(void)
 	return 'X';
 }
 
-void send_state()
+static void send_state()
 {
 	char state[2 * (MAZE_SIZE * MAZE_SIZE + 2) + 3];
 	int x;
@@ -49,9 +42,9 @@ void send_state()
 	state[3] = encoded_direction();
 	for (x=0; x<MAZE_SIZE*MAZE_SIZE; x++) {
 		state[x + 5] =
-		    distances[x];
+		    read_cell_distance_value(x);
 		state[x + 262] =
-		    walls[x];
+		    read_cell_walls_value(x);
 	}
 	state[4] = 'C';
 	state[261] = 'C';
@@ -60,10 +53,11 @@ void send_state()
 	wait_response();
 }
 
-void read_walls()
+static struct walls_around read_walls()
 {
 	char walls[3] = { 0 };
 	char position_state[4];
+	struct walls_around walls_readings;
 
 	position_state[0] = 'W';
 	position_state[1] = search_position() % MAZE_SIZE;
@@ -73,22 +67,24 @@ void read_walls()
 	zmq_send(requester, position_state, 4, 0);
 	zmq_recv(requester, walls, 3, 0);
 
-	left_wall = (bool)walls[0];
-	front_wall = (bool)walls[1];
-	right_wall = (bool)walls[2];
+	walls_readings.left = (bool)walls[0];
+	walls_readings.front = (bool)walls[1];
+	walls_readings.right = (bool)walls[2];
+	return walls_readings;
 }
 
-void flood_fill(void) {
+static void flood_fill(void) {
 	enum step_direction step;
+	struct walls_around walls_readings;
 
 	while (search_distance() > 0) {
-		read_walls();
+		walls_readings = read_walls();
 
-		search_update(left_wall, front_wall, right_wall);
+		search_update(walls_readings);
 
 		send_state();
 
-		step = best_neighbor_step();
+		step = best_neighbor_step(walls_readings);
 
 		move_search_position(step);
 	}

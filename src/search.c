@@ -1,29 +1,32 @@
 #include "search.h"
 
-uint8_t distances[MAZE_SIZE * MAZE_SIZE];
-uint8_t walls[MAZE_SIZE * MAZE_SIZE];
+static uint8_t distances[MAZE_SIZE * MAZE_SIZE];
+static uint8_t maze_walls[MAZE_SIZE * MAZE_SIZE];
 
-enum compass_direction initial_direction = NORTH;
+static enum compass_direction initial_direction = NORTH;
 
-uint8_t current_position;
-enum compass_direction current_direction;
-struct sensors_detection {
-	bool front : 1;
-	bool left : 1;
-	bool right : 1;
-} current_walls;
+static uint8_t current_position;
+static enum compass_direction current_direction;
 
-struct data_stack {
+static struct data_stack {
 	uint8_t data[2 * MAZE_AREA];
 	uint32_t size;
 } stack;
 
-struct cells_stack {
+static struct cells_stack {
 	int cells[MAX_GOALS];
 	uint8_t size;
 } goal_cells;
 
-void *requester;
+uint8_t read_cell_distance_value(uint8_t cell)
+{
+	return distances[cell];
+}
+
+uint8_t read_cell_walls_value(uint8_t cell)
+{
+	return maze_walls[cell];
+}
 
 /**
  * @brief Push a cell to the stack.
@@ -60,13 +63,6 @@ void set_goal_classic(void)
 	add_goal(8, 8);
 }
 
-static void set_current_walls(bool left, bool front, bool right)
-{
-	current_walls.left = left;
-	current_walls.front = front;
-	current_walls.right = right;
-}
-
 void set_search_initial_direction(enum compass_direction direction)
 {
 	initial_direction = direction;
@@ -76,9 +72,6 @@ void set_search_initial_state(void)
 {
 	current_position = 0;
 	current_direction = initial_direction;
-	current_walls.front = 0;
-	current_walls.left = 1;
-	current_walls.right = 1;
 }
 
 static enum compass_direction next_compass_direction(enum step_direction step)
@@ -116,32 +109,32 @@ static uint8_t next_step_position(enum step_direction step)
 
 static bool wall_exists(uint8_t position, uint8_t bit)
 {
-	return (walls[position] & bit);
+	return (maze_walls[position] & bit);
 }
 
 static void build_wall(uint8_t position, uint8_t bit)
 {
-	walls[position] |= bit;
+	maze_walls[position] |= bit;
 	switch (bit) {
 	case EAST_BIT:
 		if (position % MAZE_SIZE == MAZE_SIZE - 1)
 			break;
-		walls[position + EAST] |= WEST_BIT;
+		maze_walls[position + EAST] |= WEST_BIT;
 		break;
 	case SOUTH_BIT:
 		if (position / MAZE_SIZE == 0)
 			break;
-		walls[position + SOUTH] |= NORTH_BIT;
+		maze_walls[position + SOUTH] |= NORTH_BIT;
 		break;
 	case WEST_BIT:
 		if (position % MAZE_SIZE == 0)
 			break;
-		walls[position + WEST] |= EAST_BIT;
+		maze_walls[position + WEST] |= EAST_BIT;
 		break;
 	case NORTH_BIT:
 		if (position / MAZE_SIZE == MAZE_SIZE - 1)
 			break;
-		walls[position + NORTH] |= SOUTH_BIT;
+		maze_walls[position + NORTH] |= SOUTH_BIT;
 		break;
 	default:
 		break;
@@ -164,34 +157,34 @@ static bool place_wall(uint8_t bit)
 	return false;
 }
 
-static void update_walls(void)
+static void update_walls(struct walls_around walls)
 {
 	bool windrose[4] = {false, false, false, false};
 
 	switch (current_direction) {
 	case EAST:
-		windrose[0] = current_walls.front;
-		windrose[1] = current_walls.right;
+		windrose[0] = walls.front;
+		windrose[1] = walls.right;
 		windrose[2] = false;
-		windrose[3] = current_walls.left;
+		windrose[3] = walls.left;
 		break;
 	case SOUTH:
-		windrose[0] = current_walls.left;
-		windrose[1] = current_walls.front;
-		windrose[2] = current_walls.right;
+		windrose[0] = walls.left;
+		windrose[1] = walls.front;
+		windrose[2] = walls.right;
 		windrose[3] = false;
 		break;
 	case WEST:
 		windrose[0] = false;
-		windrose[1] = current_walls.left;
-		windrose[2] = current_walls.front;
-		windrose[3] = current_walls.right;
+		windrose[1] = walls.left;
+		windrose[2] = walls.front;
+		windrose[3] = walls.right;
 		break;
 	case NORTH:
-		windrose[0] = current_walls.right;
+		windrose[0] = walls.right;
 		windrose[1] = false;
-		windrose[2] = current_walls.left;
-		windrose[3] = current_walls.front;
+		windrose[2] = walls.left;
+		windrose[3] = walls.front;
 		break;
 	default:
 		break;
@@ -205,7 +198,7 @@ static void update_walls(void)
 		push_cell(current_position + WEST);
 	if (windrose[3] && place_wall(NORTH_BIT))
 		push_cell(current_position + NORTH);
-	walls[current_position] |= VISITED_BIT;
+	maze_walls[current_position] |= VISITED_BIT;
 }
 
 enum compass_direction search_direction(void)
@@ -250,26 +243,26 @@ void initialize_maze_walls(void)
 	int i;
 
 	for (i = 0; i < MAZE_SIZE * MAZE_SIZE; i++)
-		walls[i] = 0;
+		maze_walls[i] = 0;
 
 	for (i = 0; i < MAZE_SIZE; i++) {
-		walls[MAZE_SIZE - 1 + i * MAZE_SIZE] |= EAST_BIT;
-		walls[i] |= SOUTH_BIT;
-		walls[i * MAZE_SIZE] |= WEST_BIT;
-		walls[i + (MAZE_SIZE - 1) * MAZE_SIZE] |= NORTH_BIT;
+		maze_walls[MAZE_SIZE - 1 + i * MAZE_SIZE] |= EAST_BIT;
+		maze_walls[i] |= SOUTH_BIT;
+		maze_walls[i * MAZE_SIZE] |= WEST_BIT;
+		maze_walls[i + (MAZE_SIZE - 1) * MAZE_SIZE] |= NORTH_BIT;
 	}
 
-	walls[0] |= (initial_direction == NORTH) ? EAST_BIT : NORTH_BIT;
-	walls[0] |= VISITED_BIT;
+	maze_walls[0] |= (initial_direction == NORTH) ? EAST_BIT : NORTH_BIT;
+	maze_walls[0] |= VISITED_BIT;
 }
 
-enum step_direction best_neighbor_step(void)
+enum step_direction best_neighbor_step(struct walls_around walls)
 {
-	if (!current_walls.front && (front_distance() < search_distance()))
+	if (!walls.front && (front_distance() < search_distance()))
 		return FRONT;
-	if (!current_walls.left && (left_distance() < search_distance()))
+	if (!walls.left && (left_distance() < search_distance()))
 		return LEFT;
-	if (!current_walls.right && (right_distance() < search_distance()))
+	if (!walls.right && (right_distance() < search_distance()))
 		return RIGHT;
 	return BACK;
 }
@@ -389,19 +382,23 @@ void initialize_search(void)
 	set_search_initial_state();
 }
 
-void search_update(bool left, bool front, bool right)
+void search_update(struct walls_around walls)
 {
-	set_current_walls(left, front, right);
-	update_walls();
+	update_walls(walls);
 	update_distances();
 }
 
 enum step_direction search_step(bool left, bool front, bool right)
 {
 	enum step_direction step;
+	struct walls_around walls;
 
-	search_update(left, front, right);
-	step = best_neighbor_step();
+	walls.left = left;
+	walls.front = front;
+	walls.right = right;
+
+	search_update(walls);
+	step = best_neighbor_step(walls);
 	move_search_position(step);
 
 	return step;
@@ -410,6 +407,7 @@ enum step_direction search_step(bool left, bool front, bool right)
 /**
  * @brief Find an unexplored and potentially interesting cell.
  */
-uint8_t find_unexplored_interesting_cell(void) {
+uint8_t find_unexplored_interesting_cell(void)
+{
 	return 0;
 }
