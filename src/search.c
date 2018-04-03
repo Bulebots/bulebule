@@ -405,9 +405,70 @@ enum step_direction search_step(bool left, bool front, bool right)
 }
 
 /**
+ * @brief Return the walls around at the current position.
+ */
+static struct walls_around current_walls_around(void)
+{
+	struct walls_around walls;
+	uint8_t cell;
+
+	cell = maze_walls[current_position];
+	switch (current_direction) {
+	case EAST:
+		walls.left = (bool)(cell & NORTH_BIT);
+		walls.front = (bool)(cell & EAST_BIT);
+		walls.right = (bool)(cell & SOUTH_BIT);
+		break;
+	case SOUTH:
+		walls.left = (bool)(cell & EAST_BIT);
+		walls.front = (bool)(cell & SOUTH_BIT);
+		walls.right = (bool)(cell & WEST_BIT);
+		break;
+	case WEST:
+		walls.left = (bool)(cell & SOUTH_BIT);
+		walls.front = (bool)(cell & WEST_BIT);
+		walls.right = (bool)(cell & NORTH_BIT);
+		break;
+	case NORTH:
+		walls.left = (bool)(cell & WEST_BIT);
+		walls.front = (bool)(cell & NORTH_BIT);
+		walls.right = (bool)(cell & EAST_BIT);
+		break;
+	default:
+		break;
+	}
+
+	return walls;
+}
+
+/**
  * @brief Find an unexplored and potentially interesting cell.
  */
 uint8_t find_unexplored_interesting_cell(void)
 {
-	return 0;
+	uint8_t interesting = 0;
+	uint8_t backed_up_position;
+	enum compass_direction backed_up_direction;
+	enum step_direction step;
+	bool left, front, right;
+
+	/* Back up position and direction */
+	backed_up_position = current_position;
+	backed_up_direction = current_direction;
+
+	set_search_initial_state();
+	set_distances_goal();
+	while (search_distance() > 0) {
+		step = best_neighbor_step(current_walls_around());
+		move_search_position(step);
+		if (!(maze_walls[current_position] & VISITED_BIT)) {
+			interesting = current_position;
+			break;
+		}
+	}
+
+	/* Recover backed up position and direction */
+	current_position = backed_up_position;
+	current_direction = backed_up_direction;
+	return interesting;
 }

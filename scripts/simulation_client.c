@@ -77,17 +77,16 @@ static void flood_fill(void) {
 	enum step_direction step;
 	struct walls_around walls_readings;
 
-	while (search_distance() > 0) {
+	do {
 		walls_readings = read_walls();
-
 		search_update(walls_readings);
-
 		send_state();
-
 		step = best_neighbor_step(walls_readings);
-
 		move_search_position(step);
-	}
+	} while (search_distance() > 0);
+
+	walls_readings = read_walls();
+	search_update(walls_readings);
 }
 
 int main(void)
@@ -109,10 +108,10 @@ int main(void)
 	set_distances_goal();
 	while (true) {
 		flood_fill();
-		cell = find_unexplored_interesting_cell();
-		set_distances_cell(cell);
 		if (search_position() == 0)
 			break;
+		cell = find_unexplored_interesting_cell();
+		set_distances_cell(cell);
 	}
 	set_distances_goal();
 	send_state();
