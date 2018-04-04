@@ -31,7 +31,7 @@ static char encoded_direction(void)
 	return 'X';
 }
 
-static void send_state()
+void send_state()
 {
 	char state[2 * (MAZE_SIZE * MAZE_SIZE + 1) + 4];
 	int x;
@@ -108,6 +108,7 @@ int main(void)
 	set_goal_classic();
 
 	set_distances_goal();
+	/* TODO: infinite loop might be risky... test all mazes! */
 	while (true) {
 		flood_fill();
 		if (search_position() == 0)

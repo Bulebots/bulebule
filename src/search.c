@@ -1,4 +1,5 @@
 #include "search.h"
+#include <stdio.h>
 
 static uint8_t distances[MAZE_SIZE * MAZE_SIZE];
 static uint8_t maze_walls[MAZE_SIZE * MAZE_SIZE];
@@ -8,15 +9,33 @@ static enum compass_direction initial_direction = NORTH;
 static uint8_t current_position;
 static enum compass_direction current_direction;
 
+/* TODO: try all mazes to see if this stack size is really enough. */
+#define DATA_STACK_SIZE (2 * MAZE_AREA)
 static struct data_stack {
-	uint8_t data[2 * MAZE_AREA];
+	uint8_t data[DATA_STACK_SIZE];
 	uint32_t size;
 } stack;
+
+static struct data_queue {
+	uint8_t buffer[MAZE_AREA];
+	int head;
+	int tail;
+} queue;
 
 static struct cells_stack {
 	int cells[MAX_GOALS];
 	uint8_t size;
 } goal_cells;
+
+static void queue_push(uint8_t data)
+{
+	queue.buffer[queue.head++] = data;
+}
+
+static uint8_t queue_pop(void)
+{
+	return queue.buffer[queue.tail++];
+}
 
 uint8_t read_cell_distance_value(uint8_t cell)
 {
@@ -190,6 +209,11 @@ static void update_walls(struct walls_around walls)
 		break;
 	}
 	push_cell(current_position);
+	/*
+	 * TODO: before pushing the side cell, check it is actually connected
+	 *       to either a goal cell or an already-visited cell. See if this
+	 *       could reduce calculations for closed (unreachable) areas.
+	 */
 	if (windrose[0] && place_wall(EAST_BIT))
 		push_cell(current_position + EAST);
 	if (windrose[1] && place_wall(SOUTH_BIT))
@@ -232,11 +256,9 @@ static uint8_t right_distance(void)
 }
 
 /**
- * @brief Initialize maze walls with borders and initial direction.
+ * @brief Initialize maze walls with borders.
  *
- * Basically add walls to the maze perimeter and also create a side wall
- * in the initial location according to the initial direction of the mouse,
- * which can be "north" or "east".
+ * Basically add walls to the maze perimeter.
  */
 void initialize_maze_walls(void)
 {
@@ -251,9 +273,6 @@ void initialize_maze_walls(void)
 		maze_walls[i * MAZE_SIZE] |= WEST_BIT;
 		maze_walls[i + (MAZE_SIZE - 1) * MAZE_SIZE] |= NORTH_BIT;
 	}
-
-	maze_walls[0] |= (initial_direction == NORTH) ? EAST_BIT : NORTH_BIT;
-	maze_walls[0] |= VISITED_BIT;
 }
 
 enum step_direction best_neighbor_step(struct walls_around walls)
@@ -267,58 +286,47 @@ enum step_direction best_neighbor_step(struct walls_around walls)
 	return BACK;
 }
 
-static uint8_t minimum_open_neighbor_distance(uint8_t cell)
+static void queue_push_breath(uint8_t cell, uint8_t distance)
 {
-	uint8_t minimum = 255;
-	uint8_t neighbor;
-
-	if (!wall_exists(cell, EAST_BIT)) {
-		neighbor = distances[cell + EAST];
-		minimum = (neighbor < minimum) ? neighbor : minimum;
-	}
-	if (!wall_exists(cell, SOUTH_BIT)) {
-		neighbor = distances[cell + SOUTH];
-		minimum = (neighbor < minimum) ? neighbor : minimum;
-	}
-	if (!wall_exists(cell, WEST_BIT)) {
-		neighbor = distances[cell + WEST];
-		minimum = (neighbor < minimum) ? neighbor : minimum;
-	}
-	if (!wall_exists(cell, NORTH_BIT)) {
-		neighbor = distances[cell + NORTH];
-		minimum = (neighbor < minimum) ? neighbor : minimum;
-	}
-
-	return minimum;
+	if (distances[cell] <= distance)
+		return;
+	distances[cell] = distance;
+	queue_push(cell);
 }
 
-static void push_open_neighbors(uint8_t cell)
-{
-	if (!wall_exists(cell, EAST_BIT))
-		push_cell(cell + EAST);
-	if (!wall_exists(cell, SOUTH_BIT))
-		push_cell(cell + SOUTH);
-	if (!wall_exists(cell, WEST_BIT))
-		push_cell(cell + WEST);
-	if (!wall_exists(cell, NORTH_BIT))
-		push_cell(cell + NORTH);
-}
-
-static void update_distances(void)
+static void update_distances_breath(void)
 {
 	uint8_t cell;
-	uint8_t minimum;
+	uint8_t distance;
 
-	while (stack.size) {
-		cell = pop_cell();
-		minimum = minimum_open_neighbor_distance(cell);
-		if (distances[cell] == 0)
-			continue;
-		if (distances[cell] == minimum + 1)
-			continue;
-		distances[cell] = minimum + 1;
-		push_open_neighbors(cell);
+	while (queue.head != queue.tail) {
+		cell = queue_pop();
+		distance = distances[cell] + 1;
+		if (!wall_exists(cell, EAST_BIT))
+			queue_push_breath(cell + EAST, distance);
+		if (!wall_exists(cell, SOUTH_BIT))
+			queue_push_breath(cell + SOUTH, distance);
+		if (!wall_exists(cell, WEST_BIT))
+			queue_push_breath(cell + WEST, distance);
+		if (!wall_exists(cell, NORTH_BIT))
+			queue_push_breath(cell + NORTH, distance);
 	}
+}
+
+/**
+ * @brief Reset maze distances and queue.
+ *
+ * To be executed as the first flood-fill step, before pushing the target
+ * cells to the queue.
+ */
+static void _reset_distances_and_queue(void)
+{
+	int i;
+
+	for (i = 0; i < MAZE_AREA; i++)
+		distances[i] = MAX_DISTANCE;
+	queue.head = 0;
+	queue.tail = 0;
 }
 
 /**
@@ -328,11 +336,10 @@ void set_distances_cell(uint8_t cell)
 {
 	int i;
 
-	for (i = 0; i < MAZE_AREA; i++)
-		distances[i] = MAZE_AREA - 1;
+	_reset_distances_and_queue();
 	distances[cell] = 0;
-	push_open_neighbors(cell);
-	update_distances();
+	queue_push(cell);
+	update_distances_breath();
 }
 
 /**
@@ -343,14 +350,13 @@ void set_distances_goal(void)
 	int i;
 	int cell;
 
-	for (i = 0; i < MAZE_AREA; i++)
-		distances[i] = MAZE_AREA - 1;
+	_reset_distances_and_queue();
 	for (i = 0; i < goal_cells.size; i++) {
 		cell = goal_cells.cells[i];
 		distances[cell] = 0;
-		push_open_neighbors(cell);
+		queue_push(cell);
 	}
-	update_distances();
+	update_distances_breath();
 }
 
 /**
@@ -361,7 +367,7 @@ void set_distances_unique(void)
 	int i;
 
 	for (i = 0; i < MAZE_SIZE * MAZE_SIZE; i++)
-		distances[i] = 255 - i;
+		distances[i] = MAX_DISTANCE - i;
 }
 
 void move_search_position(enum step_direction step)
@@ -450,7 +456,6 @@ uint8_t find_unexplored_interesting_cell(void)
 	uint8_t backed_up_position;
 	enum compass_direction backed_up_direction;
 	enum step_direction step;
-	bool left, front, right;
 
 	/* Back up position and direction */
 	backed_up_position = current_position;

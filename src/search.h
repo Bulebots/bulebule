@@ -9,6 +9,7 @@
 #define MAZE_SIZE 16
 #define MAZE_AREA (16 * 16)
 #define MAX_GOALS 10
+#define MAX_DISTANCE (MAZE_AREA - 1)
 
 #define VISITED_BIT 1
 #define EAST_BIT 2
