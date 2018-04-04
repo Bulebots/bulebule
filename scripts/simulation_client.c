@@ -33,21 +33,23 @@ static char encoded_direction(void)
 
 static void send_state()
 {
-	char state[2 * (MAZE_SIZE * MAZE_SIZE + 2) + 3];
+	char state[2 * (MAZE_SIZE * MAZE_SIZE + 1) + 4];
 	int x;
 
 	state[0] = 'S';
 	state[1] = search_position() % MAZE_SIZE;
 	state[2] = search_position() / MAZE_SIZE;
 	state[3] = encoded_direction();
+	state[4] = 'C';
 	for (x=0; x<MAZE_SIZE*MAZE_SIZE; x++) {
 		state[x + 5] =
 		    read_cell_distance_value(x);
+	}
+	state[261] = 'C';
+	for (x=0; x<MAZE_SIZE*MAZE_SIZE; x++) {
 		state[x + 262] =
 		    read_cell_walls_value(x);
 	}
-	state[4] = 'C';
-	state[261] = 'C';
 
 	zmq_send(requester, state, 518, 0);
 	wait_response();
