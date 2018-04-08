@@ -75,7 +75,7 @@ static struct walls_around read_walls()
 	return walls_readings;
 }
 
-static void flood_fill(void) {
+static void go_to_target(void) {
 	enum step_direction step;
 	struct walls_around walls_readings;
 
@@ -107,16 +107,17 @@ int main(void)
 	initialize_search();
 	set_goal_classic();
 
-	set_distances_goal();
+	set_target_goal();
 	/* TODO: infinite loop might be risky... test all mazes! */
 	while (true) {
-		flood_fill();
+		go_to_target();
 		if (search_position() == 0)
 			break;
 		cell = find_unexplored_interesting_cell();
-		set_distances_cell(cell);
+		set_target_cell(cell);
 	}
-	set_distances_goal();
+	set_target_goal();
+	set_distances();
 	send_state();
 
 	return 0;

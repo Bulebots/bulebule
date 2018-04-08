@@ -9,23 +9,19 @@ static enum compass_direction initial_direction = NORTH;
 static uint8_t current_position;
 static enum compass_direction current_direction;
 
-/* TODO: try all mazes to see if this stack size is really enough. */
-#define DATA_STACK_SIZE (2 * MAZE_AREA)
-static struct data_stack {
-	uint8_t data[DATA_STACK_SIZE];
-	uint32_t size;
-} stack;
-
 static struct data_queue {
 	uint8_t buffer[MAZE_AREA];
 	int head;
 	int tail;
 } queue;
 
-static struct cells_stack {
-	int cells[MAX_GOALS];
+struct cells_stack {
+	int cells[MAX_TARGETS];
 	uint8_t size;
-} goal_cells;
+};
+
+static struct cells_stack goal_cells;
+static struct cells_stack target_cells;
 
 static void queue_push(uint8_t data)
 {
@@ -48,25 +44,9 @@ uint8_t read_cell_walls_value(uint8_t cell)
 }
 
 /**
- * @brief Push a cell to the stack.
- */
-static void push_cell(uint8_t cell)
-{
-	stack.data[stack.size++] = cell;
-}
-
-/**
- * @brief Pop a cell from the stack.
- */
-static uint8_t pop_cell(void)
-{
-	return stack.data[--stack.size];
-}
-
-/**
  * @brief Add new goal coordinates.
  */
-void add_goal(int x, int y)
+static void add_goal(int x, int y)
 {
 	goal_cells.cells[goal_cells.size++] = x + y * MAZE_SIZE;
 }
@@ -80,6 +60,35 @@ void set_goal_classic(void)
 	add_goal(7, 8);
 	add_goal(8, 7);
 	add_goal(8, 8);
+}
+
+/**
+ * @brief Add new target cell.
+ */
+static void add_target(uint8_t cell)
+{
+	target_cells.cells[target_cells.size++] = cell;
+}
+
+/**
+ * @brief Set new target cell.
+ */
+void set_target_cell(uint8_t cell)
+{
+	target_cells.size = 0;
+	add_target(cell);
+}
+
+/**
+ * @brief Set the goal as target.
+ */
+void set_target_goal(void)
+{
+	int i;
+
+	target_cells.size = 0;
+	for (i = 0; i < goal_cells.size; i++)
+		add_target(goal_cells.cells[i]);
 }
 
 void set_search_initial_direction(enum compass_direction direction)
@@ -208,20 +217,14 @@ static void update_walls(struct walls_around walls)
 	default:
 		break;
 	}
-	push_cell(current_position);
-	/*
-	 * TODO: before pushing the side cell, check it is actually connected
-	 *       to either a goal cell or an already-visited cell. See if this
-	 *       could reduce calculations for closed (unreachable) areas.
-	 */
-	if (windrose[0] && place_wall(EAST_BIT))
-		push_cell(current_position + EAST);
-	if (windrose[1] && place_wall(SOUTH_BIT))
-		push_cell(current_position + SOUTH);
-	if (windrose[2] && place_wall(WEST_BIT))
-		push_cell(current_position + WEST);
-	if (windrose[3] && place_wall(NORTH_BIT))
-		push_cell(current_position + NORTH);
+	if (windrose[0])
+		place_wall(EAST_BIT);
+	if (windrose[1])
+		place_wall(SOUTH_BIT);
+	if (windrose[2])
+		place_wall(WEST_BIT);
+	if (windrose[3])
+		place_wall(NORTH_BIT);
 	maze_walls[current_position] |= VISITED_BIT;
 }
 
@@ -330,44 +333,20 @@ static void _reset_distances_and_queue(void)
 }
 
 /**
- * @brief Set maze distances with respect to a given single cell.
+ * @brief Set maze distances with respect to the target.
  */
-void set_distances_cell(uint8_t cell)
-{
-	int i;
-
-	_reset_distances_and_queue();
-	distances[cell] = 0;
-	queue_push(cell);
-	update_distances_breath();
-}
-
-/**
- * @brief Set maze distances with respect to the goal.
- */
-void set_distances_goal(void)
+void set_distances(void)
 {
 	int i;
 	int cell;
 
 	_reset_distances_and_queue();
-	for (i = 0; i < goal_cells.size; i++) {
-		cell = goal_cells.cells[i];
+	for (i = 0; i < target_cells.size; i++) {
+		cell = target_cells.cells[i];
 		distances[cell] = 0;
 		queue_push(cell);
 	}
 	update_distances_breath();
-}
-
-/**
- * @brief Set maze distances with unique values (for testing).
- */
-void set_distances_unique(void)
-{
-	int i;
-
-	for (i = 0; i < MAZE_SIZE * MAZE_SIZE; i++)
-		distances[i] = MAX_DISTANCE - i;
 }
 
 void move_search_position(enum step_direction step)
@@ -391,7 +370,7 @@ void initialize_search(void)
 void search_update(struct walls_around walls)
 {
 	update_walls(walls);
-	update_distances();
+	set_distances();
 }
 
 enum step_direction search_step(bool left, bool front, bool right)
@@ -462,7 +441,8 @@ uint8_t find_unexplored_interesting_cell(void)
 	backed_up_direction = current_direction;
 
 	set_search_initial_state();
-	set_distances_goal();
+	set_target_goal();
+	set_distances();
 	while (search_distance() > 0) {
 		step = best_neighbor_step(current_walls_around());
 		move_search_position(step);
