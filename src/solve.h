@@ -7,7 +7,7 @@
 
 void explore(void);
 #ifdef MMSIM_SIMULATION
-extern void send_state(void);
+void send_state(void);
 #endif
 
 #endif /* __SOLVE_H */

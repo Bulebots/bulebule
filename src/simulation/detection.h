@@ -3,6 +3,6 @@
 
 #include "search.h"
 
-extern struct walls_around read_walls(void);
+struct walls_around read_walls(void);
 
 #endif /* __DETECTION_H */

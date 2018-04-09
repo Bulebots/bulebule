@@ -247,8 +247,7 @@ static void move_out(void)
 void move_front(void)
 {
 	enable_walls_control();
-	accelerate(current_cell_start_micrometers,
-		   CELL_DIMENSION - cell_shift);
+	accelerate(current_cell_start_micrometers, CELL_DIMENSION - cell_shift);
 	entered_next_cell();
 }
 

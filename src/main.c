@@ -13,7 +13,7 @@
 #include "solve.h"
 
 static bool solved;
-void solve(void);
+static void solve(void);
 
 /**
  * @brief Handle the SysTick interruptions.

@@ -1,6 +1,7 @@
 #include "solve.h"
 
-static void go_to_target(void) {
+static void go_to_target(void)
+{
 	enum step_direction step;
 	struct walls_around walls;
 
