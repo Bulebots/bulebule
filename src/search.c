@@ -46,7 +46,7 @@ uint8_t read_cell_walls_value(uint8_t cell)
 /**
  * @brief Add new goal coordinates.
  */
-static void add_goal(int x, int y)
+void add_goal(int x, int y)
 {
 	goal_cells.cells[goal_cells.size++] = x + y * MAZE_SIZE;
 }

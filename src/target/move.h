@@ -22,7 +22,6 @@ void stop_head_front_wall(void);
 void stop_middle(void);
 void turn_left(void);
 void turn_right(void);
-void move_out(void);
 void move_front(void);
 void move_left(void);
 void move_right(void);

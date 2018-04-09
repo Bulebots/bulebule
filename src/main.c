@@ -37,9 +37,12 @@ void solve(void)
 
 	reset_motion();
 	enable_motor_control();
-
-	set_search_initial_state();
 	set_starting_position();
+
+	initialize_search();
+	/* set_goal_classic(); */
+	add_goal(3, 5);
+	set_target_goal();
 
 	explore();
 

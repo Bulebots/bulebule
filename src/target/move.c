@@ -9,6 +9,7 @@ static int32_t current_cell_start_micrometers;
 void set_starting_position(void)
 {
 	cell_shift = WALL_WIDTH / 2 + MOUSE_TAIL;
+	current_cell_start_micrometers = get_encoder_average_micrometers();
 }
 
 float get_max_linear_speed(void)
@@ -229,7 +230,7 @@ void turn_right(void)
  * This function takes into account the value of the `cell_shift` variable wich
  * is basically used to track the exact position within a cell.
  */
-void move_out(void)
+static void move_out(void)
 {
 	enable_walls_control();
 	accelerate(get_encoder_average_micrometers(),
@@ -239,11 +240,15 @@ void move_out(void)
 
 /**
  * @brief Move front into the next cell.
+ *
+ * This function takes into account the value of the `cell_shift` variable wich
+ * is basically used to track the exact position within a cell.
  */
 void move_front(void)
 {
 	enable_walls_control();
-	accelerate(current_cell_start_micrometers, CELL_DIMENSION);
+	accelerate(current_cell_start_micrometers,
+		   CELL_DIMENSION - cell_shift);
 	entered_next_cell();
 }
 

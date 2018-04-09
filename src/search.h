@@ -34,6 +34,7 @@ enum step_direction { NONE = -1, LEFT = 0, FRONT = 1, RIGHT = 2, BACK = 3 };
 
 uint8_t read_cell_distance_value(uint8_t cell);
 uint8_t read_cell_walls_value(uint8_t cell);
+void add_goal(int x, int y);
 void set_goal_classic(void);
 void set_search_initial_direction(enum compass_direction direction);
 void set_search_initial_state(void);
