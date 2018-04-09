@@ -172,3 +172,23 @@ void wait_front_sensor_close_signal(float close_distance)
 			break;
 	}
 }
+
+/**
+ * @brief Set initial search direction for the solver.
+ */
+void initialize_solver_direction(void)
+{
+	while (1) {
+		if (button_left_read_consecutive(500)) {
+			set_search_initial_direction(NORTH);
+			led_left_on();
+			break;
+		}
+		if (button_right_read_consecutive(500)) {
+			set_search_initial_direction(EAST);
+			led_right_on();
+			break;
+		}
+	}
+	sleep_ticks(2000);
+}

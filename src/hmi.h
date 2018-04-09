@@ -22,5 +22,6 @@ bool button_right_read(void);
 bool button_left_read_consecutive(uint32_t count);
 bool button_right_read_consecutive(uint32_t count);
 void wait_front_sensor_close_signal(float close_distance);
+void initialize_solver_direction(void);
 
 #endif /* __HMI_H */

@@ -11,6 +11,7 @@
 
 #include "clock.h"
 #include "config.h"
+#include "search.h"
 #include "setup.h"
 
 /* Sensors IDs*/
@@ -32,6 +33,7 @@ float get_front_wall_distance(void);
 bool front_wall_detection(void);
 bool right_wall_detection(void);
 bool left_wall_detection(void);
+struct walls_around read_walls(void);
 void side_sensors_calibration(void);
 
 #endif /* __DETECTION_H */

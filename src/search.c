@@ -373,22 +373,6 @@ void search_update(struct walls_around walls)
 	set_distances();
 }
 
-enum step_direction search_step(bool left, bool front, bool right)
-{
-	enum step_direction step;
-	struct walls_around walls;
-
-	walls.left = left;
-	walls.front = front;
-	walls.right = right;
-
-	search_update(walls);
-	step = best_neighbor_step(walls);
-	move_search_position(step);
-
-	return step;
-}
-
 /**
  * @brief Return the walls around at the current position.
  */

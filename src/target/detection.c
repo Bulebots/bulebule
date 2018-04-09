@@ -282,6 +282,19 @@ bool front_wall_detection(void)
 }
 
 /**
+ * @brief Return left, front and right walls detection readings.
+ */
+struct walls_around read_walls(void)
+{
+	struct walls_around walls_readings;
+
+	walls_readings.left = left_wall_detection();
+	walls_readings.front = front_wall_detection();
+	walls_readings.right = right_wall_detection();
+	return walls_readings;
+}
+
+/**
  * @brief Calibration for side sensors.
  */
 void side_sensors_calibration(void)

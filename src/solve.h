@@ -5,7 +5,9 @@
 #include "move.h"
 #include "search.h"
 
-void solve(void);
-void initialize_solver_direction(void);
+void explore(void);
+#ifdef MMSIM_SIMULATION
+extern void send_state(void);
+#endif
 
 #endif /* __SOLVE_H */

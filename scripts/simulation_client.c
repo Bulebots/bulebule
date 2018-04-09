@@ -1,3 +1,4 @@
+#include "solve.h"
 #include "search.h"
 
 #include <assert.h>
@@ -55,7 +56,7 @@ void send_state()
 	wait_response();
 }
 
-static struct walls_around read_walls()
+struct walls_around read_walls(void)
 {
 	char walls[3] = { 0 };
 	char position_state[4];
@@ -75,28 +76,11 @@ static struct walls_around read_walls()
 	return walls_readings;
 }
 
-static void go_to_target(void) {
-	enum step_direction step;
-	struct walls_around walls_readings;
-
-	do {
-		walls_readings = read_walls();
-		search_update(walls_readings);
-		send_state();
-		step = best_neighbor_step(walls_readings);
-		move_search_position(step);
-	} while (search_distance() > 0);
-
-	walls_readings = read_walls();
-	search_update(walls_readings);
-}
-
 int main(void)
 {
 	int rc;
 	void *context = zmq_ctx_new();
 	char buffer[256];
-	uint8_t cell;
 
 	requester = zmq_socket(context, ZMQ_REQ);
 	rc = zmq_connect(requester, "tcp://127.0.0.1:6574");
@@ -106,16 +90,10 @@ int main(void)
 
 	initialize_search();
 	set_goal_classic();
-
 	set_target_goal();
-	/* TODO: infinite loop might be risky... test all mazes! */
-	while (true) {
-		go_to_target();
-		if (search_position() == 0)
-			break;
-		cell = find_unexplored_interesting_cell();
-		set_target_cell(cell);
-	}
+
+	explore();
+
 	set_target_goal();
 	set_distances();
 	send_state();

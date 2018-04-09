@@ -12,6 +12,9 @@
 #include "setup.h"
 #include "solve.h"
 
+static bool solved;
+void solve(void);
+
 /**
  * @brief Handle the SysTick interruptions.
  */
@@ -22,6 +25,26 @@ void sys_tick_handler(void)
 	update_encoder_readings();
 	update_distance_readings();
 	motor_control();
+}
+
+/**
+ * @brief Solve an unknown maze.
+ */
+void solve(void)
+{
+	if (!solved)
+		initialize_search();
+
+	reset_motion();
+	enable_motor_control();
+
+	set_search_initial_state();
+	set_starting_position();
+
+	explore();
+
+	stop_middle();
+	solved = true;
 }
 
 /**
