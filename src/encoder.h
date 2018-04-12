@@ -5,6 +5,7 @@
 
 #include <libopencm3/stm32/timer.h>
 
+#include "config.h"
 #include "setup.h"
 
 float get_micrometers_per_count(void);

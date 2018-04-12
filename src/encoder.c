@@ -1,8 +1,8 @@
 #include "encoder.h"
 
 /* Physical variables for calibration */
-static volatile float micrometers_per_count = 8.32;
-static volatile float wheels_separation = 0.078;
+static volatile float micrometers_per_count = MICROMETERS_PER_COUNT;
+static volatile float wheels_separation = WHEELS_SEPARATION;
 
 /* Difference between the current count and the latest count */
 static volatile int32_t left_diff_count;
