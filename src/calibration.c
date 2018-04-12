@@ -106,9 +106,8 @@ void run_static_turn_right_profile(void)
  *
  * @param[in] cells Number of cells to run across before stopping.
  */
-void run_micrometers_per_count_calibration(unsigned cells)
+void run_micrometers_per_count_calibration(unsigned int cells)
 {
-	unsigned i;
 	float linear_acceleration = get_linear_acceleration();
 	float linear_deceleration = get_linear_deceleration();
 	float max_linear_speed = get_max_linear_speed();
@@ -120,12 +119,16 @@ void run_micrometers_per_count_calibration(unsigned cells)
 	reset_motion();
 	side_sensors_calibration();
 	enable_motor_control();
-	set_starting_position();
 
-	move_out();
-	for (i = 0; i < cells - 1; i++)
-		move_front();
-	stop_head_front_wall();
+	side_sensors_control(true);
+	front_sensors_control(false);
+
+	accelerate(get_encoder_average_micrometers(),
+		   CELL_DIMENSION * cells - WALL_WIDTH / 2. - MOUSE_TAIL);
+	disable_walls_control();
+	decelerate(get_encoder_average_micrometers(),
+		   CELL_DIMENSION - WALL_WIDTH / 2. - MOUSE_HEAD, 0.);
+	reset_control_errors();
 
 	set_linear_acceleration(linear_acceleration);
 	set_linear_deceleration(linear_deceleration);
