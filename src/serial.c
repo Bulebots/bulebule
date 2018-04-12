@@ -11,7 +11,7 @@ static bool run_angular_speed_profile_signal;
 static bool run_linear_speed_profile_signal;
 static bool run_static_turn_right_profile_signal;
 static bool run_front_sensors_calibration_signal;
-static unsigned run_micrometers_per_count_calibration_signal;
+static unsigned int run_micrometers_per_count_calibration_signal;
 
 /**
  * @brief Push a single char to the serial received buffer.
@@ -100,7 +100,7 @@ static void process_command(void)
 		run_static_turn_right_profile_signal = true;
 	else if (starts_with("run micrometers_per_count_calibration "))
 		run_micrometers_per_count_calibration_signal =
-		    (unsigned)parse_spaced_float(2);
+		    (unsigned int)parse_spaced_float(2);
 	else if (!strcmp(buffer.data, "run front_sensors_calibration"))
 		run_front_sensors_calibration_signal = true;
 	else if (starts_with("set micrometers_per_count "))
