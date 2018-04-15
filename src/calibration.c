@@ -128,13 +128,12 @@ void run_micrometers_per_count_calibration(unsigned int cells)
 	disable_walls_control();
 	decelerate(get_encoder_average_micrometers(),
 		   CELL_DIMENSION - WALL_WIDTH / 2. - MOUSE_HEAD, 0.);
-	reset_control_errors();
+
+	reset_motion();
 
 	set_linear_acceleration(linear_acceleration);
 	set_linear_deceleration(linear_deceleration);
 	set_max_linear_speed(max_linear_speed);
-
-	reset_motion();
 }
 
 /**
