@@ -81,7 +81,6 @@ static void set_emitter_off(uint8_t emitter)
  * The battery voltage is also read on the state 1.
  *
  * - State 1 (first because the emitter is OFF on start):
- *         -# Start the battery voltage (ADC2) read.
  *         -# Save phototranistors sensors (ADC1) from emitter OFF and
  *            power ON the emitter.
  * - State 2:
@@ -99,7 +98,6 @@ static void sm_emitter_adc(void)
 
 	switch (emitter_status) {
 	case 1:
-		adc_start_conversion_injected(ADC2);
 		sensors_off[sensor_index] =
 		    adc_read_injected(ADC1, (sensor_index + 1));
 		set_emitter_on(sensor_index);
