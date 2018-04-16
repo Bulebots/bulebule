@@ -62,7 +62,7 @@ static void setup_clock(void)
  * Exception priorities:
  *
  * - Systick priority to 1 with SCB.
- * - USART3 with priority 1 with NVIC.
+ * - USART3 with priority 2 with NVIC.
  * - TIM1_UP with priority 0.
  *
  * Interruptions enabled:
@@ -78,8 +78,8 @@ static void setup_clock(void)
 static void setup_exceptions(void)
 {
 	nvic_set_priority(NVIC_TIM1_UP_IRQ, 0);
-	nvic_set_priority(NVIC_USART3_IRQ, PRIORITY_FACTOR * 1);
 	nvic_set_priority(NVIC_SYSTICK_IRQ, PRIORITY_FACTOR * 1);
+	nvic_set_priority(NVIC_USART3_IRQ, PRIORITY_FACTOR * 2);
 
 	nvic_enable_irq(NVIC_TIM1_UP_IRQ);
 	nvic_enable_irq(NVIC_USART3_IRQ);
