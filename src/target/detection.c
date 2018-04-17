@@ -247,20 +247,6 @@ static void sm_emitter_adc(void)
 }
 
 /**
- * @brief TIM1 interruption routine.
- *
- * - Manage the update event interruption flag.
- * - Trigger state machine to manage sensors.
- */
-void tim1_up_isr(void)
-{
-	if (timer_get_flag(TIM1, TIM_SR_UIF)) {
-		timer_clear_flag(TIM1, TIM_SR_UIF);
-		sm_emitter_adc();
-	}
-}
-
-/**
  * @brief Get sensors values with emitter on and off.
  */
 void get_sensors_raw(uint16_t *off, uint16_t *on)
