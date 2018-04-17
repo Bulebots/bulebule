@@ -48,6 +48,9 @@ static void setup_clock(void)
 	/* ADC */
 	rcc_periph_clock_enable(RCC_ADC1);
 	rcc_periph_clock_enable(RCC_ADC2);
+
+	/* Enable clock cycle counter */
+	dwt_enable_cycle_counter();
 }
 
 /**

@@ -1,6 +1,7 @@
 #ifndef __SETUP_H
 #define __SETUP_H
 
+#include <libopencm3/cm3/dwt.h>
 #include <libopencm3/cm3/nvic.h>
 #include <libopencm3/cm3/scb.h>
 #include <libopencm3/cm3/systick.h>
@@ -13,6 +14,7 @@
 
 /** Universal constants */
 #define MICROMETERS_PER_METER 1000000
+#define MICROSECONDS_PER_SECOND 1000000
 #define PI 3.1415
 #define CELL_DIMENSION 0.18
 #define WALL_WIDTH 0.012
