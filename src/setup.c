@@ -63,11 +63,9 @@ static void setup_clock(void)
  *
  * - Systick priority to 1 with SCB.
  * - USART3 with priority 2 with NVIC.
- * - TIM1_UP with priority 0.
  *
  * Interruptions enabled:
  *
- * - TIM1 Update interrupt.
  * - USART3 interrupt.
  *
  * @note The priority levels are assigned on steps of 16 because the processor
@@ -77,11 +75,9 @@ static void setup_clock(void)
  */
 static void setup_exceptions(void)
 {
-	nvic_set_priority(NVIC_TIM1_UP_IRQ, 0);
 	nvic_set_priority(NVIC_SYSTICK_IRQ, PRIORITY_FACTOR * 1);
 	nvic_set_priority(NVIC_USART3_IRQ, PRIORITY_FACTOR * 2);
 
-	nvic_enable_irq(NVIC_TIM1_UP_IRQ);
 	nvic_enable_irq(NVIC_USART3_IRQ);
 }
 
@@ -407,40 +403,6 @@ static void setup_adc2(void)
 }
 
 /**
- * @brief TIM1 setup.
- *
- * The TIM1 generates an update event interruption that invokes the
- * function tim1_up_isr.
- *
- * - Set TIM1 default values.
- * - Configure the base time (no clock division ratio, no aligned mode,
- *   direction up).
- * - Set clock division, prescaler and period parameters to get an update
- *   event with a frequency of 16 KHz. 16 interruptions by ms, 4 sensors with
- *   4 states.
- *
- *   \f$frequency = \frac{timerclock}{(preescaler + 1)(period + 1)}\f$
- *
- * - Enable the TIM1.
- * - Enable the interruption of type update event on the TIM1.
- *
- * @note The TIM1 is conected to the APB2 prescaler.
- *
- * @see Reference manual (RM0008) "Advanced-control timers"
- */
-static void setup_timer1(void)
-{
-	rcc_periph_reset_pulse(RST_TIM1);
-	timer_set_mode(TIM1, TIM_CR1_CKD_CK_INT, TIM_CR1_CMS_EDGE,
-		       TIM_CR1_DIR_UP);
-	timer_set_clock_division(TIM1, 0x00);
-	timer_set_prescaler(TIM1, (rcc_apb2_frequency / 160000 - 1));
-	timer_set_period(TIM1, 10 - 1);
-	timer_enable_counter(TIM1);
-	timer_enable_irq(TIM1, TIM_DIER_UIE);
-}
-
-/**
  * @brief Execute all setup functions.
  */
 void setup(void)
@@ -455,6 +417,5 @@ void setup(void)
 	setup_pwm();
 	setup_mpu();
 	setup_systick();
-	setup_timer1();
 	setup_adc1();
 }
