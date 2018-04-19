@@ -3,7 +3,6 @@
 #define SIDE_WALL_DETECTION (CELL_DIMENSION * 0.90)
 #define FRONT_WALL_DETECTION (CELL_DIMENSION * 1.5)
 #define SIDE_CALIBRATION_READINGS 20
-#define SENSORS_SM_TICKS 4
 #define LOG_CONVERSION_TABLE_STEP 4
 #define LOG_CONVERSION_TABLE_SIZE (ADC_RESOLUTION / LOG_CONVERSION_TABLE_STEP)
 
@@ -190,63 +189,6 @@ static void set_emitter_off(uint8_t emitter)
 }
 
 /**
- * @brief State machine to manage the sensors activation and deactivation
- * states and readings.
- *
- * In order to get accurate distance values, the phototransistor's output
- * will be read with the infrared emitter sensors powered on and powered
- * off. Besides, to avoid undesired interactions between different emitters and
- * phototranistors, the reads will be done one by one.
- *
- * The battery voltage is also read on the state 1.
- *
- * - State 1 (first because the emitter is OFF on start):
- *         -# Save phototranistors sensors (ADC1) from emitter OFF and
- *            power ON the emitter.
- * - State 2:
- *         -# Start the phototranistors sensors (ADC1) read.
- * - State 3:
- *         -# Save phototranistors sensors (ADC1) from emitter ON and
- *            power OFF the emitter.
- * - State 4:
- *         -# Start the phototranistors sensors (ADC1) read.
- */
-static void sm_emitter_adc(void)
-{
-	static uint8_t emitter_status = 1;
-	static uint8_t sensor_index = SENSOR_SIDE_LEFT_ID;
-
-	switch (emitter_status) {
-	case 1:
-		sensors_off[sensor_index] =
-		    adc_read_injected(ADC1, (sensor_index + 1));
-		set_emitter_on(sensor_index);
-		emitter_status = 2;
-		break;
-	case 2:
-		adc_start_conversion_injected(ADC1);
-		emitter_status = 3;
-		break;
-	case 3:
-		sensors_on[sensor_index] =
-		    adc_read_injected(ADC1, (sensor_index + 1));
-		set_emitter_off(sensor_index);
-		emitter_status = 4;
-		break;
-	case 4:
-		adc_start_conversion_injected(ADC1);
-		emitter_status = 1;
-		if (sensor_index == (NUM_SENSOR - 1))
-			sensor_index = 0;
-		else
-			sensor_index++;
-		break;
-	default:
-		break;
-	}
-}
-
-/**
  * @brief Get sensors values with emitter on and off.
  */
 void get_sensors_raw(uint16_t *off, uint16_t *on)
@@ -256,6 +198,38 @@ void get_sensors_raw(uint16_t *off, uint16_t *on)
 	for (i = 0; i < NUM_SENSOR; i++) {
 		off[i] = sensors_off[i];
 		on[i] = sensors_on[i];
+	}
+}
+
+/**
+ * @brief Start and wait for complete injection of sensor readings.
+ */
+static void inject_readings(void)
+{
+	adc_start_conversion_injected(ADC1);
+	while (!(adc_eoc_injected(ADC1)))
+		;
+	// Clear injected end of conversion
+	ADC_SR(ADC1) &= ~ADC_SR_JEOC;
+}
+
+/**
+ * @brief Update the sensors raw readings.
+ */
+static void update_raw_readings(void)
+{
+	uint8_t i = 0;
+
+	inject_readings();
+	for (i = 0; i < NUM_SENSOR; i++)
+		sensors_off[i] = adc_read_injected(ADC1, (i + 1));
+
+	for (i = 0; i < NUM_SENSOR; i++) {
+		set_emitter_on(i);
+		sleep_us(10);
+		inject_readings();
+		sensors_on[i] = adc_read_injected(ADC1, (i + 1));
+		set_emitter_off(i);
 	}
 }
 
@@ -291,6 +265,7 @@ void update_distance_readings(void)
 {
 	uint8_t i = 0;
 
+	update_raw_readings();
 	for (i = 0; i < NUM_SENSOR; i++) {
 		distance[i] = (sensors_calibration_a[i] /
 				   raw_log(sensors_on[i], sensors_off[i]) -
@@ -433,7 +408,7 @@ void side_sensors_calibration(void)
 	for (i = 0; i < SIDE_CALIBRATION_READINGS; i++) {
 		left_temp += distance[SENSOR_SIDE_LEFT_ID];
 		right_temp += distance[SENSOR_SIDE_RIGHT_ID];
-		sleep_ticks(SENSORS_SM_TICKS);
+		sleep_ticks(2);
 	}
 	calibration_factor[SENSOR_SIDE_LEFT_ID] +=
 	    (left_temp / SIDE_CALIBRATION_READINGS) - MIDDLE_MAZE_DISTANCE;

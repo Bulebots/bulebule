@@ -417,5 +417,4 @@ void setup(void)
 	setup_pwm();
 	setup_mpu();
 	setup_systick();
-	setup_adc1();
 }
