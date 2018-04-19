@@ -370,10 +370,10 @@ void setup(void)
 	setup_clock();
 	setup_exceptions();
 	setup_gpio();
+	setup_adc1();
 	setup_usart();
 	setup_encoders();
 	setup_pwm();
 	setup_mpu();
 	setup_systick();
-	setup_adc1();
 }
