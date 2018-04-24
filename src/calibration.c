@@ -143,28 +143,45 @@ void run_movement_sequence(const char *sequence)
  */
 void run_front_sensors_calibration(void)
 {
+	float calibration_linear_speed = .3;
 	float linear_acceleration = get_linear_acceleration();
+	float linear_deceleration = get_linear_deceleration();
+	float required_deceleration;
 	int32_t target_micrometers;
 	int32_t micrometers_to_stop;
+	uint32_t ticks_to_stop;
 
 	disable_walls_control();
 	enable_motor_control();
 
-	set_linear_acceleration(4.);
+	set_linear_acceleration(3.);
 
-	target_micrometers = get_encoder_average_micrometers() +
-			     1.3 * CELL_DIMENSION * MICROMETERS_PER_METER;
+	target_micrometers =
+	    get_encoder_average_micrometers() +
+	    (2 * CELL_DIMENSION - MOUSE_TAIL - MOUSE_HEAD - WALL_WIDTH) *
+		MICROMETERS_PER_METER;
 	set_target_angular_speed(0.);
-	set_target_linear_speed(.3);
-	micrometers_to_stop = (int32_t)required_micrometers_to_speed(0.);
+	set_target_linear_speed(calibration_linear_speed);
+	micrometers_to_stop = 15000;
 	while (get_encoder_average_micrometers() <
-	       target_micrometers - micrometers_to_stop)
+	       target_micrometers - micrometers_to_stop) {
 		log_front_sensors_calibration();
-	set_target_angular_speed(0.);
+		sleep_us(1000);
+	}
+	required_deceleration =
+	    (calibration_linear_speed * calibration_linear_speed) /
+	    (2 *
+	     (float)(target_micrometers - get_encoder_average_micrometers()) /
+	     MICROMETERS_PER_METER);
+	set_linear_deceleration(required_deceleration);
+	ticks_to_stop = (uint32_t)(required_time_to_speed(0.) * 1000);
 	set_target_linear_speed(0.);
-	each(2, log_front_sensors_calibration, 200);
-
-	set_linear_acceleration(linear_acceleration);
+	each(2, log_front_sensors_calibration, ticks_to_stop);
 
 	reset_motion();
+
+	set_linear_acceleration(linear_acceleration);
+	set_linear_deceleration(linear_deceleration);
+
+	blink_burst();
 }
