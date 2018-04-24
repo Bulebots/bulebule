@@ -55,24 +55,6 @@ void run_angular_speed_profile(void)
 }
 
 /**
- * @brief Run a profiling test for sensors distance calculation.
- *
- * This test executes 1000 times the function that reads and transforms sensors
- * input to distance. Then, it logs the total time on clock ticks.
- */
-void run_distances_profiling(void)
-{
-	uint32_t clock_tick_start, clock_tick_end;
-	uint16_t i;
-
-	clock_tick_start = get_clock_ticks();
-	for (i = 0; i < 1000; i++)
-		update_distance_readings();
-	clock_tick_end = get_clock_ticks();
-	LOG_INFO("Clock ticks %" PRIu32, (clock_tick_end - clock_tick_start));
-}
-
-/**
  * @brief Run a static 90-degree right turn speed profile.
  *
  * The robot will accelerate to reach the target angular speed and decelerate
