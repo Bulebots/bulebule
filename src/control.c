@@ -4,6 +4,7 @@
  * Maximum acceleration and deceleration.
  *
  * - Linear acceleration is defined in meters per second squared.
+ * - Linear deceleration is defined in meters per second squared.
  * - Angular acceleration is defined in radians per second squared.
  */
 static volatile float linear_acceleration = 5.;
@@ -335,7 +336,7 @@ void update_ideal_speed(void)
 			ideal_linear_speed = target_linear_speed;
 	} else if (ideal_linear_speed > target_linear_speed) {
 		ideal_linear_speed -=
-		    linear_acceleration / SYSTICK_FREQUENCY_HZ;
+		    linear_deceleration / SYSTICK_FREQUENCY_HZ;
 		if (ideal_linear_speed < target_linear_speed)
 			ideal_linear_speed = target_linear_speed;
 	}
