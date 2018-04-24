@@ -138,7 +138,7 @@ class Proxy(Agent):
         return len(splits) - 1
 
     def send_bt(self, message):
-        for retry in range(10):
+        for retry in range(3):
             try:
                 self.rfcomm.settimeout(1.)
                 self.rfcomm.send(message)
@@ -146,7 +146,7 @@ class Proxy(Agent):
                 print_exc()
             # Wait for the robot ACK
             t0 = time.time()
-            while (time.time() - t0 < 0.1):
+            while (time.time() - t0 < 0.3):
                 received = self.receive()
                 for i in range(received):
                     log = self.log[-1 - i]
