@@ -77,6 +77,61 @@ void run_static_turn_right_profile(void)
 }
 
 /**
+ * Execute simple movement command sequences.
+ *
+ * - 'O': to get out of the starting cell.
+ * - 'F': to move front.
+ * - 'L': to move left.
+ * - 'R': to move right.
+ * - 'B': to move back.
+ * - 'M': to stop at the middle of the cell.
+ * - 'H': to stop touching the front wall of the cell.
+ * - 'E': to stop at the end of the cell.
+ */
+void run_movement_sequence(const char *sequence)
+{
+	char movement;
+
+	reset_motion();
+	enable_motor_control();
+	while (true) {
+		movement = *sequence++;
+		if (!movement)
+			break;
+		switch (movement) {
+		case 'O':
+			set_starting_position();
+			move_front();
+			break;
+		case 'F':
+			move_front();
+			break;
+		case 'L':
+			move_left();
+			break;
+		case 'R':
+			move_right();
+			break;
+		case 'B':
+			move_back();
+			break;
+		case 'M':
+			stop_middle();
+			break;
+		case 'H':
+			stop_head_front_wall();
+			break;
+		case 'E':
+			stop_end();
+			break;
+		default:
+			break;
+		}
+	}
+	reset_motion();
+}
+
+/**
  * @brief Front sensors calibration funtion.
  *
  * Assumes the robot is positioned at the start of a cell, with its tail
