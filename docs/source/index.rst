@@ -25,6 +25,20 @@ How can I build it?
 Sponsors
 --------
 
+Thanks to `Elmeq <https://www.elmeq.es/>`_ and `Faulhaber
+<https://www.faulhaber.com/>`_ for providing us with a pair of brand new
+motors.
+
+.. figure:: figures/sponsors/elmeq.jpg
+   :target: https://www.elmeq.es/
+   :width: 40%
+   :align: center
+
+.. figure:: figures/sponsors/faulhaber.png
+   :target: https://www.faulhaber.com/
+   :width: 60%
+   :align: center
+
 Thanks to `www.mootio-components.com <http://www.mootio-components.com/>`_ for providing us with awesome gears and some other
 mechanical goods.
 
