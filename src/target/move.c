@@ -3,13 +3,13 @@
 static volatile float max_linear_speed = .8;
 
 /* Assume the mouse tail is initially touching a wall */
-static float cell_shift = WALL_WIDTH / 2 + MOUSE_TAIL;
 static int32_t current_cell_start_micrometers;
 
 void set_starting_position(void)
 {
-	cell_shift = WALL_WIDTH / 2 + MOUSE_TAIL;
-	current_cell_start_micrometers = get_encoder_average_micrometers();
+	current_cell_start_micrometers =
+	    get_encoder_average_micrometers() -
+	    (MOUSE_TAIL - WALL_WIDTH / 2) * MICROMETERS_PER_METER;
 }
 
 float get_max_linear_speed(void)
@@ -40,7 +40,6 @@ static void entered_next_cell(void)
 			      MICROMETERS_PER_METER);
 		current_cell_start_micrometers += front_wall_correction;
 	}
-	cell_shift = 0.;
 	led_left_toggle();
 }
 
@@ -177,7 +176,6 @@ void stop_head_front_wall(void)
 	decelerate(current_cell_start_micrometers, distance, 0.);
 	disable_walls_control();
 	reset_control_errors();
-	cell_shift = distance;
 }
 
 /**
@@ -191,7 +189,6 @@ void stop_middle(void)
 	decelerate(current_cell_start_micrometers, distance, 0.);
 	disable_walls_control();
 	reset_control_errors();
-	cell_shift = distance;
 }
 
 /**
@@ -225,29 +222,12 @@ void turn_right(void)
 }
 
 /**
- * @brief Move out of the current cell and into the next cell.
- *
- * This function takes into account the value of the `cell_shift` variable wich
- * is basically used to track the exact position within a cell.
- */
-static void move_out(void)
-{
-	enable_walls_control();
-	accelerate(get_encoder_average_micrometers(),
-		   CELL_DIMENSION - cell_shift);
-	entered_next_cell();
-}
-
-/**
  * @brief Move front into the next cell.
- *
- * This function takes into account the value of the `cell_shift` variable wich
- * is basically used to track the exact position within a cell.
  */
 void move_front(void)
 {
 	enable_walls_control();
-	accelerate(current_cell_start_micrometers, CELL_DIMENSION - cell_shift);
+	accelerate(current_cell_start_micrometers, CELL_DIMENSION);
 	entered_next_cell();
 }
 
@@ -284,10 +264,17 @@ void move_right(void)
  */
 void move_back(void)
 {
+	int32_t shift;
+
 	stop_middle();
+	shift =
+	    get_encoder_average_micrometers() - current_cell_start_micrometers;
 	turn_right();
 	turn_right();
-	move_out();
+	current_cell_start_micrometers = get_encoder_average_micrometers() +
+					 shift -
+					 CELL_DIMENSION * MICROMETERS_PER_METER;
+	move_front();
 }
 
 /**
