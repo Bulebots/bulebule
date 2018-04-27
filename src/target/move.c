@@ -269,8 +269,13 @@ void move_back(void)
 	stop_middle();
 	shift =
 	    get_encoder_average_micrometers() - current_cell_start_micrometers;
-	turn_right();
-	turn_right();
+	if (read_cycle_counter() % 2) {
+		turn_right();
+		turn_right();
+	} else {
+		turn_left();
+		turn_left();
+	}
 	current_cell_start_micrometers = get_encoder_average_micrometers() +
 					 shift -
 					 CELL_DIMENSION * MICROMETERS_PER_METER;
