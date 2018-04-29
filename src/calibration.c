@@ -95,6 +95,48 @@ void run_static_turn_right_profile(void)
 }
 
 /**
+ * @brief Micrometers per count calibration.
+ *
+ * Assumes the robot is positioned at the start of a cell, with its tail
+ * touching the back wall. It will accelerate in a straight line and will stop
+ * touching its nose with last cell's front wall.
+ *
+ * Side walls control is activated so it is recommended to always have side
+ * walls when running this test.
+ *
+ * @param[in] cells Number of cells to run across before stopping.
+ */
+void run_micrometers_per_count_calibration(unsigned int cells)
+{
+	float linear_acceleration = get_linear_acceleration();
+	float linear_deceleration = get_linear_deceleration();
+	float max_linear_speed = get_max_linear_speed();
+
+	set_linear_acceleration(4.);
+	set_linear_deceleration(4.);
+	set_max_linear_speed(0.4);
+
+	reset_motion();
+	side_sensors_calibration();
+	enable_motor_control();
+
+	side_sensors_control(true);
+	front_sensors_control(false);
+
+	accelerate(get_encoder_average_micrometers(),
+		   CELL_DIMENSION * cells - WALL_WIDTH / 2. - MOUSE_TAIL);
+	disable_walls_control();
+	decelerate(get_encoder_average_micrometers(),
+		   CELL_DIMENSION - WALL_WIDTH / 2. - MOUSE_HEAD, 0.);
+
+	reset_motion();
+
+	set_linear_acceleration(linear_acceleration);
+	set_linear_deceleration(linear_deceleration);
+	set_max_linear_speed(max_linear_speed);
+}
+
+/**
  * @brief Front sensors calibration funtion.
  *
  * Assumes the robot is positioned at the start of a cell, with its tail
