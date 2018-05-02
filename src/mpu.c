@@ -1,23 +1,23 @@
-#include "gyro.h"
+#include "mpu.h"
 
-#define GYRO_READ 0x80
+#define MPU_READ 0x80
 
-#define GYRO_SIGNAL_PATH_RESET 104
-#define GYRO_PWR_MGMT_1 107
-#define GYRO_USER_CTRL 106
-#define GYRO_WHOAMI 117
+#define MPU_SIGNAL_PATH_RESET 104
+#define MPU_PWR_MGMT_1 107
+#define MPU_USER_CTRL 106
+#define MPU_WHOAMI 117
 
 /**
- * @brief Read a gyroscope register.
+ * @brief Read a mpu register.
  *
  * @param[in] address Register address.
  */
-uint8_t gyro_read_register(uint8_t address)
+uint8_t mpu_read_register(uint8_t address)
 {
 	uint8_t reading;
 
 	gpio_clear(GPIOB, GPIO12);
-	spi_send(SPI2, (GYRO_READ | address));
+	spi_send(SPI2, (MPU_READ | address));
 	spi_read(SPI2);
 	spi_send(SPI2, 0x00);
 	reading = spi_read(SPI2);
@@ -27,12 +27,12 @@ uint8_t gyro_read_register(uint8_t address)
 }
 
 /**
- * @brief Write a gyroscope register with a given value.
+ * @brief Write a mpu register with a given value.
  *
  * @param[in] address Register address.
  * @param[in] address Register value.
  */
-void gyro_write_register(uint8_t address, uint8_t value)
+void mpu_write_register(uint8_t address, uint8_t value)
 {
 	gpio_clear(GPIOB, GPIO12);
 	spi_send(SPI2, address);
@@ -47,7 +47,7 @@ void gyro_write_register(uint8_t address, uint8_t value)
  *
  * This is a read-only register set to 0x70 after reset.
  */
-uint8_t gyro_who_am_i(void)
+uint8_t mpu_who_am_i(void)
 {
-	return gyro_read_register(GYRO_WHOAMI);
+	return mpu_read_register(MPU_WHOAMI);
 }
