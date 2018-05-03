@@ -1,7 +1,6 @@
 #ifndef __DETECTION_H
 #define __DETECTION_H
 
-#include <math.h>
 #include <stdio.h>
 
 #include <libopencm3/cm3/nvic.h>
