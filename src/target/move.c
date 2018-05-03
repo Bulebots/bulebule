@@ -110,39 +110,20 @@ void disable_walls_control(void)
 }
 
 /**
- * @brief Accelerate from a starting point and travel a defined distance.
- *
- * The acceleration will always try to reach `max_linear_speed`.
+ * @brief Reach a target position at a target speed.
  *
  * @param[in] start Starting point, in micrometers.
- * @param[in] distance Distance to travel, in meters.
+ * @param[in] distance Distance to travel, in meters, from the starting point.
+ * @param[in] speed Target speed, in meters per second.
  */
-void accelerate(int32_t start, float distance)
-{
-	int32_t target_distance;
-
-	target_distance = start + (int32_t)(distance * MICROMETERS_PER_METER);
-	set_target_angular_speed(0.);
-	set_target_linear_speed(max_linear_speed);
-	while (get_encoder_average_micrometers() < target_distance)
-		;
-}
-
-/**
- * @brief Decelerate from a starting point and travel a defined distance.
- *
- * @param[in] start Starting point, in micrometers.
- * @param[in] distance Distance to travel, in meters.
- * @param[in] speed Target speed after decelerating, in meters per second.
- */
-void decelerate(int32_t start, float distance, float speed)
+void target_straight(int32_t start, float distance, float speed)
 {
 	int32_t target_distance;
 	uint32_t target_ticks;
 
+	set_target_angular_speed(0.);
 	target_distance = start + (int32_t)(distance * MICROMETERS_PER_METER) -
 			  (int32_t)required_micrometers_to_speed(speed);
-	set_target_angular_speed(0.);
 	set_target_linear_speed(max_linear_speed);
 	target_ticks = required_ticks_to_speed(speed);
 	while (get_encoder_average_micrometers() < target_distance)
@@ -159,7 +140,7 @@ void decelerate(int32_t start, float distance, float speed)
 void stop_end(void)
 {
 	enable_walls_control();
-	decelerate(current_cell_start_micrometers, CELL_DIMENSION, 0.);
+	target_straight(current_cell_start_micrometers, CELL_DIMENSION, 0.);
 	disable_walls_control();
 	reset_control_errors();
 	entered_next_cell();
@@ -173,7 +154,7 @@ void stop_head_front_wall(void)
 	float distance = CELL_DIMENSION - WALL_WIDTH / 2. - MOUSE_HEAD;
 
 	enable_walls_control();
-	decelerate(current_cell_start_micrometers, distance, 0.);
+	target_straight(current_cell_start_micrometers, distance, 0.);
 	disable_walls_control();
 	reset_control_errors();
 }
@@ -186,7 +167,7 @@ void stop_middle(void)
 	float distance = CELL_DIMENSION / 2.;
 
 	enable_walls_control();
-	decelerate(current_cell_start_micrometers, distance, 0.);
+	target_straight(current_cell_start_micrometers, distance, 0.);
 	disable_walls_control();
 	reset_control_errors();
 }
@@ -227,7 +208,8 @@ void turn_right(void)
 void move_front(void)
 {
 	enable_walls_control();
-	accelerate(current_cell_start_micrometers, CELL_DIMENSION);
+	target_straight(current_cell_start_micrometers, CELL_DIMENSION,
+			max_linear_speed);
 	entered_next_cell();
 }
 
@@ -237,11 +219,12 @@ void move_front(void)
 void move_left(void)
 {
 	enable_walls_control();
-	decelerate(current_cell_start_micrometers, 0.03, 0.404);
+	target_straight(current_cell_start_micrometers, 0.03, 0.404);
 	disable_walls_control();
 	turn_left();
 	enable_walls_control();
-	accelerate(get_encoder_average_micrometers(), 0.03);
+	target_straight(get_encoder_average_micrometers(), 0.03,
+			max_linear_speed);
 	entered_next_cell();
 }
 
@@ -251,11 +234,12 @@ void move_left(void)
 void move_right(void)
 {
 	enable_walls_control();
-	decelerate(current_cell_start_micrometers, 0.03, 0.404);
+	target_straight(current_cell_start_micrometers, 0.03, 0.404);
 	disable_walls_control();
 	turn_right();
 	enable_walls_control();
-	accelerate(get_encoder_average_micrometers(), 0.03);
+	target_straight(get_encoder_average_micrometers(), 0.03,
+			max_linear_speed);
 	entered_next_cell();
 }
 
