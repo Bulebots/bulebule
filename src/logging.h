@@ -7,6 +7,7 @@
 #include "encoder.h"
 #include "formatting.h"
 #include "move.h"
+#include "mpu.h"
 
 void log_battery_voltage(void);
 void log_configuration_variables(void);
@@ -21,5 +22,7 @@ void log_side_sensors_error(void);
 void log_front_sensors_calibration(void);
 void log_front_sensors_error(void);
 void log_walls_detection(void);
+void log_gyro_raw_pub(void);
+void log_gyro_dps_pub(void);
 
 #endif /* __LOGGING_H */

@@ -231,3 +231,25 @@ void log_walls_detection(void)
 		 "\"wall_front\":%d}",
 		 left_wall, right_wall, front_wall);
 }
+
+/**
+ * @brief Log gyroscope z raw readings, published for real-time.
+ */
+void log_gyro_raw_pub(void)
+{
+	float reading;
+
+	reading = get_gyro_z_raw();
+	LOG_INFO("PUB,line,gyro_raw,%f", reading);
+}
+
+/**
+ * @brief Log gyroscope z dps readings, published for real-time.
+ */
+void log_gyro_dps_pub(void)
+{
+	float reading;
+
+	reading = get_gyro_z_dps();
+	LOG_INFO("PUB,line,gyro_dps,%f", reading);
+}
