@@ -14,6 +14,8 @@
 #define MPU_GYRO_ZOUT_H 71
 #define MPU_GYRO_ZOUT_L 72
 
+#define MPU_GYRO_SENSITIVITY_2000_DPS 16.4
+
 /**
  * @brief Read a mpu register.
  *
@@ -85,10 +87,20 @@ void mpu_setup(void)
 }
 
 /**
- * @brief Get gyroscope z current raw value
+ * @brief Get gyroscope z current value on bits per second
  */
 int16_t get_gyro_z_raw(void)
 {
 	return ((mpu_read_register(MPU_GYRO_ZOUT_H) << BYTE) |
 		mpu_read_register(MPU_GYRO_ZOUT_L));
+}
+
+/**
+ * @brief Get gyroscope z current value on degrees per second
+ */
+float get_gyro_z_dps(void)
+{
+	return ((int16_t)((mpu_read_register(MPU_GYRO_ZOUT_H) << BYTE) |
+			  mpu_read_register(MPU_GYRO_ZOUT_L)) /
+		MPU_GYRO_SENSITIVITY_2000_DPS);
 }
