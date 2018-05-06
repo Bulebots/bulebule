@@ -7,6 +7,7 @@
 #include "logging.h"
 #include "motor.h"
 #include "move.h"
+#include "mpu.h"
 #include "search.h"
 #include "serial.h"
 #include "setup.h"
@@ -56,6 +57,8 @@ void solve(void)
 int main(void)
 {
 	setup();
+	mpu_setup();
+	gyro_z_calibration();
 	initialize_solver_direction();
 	while (1) {
 		if (button_left_read_consecutive(500)) {
