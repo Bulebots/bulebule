@@ -11,5 +11,6 @@ uint8_t mpu_who_am_i(void);
 void mpu_setup(void);
 int16_t get_gyro_z_raw(void);
 float get_gyro_z_dps(void);
+void gyro_z_calibration(void);
 
 #endif /* __MPU_H */
