@@ -69,6 +69,7 @@ uint8_t mpu_who_am_i(void)
 /**
  * @brief MPU-6500 board setup to configure the gyroscope z
  *
+ * - Configure spi with low speed to write (less than 1MHz)
  * - Reset mpu restoring default settings and wait 100 ms.
  * - Reset signal path and wait 100 ms.
  * - Set SPI mode, reset I2C Slave module
@@ -77,11 +78,12 @@ uint8_t mpu_who_am_i(void)
  * - DLPF(Dual Low Pass Filter) configuration to 0 with 250 Hz of bandwidth
  *   and InternalSample = 8 KHz
  * - Gyroscope configuration to use DLPF and to select +-2000 dps and 16.4 LSB
- *   º/s.
+ * - Configure spi with high speed (less than 20MHz)
  * - Wait 100 ms
  */
 void mpu_setup(void)
 {
+	setup_spi_low_speed();
 	mpu_write_register(MPU_PWR_MGMT_1, 0x80);
 	sleep_us(100000);
 	mpu_write_register(MPU_SIGNAL_PATH_RESET, 0x07);
@@ -90,6 +92,7 @@ void mpu_setup(void)
 	mpu_write_register(MPU_SMPLRT_DIV, 0x00);
 	mpu_write_register(MPU_CONFIG, 0x00);
 	mpu_write_register(MPU_GYRO_CONFIG, 0x18);
+	setup_spi_high_speed();
 	sleep_us(100000);
 }
 
@@ -116,17 +119,19 @@ float get_gyro_z_dps(void)
  * @brief Gyroscope z calibration
  *
  * This function should be executed when the robot is stopped. The gyro z
- * output at that moment shall be substracted from the gyro output since
- * then. The offset values are saved on 2’s complement on 16 bits. After write
- * the offset value we will wait 100 ms.
+ * output at that moment shall be substracted from the gyro output since then.
+ * The offset values are saved on 2’s complement on 16 bits with spi low
+ * speed. After write, the offset value we will wait 100 ms.
  */
 void gyro_z_calibration(void)
 {
 	int16_t zout_c2;
 
 	zout_c2 = -get_gyro_z_raw();
+	setup_spi_low_speed();
 	mpu_write_register(MPU_Z_OFFS_USR_H,
 			   ((uint8_t)((zout_c2 & MPU_MASK_H) >> BYTE)));
 	mpu_write_register(MPU_Z_OFFS_USR_L, (uint8_t)(zout_c2 & MPU_MASK_L));
+	setup_spi_high_speed();
 	sleep_us(100000);
 }

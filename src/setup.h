@@ -55,5 +55,7 @@
 #define BATTERY_LOW_LIMIT_VOLTAGE 3.3
 
 void setup(void);
+void setup_spi_low_speed(void);
+void setup_spi_high_speed(void);
 
 #endif /* __SETUP_H */
