@@ -2,33 +2,64 @@ import serial
 import datetime
 import zmq
 
+
+def publish(log):
+    body = log[-1]
+    if not body.startswith('PUB'):
+        return
+    fields = body.split(',')
+    if fields[1] != 'line':
+        raise NotImplementedError()
+    return fields
+
+
+def process_received(received, buf):
+    buf += received
+    if b'\n' not in buf:
+        return 0
+    splits = buf.split(b'\n')
+    for message in splits[:-1]:
+        fields = message.split(b',')
+        log = [x.decode('utf-8') for x in fields[:4]]
+        try:
+            log[0] = float(log[0])
+        except ValueError:
+            pass
+        body = b','.join(fields[4:])
+        if not body.startswith(b'RAW'):
+            body = body.decode('utf-8')
+        else:
+            raise NotImplementedError()
+        log = tuple(log + [body])
+        if log[1] == 'ERROR':
+            print(log)
+    buf = splits[-1]
+    prefilt = publish(log)
+    return(prefilt, buf)
+
 ser = serial.Serial('/dev/ttyUSB0', 921600)
 last_time = datetime.datetime.utcnow().timestamp()
 context = zmq.Context()
 publisher = context.socket(zmq.PUB)
 host = "127.0.0.1"
 publisher.bind('tcp://{}:{}'.format(host, 5000))
-integ_pc = 0
+buf = b''
+log = []
 while True:
     try:
-        data = ser.readline()
-        if data:
-            data = data.decode("utf-8").strip('\n').split(',')
-            print(data)
-            if data[1] == 'INFO':
-                now = datetime.datetime.utcnow()
-                vo = int(data[4])*3.3/4096
-                vref = int(data[5])*3.3/4096
-                vdiff = vo - vref
-                # 0.67 mv/dps * 10 (op. amp)
-                dps = (vdiff)/0.0067
-                degrees = dps*(now.timestamp() - last_time)
-                integ_pc = integ_pc - degrees
-                publisher.send_pyobj(('D', now.timestamp(),
-                                     (0, 0, integ_pc)))
-                publisher.send_pyobj(('Vo', now.timestamp(), vo))
-                publisher.send_pyobj(('Vdiff', now.timestamp(), vdiff))
-                last_time = now.timestamp()
+        i = ser.read(80)
+        data, buf = process_received(i, buf)
+        print(data)
+        now = datetime.datetime.utcnow()
+        if data[2] == 'gyro_raw':
+            gyro_raw = float(data[3])
+            publisher.send_pyobj(('gyro_raw', now.timestamp(), gyro_raw))
+        elif data[2] == 'gyro_dps':
+            gyro_dps = float(data[3])
+            publisher.send_pyobj(('gyro_dps', now.timestamp(), gyro_dps))
+        else:
+            pass
+        last_time = now.timestamp()
     except KeyboardInterrupt:
         ser.close()
         break
