@@ -1,6 +1,7 @@
 #include "clock.h"
 
 static volatile uint32_t clock_ticks;
+static volatile uint32_t stopwatch_counter;
 
 /**
  * @brief Get the current clock ticks count.
@@ -48,6 +49,25 @@ void sleep_ticks(uint32_t ticks)
 
 	while (awake > clock_ticks)
 		;
+}
+
+/**
+ * @brief Start the stopwatch to measure elapsed time.
+ *
+ * To be used with `stopwatch_stop()` function.
+ */
+void stopwatch_start(void)
+{
+	stopwatch_counter = read_cycle_counter();
+}
+
+/**
+ * @brief Return the elapsed seconds since `stopwatch_start()` was called.
+ */
+float stopwatch_stop(void)
+{
+	return (float)(read_cycle_counter() - stopwatch_counter) /
+	       (float)SYSCLK_FREQUENCY_HZ;
 }
 
 /**
