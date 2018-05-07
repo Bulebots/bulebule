@@ -52,12 +52,12 @@ static void entered_next_cell(void)
 uint32_t required_micrometers_to_speed(float speed)
 {
 	float acceleration;
-	float target_speed = get_target_linear_speed();
+	float current_speed = get_ideal_linear_speed();
 
-	acceleration = (target_speed > speed) ? -get_linear_deceleration()
-					      : get_linear_acceleration();
+	acceleration = (current_speed > speed) ? -get_linear_deceleration()
+					       : get_linear_acceleration();
 
-	return (uint32_t)((speed * speed - target_speed * target_speed) /
+	return (uint32_t)((speed * speed - current_speed * current_speed) /
 			  (2 * acceleration) * MICROMETERS_PER_METER);
 }
 
@@ -109,6 +109,13 @@ void disable_walls_control(void)
 	front_sensors_control(false);
 }
 
+void change_speed(float speed)
+{
+	set_target_linear_speed(speed);
+	while (get_ideal_linear_speed() != speed)
+		;
+}
+
 /**
  * @brief Reach a target position at a target speed.
  *
@@ -119,19 +126,48 @@ void disable_walls_control(void)
 void target_straight(int32_t start, float distance, float speed)
 {
 	int32_t target_distance;
-	uint32_t target_ticks;
 
 	set_target_angular_speed(0.);
-	target_distance = start + (int32_t)(distance * MICROMETERS_PER_METER) -
-			  (int32_t)required_micrometers_to_speed(speed);
-	set_target_linear_speed(max_linear_speed);
-	target_ticks = required_ticks_to_speed(speed);
-	while (get_encoder_average_micrometers() < target_distance)
-		;
-	set_target_linear_speed(speed);
-	target_ticks += get_clock_ticks();
-	while (get_clock_ticks() < target_ticks)
-		;
+
+	target_distance = start + (int32_t)(distance * MICROMETERS_PER_METER);
+	if (distance > 0) {
+		set_target_linear_speed(max_linear_speed);
+		while (get_encoder_average_micrometers() <
+		       target_distance -
+			   (int32_t)required_micrometers_to_speed(speed))
+			;
+	} else {
+		set_target_linear_speed(-max_linear_speed);
+		while (get_encoder_average_micrometers() >
+		       target_distance +
+			   (int32_t)required_micrometers_to_speed(speed))
+			;
+	}
+	change_speed(speed);
+}
+
+/**
+ * @brief Keep a specified distance from the front wall.
+ *
+ * @param[in] distance Distance to keep from the front wall, in meters.
+ */
+void keep_front_wall_distance(float distance)
+{
+	float error;
+	float front_wall_distance;
+
+	front_sensors_control(front_wall_detection());
+	side_sensors_control(false);
+
+	set_linear_acceleration(get_linear_acceleration() / 2.);
+	set_linear_deceleration(get_linear_deceleration() / 2.);
+
+	front_wall_distance = get_front_wall_distance();
+	error = front_wall_distance - distance;
+	target_straight(get_encoder_average_micrometers(), error, 0.);
+
+	set_linear_acceleration(get_linear_acceleration() * 2.);
+	set_linear_deceleration(get_linear_deceleration() * 2.);
 }
 
 /**
