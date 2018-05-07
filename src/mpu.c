@@ -22,7 +22,7 @@
 #define MPU_GYRO_SENSITIVITY_2000_DPS 16.4
 
 /**
- * @brief Read a mpu register.
+ * @brief Read a MPU register.
  *
  * @param[in] address Register address.
  */
@@ -41,7 +41,7 @@ static uint8_t mpu_read_register(uint8_t address)
 }
 
 /**
- * @brief Write a mpu register with a given value.
+ * @brief Write a MPU register with a given value.
  *
  * @param[in] address Register address.
  * @param[in] address Register value.
@@ -67,18 +67,20 @@ uint8_t mpu_who_am_i(void)
 }
 
 /**
- * @brief MPU-6500 board setup to configure the gyroscope z
+ * @brief MPU-6500 board setup.
  *
- * - Configure spi with low speed to write (less than 1MHz)
- * - Reset mpu restoring default settings and wait 100 ms.
- * - Reset signal path and wait 100 ms.
+ * MPU is configured as follows:
+ *
+ * - Configure SPI at low speed to write (less than 1MHz)
+ * - Reset MPU restoring default settings and wait 100 ms
+ * - Reset signal path and wait 100 ms
  * - Set SPI mode, reset I2C Slave module
  * - Sample Rate Divider (dix) equal to 0 where: SampleRate = InternalSample /
  *   (1 + div)
- * - DLPF(Dual Low Pass Filter) configuration to 0 with 250 Hz of bandwidth
- *   and InternalSample = 8 KHz
- * - Gyroscope configuration to use DLPF and to select +-2000 dps and 16.4 LSB
- * - Configure spi with high speed (less than 20MHz)
+ * - Set DLPF (Dual Low Pass Filter) configuration to 0 with 250 Hz of
+ *   bandwidth and InternalSample = 8 kHz
+ * - Configure gyroscope's Z-axis with DLPF, -2000 dps and 16.4 LSB
+ * - Configure SPI at high speed (less than 20MHz)
  * - Wait 100 ms
  */
 void mpu_setup(void)
@@ -97,7 +99,7 @@ void mpu_setup(void)
 }
 
 /**
- * @brief Get gyroscope z current value on bits per second
+ * @brief Get gyroscope's Z-axis angular speed in bits per second.
  */
 int16_t get_gyro_z_raw(void)
 {
@@ -106,22 +108,19 @@ int16_t get_gyro_z_raw(void)
 }
 
 /**
- * @brief Get gyroscope z current value on degrees per second
+ * @brief Get gyroscope's Z-axis angular speed in degrees per second.
  */
 float get_gyro_z_dps(void)
 {
-	return ((int16_t)((mpu_read_register(MPU_GYRO_ZOUT_H) << BYTE) |
-			  mpu_read_register(MPU_GYRO_ZOUT_L)) /
-		MPU_GYRO_SENSITIVITY_2000_DPS);
+	return (get_gyro_z_raw() / MPU_GYRO_SENSITIVITY_2000_DPS);
 }
 
 /**
- * @brief Gyroscope z calibration
+ * @brief Calibrate the gyroscope's Z axis.
  *
- * This function should be executed when the robot is stopped. The gyro z
- * output at that moment shall be substracted from the gyro output since then.
- * The offset values are saved on 2’s complement on 16 bits with spi low
- * speed. After write, the offset value we will wait 100 ms.
+ * This function should be executed when the robot is stopped. The gyroscope z
+ * output at that moment will be substracted from the gyro output from that
+ * moment on. To write MPU registers, the SPI speed is changed to low speed.
  */
 void gyro_z_calibration(void)
 {

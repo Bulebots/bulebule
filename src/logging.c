@@ -233,23 +233,17 @@ void log_walls_detection(void)
 }
 
 /**
- * @brief Log gyroscope z raw readings, published for real-time.
+ * @brief Log gyroscope's Z-axis raw readings, published for real-time.
  */
 void log_gyro_raw_pub(void)
 {
-	float reading;
-
-	reading = get_gyro_z_raw();
-	LOG_INFO("PUB,line,gyro_raw,%f", reading);
+	LOG_INFO("PUB,line,gyro_raw,%f", (float)get_gyro_z_raw());
 }
 
 /**
- * @brief Log gyroscope z dps readings, published for real-time.
+ * @brief Log gyroscope's Z-axis dps readings, published for real-time.
  */
 void log_gyro_dps_pub(void)
 {
-	float reading;
-
-	reading = get_gyro_z_dps();
-	LOG_INFO("PUB,line,gyro_dps,%f", reading);
+	LOG_INFO("PUB,line,gyro_dps,%f", (float)get_gyro_z_dps());
 }
