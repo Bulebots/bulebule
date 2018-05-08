@@ -9,7 +9,7 @@ void set_starting_position(void)
 {
 	current_cell_start_micrometers =
 	    get_encoder_average_micrometers() -
-	    (MOUSE_TAIL - WALL_WIDTH / 2) * MICROMETERS_PER_METER;
+	    (MOUSE_TAIL + WALL_WIDTH / 2) * MICROMETERS_PER_METER;
 }
 
 float get_max_linear_speed(void)
