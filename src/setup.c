@@ -295,7 +295,7 @@ static void setup_systick(void)
  *   side, right side, left front, right front.
  * - Power off the ADC to be sure that does not run during configuration.
  * - Enable scan mode with single conversion mode triggered by software.
- * - Configure the alignment (right) and the sample time (28.5 cycles of ADC
+ * - Configure the alignment (right) and the sample time (13.5 cycles of ADC
  *   clock).
  * - Set injected sequence with channel_sequence structure.
  * - Power on the ADC and wait for ADC starting up (at least 3 us).
@@ -321,7 +321,7 @@ static void setup_adc1(void)
 	adc_set_single_conversion_mode(ADC1);
 	adc_enable_external_trigger_injected(ADC1, ADC_CR2_JEXTSEL_JSWSTART);
 	adc_set_right_aligned(ADC1);
-	adc_set_sample_time_on_all_channels(ADC1, ADC_SMPR_SMP_28DOT5CYC);
+	adc_set_sample_time_on_all_channels(ADC1, ADC_SMPR_SMP_13DOT5CYC);
 	adc_set_injected_sequence(
 	    ADC1, sizeof(channel_sequence) / sizeof(channel_sequence[0]),
 	    channel_sequence);
