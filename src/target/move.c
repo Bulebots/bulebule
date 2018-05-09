@@ -1,6 +1,6 @@
 #include "move.h"
 
-static volatile float max_linear_speed = .6;
+static volatile float max_linear_speed = .5;
 
 /* Assume the mouse tail is initially touching a wall */
 static int32_t current_cell_start_micrometers;
@@ -109,7 +109,7 @@ void disable_walls_control(void)
 	front_sensors_control(false);
 }
 
-void change_speed(float speed)
+static void change_speed(float speed)
 {
 	set_target_linear_speed(speed);
 	while (get_ideal_linear_speed() != speed)
@@ -215,11 +215,11 @@ void turn_left(void)
 {
 	uint32_t starting_time = get_clock_ticks();
 
-	set_target_angular_speed(-4 * PI);
-	while (get_clock_ticks() - starting_time <= 125)
+	set_target_angular_speed(-3 * PI);
+	while (get_clock_ticks() - starting_time <= 166)
 		;
 	set_target_angular_speed(0);
-	while (get_clock_ticks() - starting_time <= 250)
+	while (get_clock_ticks() - starting_time <= 260)
 		;
 }
 
@@ -230,11 +230,11 @@ void turn_right(void)
 {
 	uint32_t starting_time = get_clock_ticks();
 
-	set_target_angular_speed(4 * PI);
-	while (get_clock_ticks() - starting_time <= 125)
+	set_target_angular_speed(3 * PI);
+	while (get_clock_ticks() - starting_time <= 166)
 		;
 	set_target_angular_speed(0);
-	while (get_clock_ticks() - starting_time <= 250)
+	while (get_clock_ticks() - starting_time <= 260)
 		;
 }
 
@@ -250,18 +250,30 @@ void move_front(void)
 }
 
 /**
+ * @brief Move left or right into the next cell.
+ */
+static void move_side(enum step_direction side)
+{
+	enable_walls_control();
+	target_straight(current_cell_start_micrometers,
+			0.02 - MOUSE_AXIS_SEPARATION / 2., 0.448);
+	disable_walls_control();
+	if (side == RIGHT)
+		turn_right();
+	else
+		turn_left();
+	enable_walls_control();
+	target_straight(get_encoder_average_micrometers(),
+			0.02 + MOUSE_AXIS_SEPARATION / 2., max_linear_speed);
+	entered_next_cell();
+}
+
+/**
  * @brief Move left into the next cell.
  */
 void move_left(void)
 {
-	enable_walls_control();
-	target_straight(current_cell_start_micrometers, 0.03, 0.404);
-	disable_walls_control();
-	turn_left();
-	enable_walls_control();
-	target_straight(get_encoder_average_micrometers(), 0.03,
-			max_linear_speed);
-	entered_next_cell();
+	move_side(LEFT);
 }
 
 /**
@@ -269,14 +281,7 @@ void move_left(void)
  */
 void move_right(void)
 {
-	enable_walls_control();
-	target_straight(current_cell_start_micrometers, 0.03, 0.404);
-	disable_walls_control();
-	turn_right();
-	enable_walls_control();
-	target_straight(get_encoder_average_micrometers(), 0.03,
-			max_linear_speed);
-	entered_next_cell();
+	move_side(RIGHT);
 }
 
 /**

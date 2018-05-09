@@ -20,6 +20,7 @@
 #define WALL_WIDTH 0.012
 #define MOUSE_TAIL 0.037
 #define MOUSE_HEAD 0.057
+#define MOUSE_AXIS_SEPARATION 0.0223
 #define MIDDLE_MAZE_DISTANCE ((CELL_DIMENSION - WALL_WIDTH) / 2.)
 
 /** System clock frequency is set in `setup_clock` */
