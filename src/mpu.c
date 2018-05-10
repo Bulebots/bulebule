@@ -1,8 +1,12 @@
 #include "mpu.h"
 
 #define BYTE 8
-#define MPU_READ 0x80
+#define MPU_CAL_SAMPLE_NUM 100
+#define MPU_AVERAGE_FACTOR 2
+#define MPU_COMPLEMENT_2_FACTOR 2
+#define MPU_CAL_SAMPLE_US 1000
 
+#define MPU_READ 0x80
 #define MPU_SMPLRT_DIV 25
 #define MPU_CONFIG 26
 #define MPU_GYRO_CONFIG 27
@@ -20,7 +24,6 @@
 #define MPU_MASK_L 0x00FF
 
 #define MPU_GYRO_SENSITIVITY_2000_DPS 16.4
-
 /**
  * @brief Read a MPU register.
  *
@@ -118,15 +121,22 @@ float get_gyro_z_dps(void)
 /**
  * @brief Calibrate the gyroscope's Z axis.
  *
- * This function should be executed when the robot is stopped. The gyroscope z
- * output at that moment will be substracted from the gyro output from that
+ * This function should be executed when the robot is stopped. The average of
+ * gyroscope z output will be substracted from the gyro output from that
  * moment on. To write MPU registers, the SPI speed is changed to low speed.
  */
 void gyro_z_calibration(void)
 {
 	int16_t zout_c2;
+	float zout_av = 0;
+	int8_t i;
 
-	zout_c2 = -get_gyro_z_raw();
+	for (i = 0; i < MPU_CAL_SAMPLE_NUM; i++) {
+		zout_av =
+		    ((float)get_gyro_z_raw() + zout_av) / MPU_AVERAGE_FACTOR;
+		sleep_us(MPU_CAL_SAMPLE_US);
+	}
+	zout_c2 = -(int16_t)(zout_av * MPU_COMPLEMENT_2_FACTOR);
 	setup_spi_low_speed();
 	mpu_write_register(MPU_Z_OFFS_USR_H,
 			   ((uint8_t)((zout_c2 & MPU_MASK_H) >> BYTE)));
