@@ -24,5 +24,6 @@ void log_front_sensors_error(void);
 void log_walls_detection(void);
 void log_gyro_raw_pub(void);
 void log_gyro_dps_pub(void);
+void log_gyro_degrees_pub(void);
 
 #endif /* __LOGGING_H */

@@ -45,6 +45,7 @@ host = "127.0.0.1"
 publisher.bind('tcp://{}:{}'.format(host, 5000))
 buf = b''
 log = []
+integ_pc = 0
 while True:
     try:
         i = ser.read(80)
@@ -57,6 +58,10 @@ while True:
         elif data[2] == 'gyro_dps':
             gyro_dps = float(data[3])
             publisher.send_pyobj(('gyro_dps', now.timestamp(), gyro_dps))
+        elif data[2] == 'gyro_degrees':
+            gyro_degrees = float(data[3])
+            publisher.send_pyobj(('gyro_degrees', now.timestamp(),
+                                  gyro_degrees))
         else:
             pass
         last_time = now.timestamp()

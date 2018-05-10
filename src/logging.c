@@ -247,3 +247,11 @@ void log_gyro_dps_pub(void)
 {
 	LOG_INFO("PUB,line,gyro_dps,%f", (float)get_gyro_z_dps());
 }
+
+/**
+ * @brief Log gyroscope's Z-axis degrees readings, published for real-time.
+ */
+void log_gyro_degrees_pub(void)
+{
+	LOG_INFO("PUB,line,gyro_degrees,%f", get_gyro_z_degrees());
+}

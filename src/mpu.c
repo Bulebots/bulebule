@@ -26,6 +26,7 @@
 #define MPU_GYRO_SENSITIVITY_2000_DPS 16.4
 #define MPU_DPS_TO_RADPS (3.14 / 180)
 
+static float deg_integ;
 /**
  * @brief Read a MPU register.
  *
@@ -117,7 +118,7 @@ int16_t get_gyro_z_raw(void)
  */
 float get_gyro_z_dps(void)
 {
-	return (get_gyro_z_raw() / MPU_GYRO_SENSITIVITY_2000_DPS);
+	return ((float)get_gyro_z_raw() / MPU_GYRO_SENSITIVITY_2000_DPS);
 }
 
 /**
@@ -125,7 +126,7 @@ float get_gyro_z_dps(void)
  */
 float get_gyro_z_radps(void)
 {
-	return (get_gyro_z_raw() * MPU_DPS_TO_RADPS /
+	return ((float)get_gyro_z_raw() * MPU_DPS_TO_RADPS /
 		MPU_GYRO_SENSITIVITY_2000_DPS);
 }
 
@@ -142,6 +143,7 @@ void gyro_z_calibration(void)
 	float zout_av = 0;
 	int8_t i;
 
+	deg_integ = 0;
 	for (i = 0; i < MPU_CAL_SAMPLE_NUM; i++) {
 		zout_av =
 		    ((float)get_gyro_z_raw() + zout_av) / MPU_AVERAGE_FACTOR;
@@ -154,4 +156,21 @@ void gyro_z_calibration(void)
 	mpu_write_register(MPU_Z_OFFS_USR_L, (uint8_t)(zout_c2 & MPU_MASK_L));
 	setup_spi_high_speed();
 	sleep_us(100000);
+}
+
+/**
+ * @brief Update the static gyroscope's Z-axis variables
+ * depending on systick.
+ */
+void update_gyro_readings(void)
+{
+	deg_integ = deg_integ - get_gyro_z_dps() / SYSTICK_FREQUENCY_HZ;
+}
+
+/**
+ * @brief Get gyroscope's Z-axis degrees.
+ */
+float get_gyro_z_degrees(void)
+{
+	return deg_integ;
 }
