@@ -341,6 +341,7 @@ void setup(void)
 	setup_usart();
 	setup_encoders();
 	setup_pwm();
+	setup_mpu();
 	setup_systick();
 	setup_timer1();
 	setup_adc1();

@@ -57,7 +57,6 @@ void solve(void)
 int main(void)
 {
 	setup();
-	mpu_setup();
 	gyro_z_calibration();
 	initialize_solver_direction();
 	while (1) {

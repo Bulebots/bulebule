@@ -88,7 +88,7 @@ uint8_t mpu_who_am_i(void)
  * - Configure SPI at high speed (less than 20MHz)
  * - Wait 100 ms
  */
-void mpu_setup(void)
+void setup_mpu(void)
 {
 	setup_spi_low_speed();
 	mpu_write_register(MPU_PWR_MGMT_1, 0x80);
