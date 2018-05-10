@@ -147,27 +147,65 @@ void target_straight(int32_t start, float distance, float speed)
 }
 
 /**
+ * @brief Wait until the robot is perpendicular with respect to the front wall.
+ */
+static void wait_front_perpendicular(float error)
+{
+	int i;
+	float average = 0.;
+
+	while (true) {
+		for (i = 0; i < 10; i++) {
+			average += get_front_sensors_error();
+			sleep_ticks(1);
+		}
+		average /= 10;
+		if (average < error)
+			break;
+	}
+}
+
+/**
  * @brief Keep a specified distance from the front wall.
  *
  * @param[in] distance Distance to keep from the front wall, in meters.
+ * @param[in] error Allowed error, in meters.
  */
-void keep_front_wall_distance(float distance)
+void keep_front_wall_distance(float distance, float error)
 {
-	float error;
+	int i;
+	float diff;
 	float front_wall_distance;
 
-	front_sensors_control(front_wall_detection());
-	side_sensors_control(false);
+	if (!front_wall_detection())
+		return;
 
 	set_linear_acceleration(get_linear_acceleration() / 2.);
 	set_linear_deceleration(get_linear_deceleration() / 2.);
 
-	front_wall_distance = get_front_wall_distance();
-	error = front_wall_distance - distance;
-	target_straight(get_encoder_average_micrometers(), error, 0.);
+	while (true) {
+		front_sensors_control(true);
+		side_sensors_control(false);
+
+		wait_front_perpendicular(error);
+
+		front_wall_distance = 0.;
+		for (i = 0; i < 10; i++) {
+			front_wall_distance += get_front_wall_distance();
+			sleep_ticks(1);
+		}
+		front_wall_distance /= 10;
+		diff = front_wall_distance - distance;
+		if (fabsf(diff) < error)
+			break;
+		target_straight(get_encoder_average_micrometers(), diff, 0.);
+	}
 
 	set_linear_acceleration(get_linear_acceleration() * 2.);
 	set_linear_deceleration(get_linear_deceleration() * 2.);
+
+	disable_walls_control();
+	reset_control_all();
 }
 
 /**
@@ -239,6 +277,44 @@ void turn_right(void)
 }
 
 /**
+ * @brief Turn left or right in-place (90-degree turn with zero linear speed).
+ */
+void turn_side(enum step_direction side)
+{
+	if (side == RIGHT)
+		turn_right();
+	else
+		turn_left();
+}
+
+/**
+ * @brief Randomly choose between `LEFT` and `RIGHT`.
+ */
+static enum step_direction choose_random_side(void)
+{
+	if (read_cycle_counter() % 2)
+		return RIGHT;
+	return LEFT;
+}
+
+/**
+ * @brief Turn back (180-degree turn) and correct with front walls if possible.
+ */
+void turn_back(void)
+{
+	enum step_direction side;
+
+	keep_front_wall_distance(CELL_DIMENSION / 2., 0.001);
+	side = choose_random_side();
+	turn_side(side);
+	keep_front_wall_distance(CELL_DIMENSION / 2., 0.001);
+	turn_side(side);
+	current_cell_start_micrometers =
+	    get_encoder_average_micrometers() -
+	    (CELL_DIMENSION / 2.) * MICROMETERS_PER_METER;
+}
+
+/**
  * @brief Move front into the next cell.
  */
 void move_front(void)
@@ -258,10 +334,7 @@ static void move_side(enum step_direction side)
 	target_straight(current_cell_start_micrometers,
 			0.02 - MOUSE_AXIS_SEPARATION / 2., 0.448);
 	disable_walls_control();
-	if (side == RIGHT)
-		turn_right();
-	else
-		turn_left();
+	turn_side(side);
 	enable_walls_control();
 	target_straight(get_encoder_average_micrometers(),
 			0.02 + MOUSE_AXIS_SEPARATION / 2., max_linear_speed);
@@ -289,21 +362,8 @@ void move_right(void)
  */
 void move_back(void)
 {
-	int32_t shift;
-
 	stop_middle();
-	shift =
-	    get_encoder_average_micrometers() - current_cell_start_micrometers;
-	if (read_cycle_counter() % 2) {
-		turn_right();
-		turn_right();
-	} else {
-		turn_left();
-		turn_left();
-	}
-	current_cell_start_micrometers = get_encoder_average_micrometers() +
-					 shift -
-					 CELL_DIMENSION * MICROMETERS_PER_METER;
+	turn_back();
 	move_front();
 }
 
