@@ -24,6 +24,8 @@
 #define MPU_MASK_L 0x00FF
 
 #define MPU_GYRO_SENSITIVITY_2000_DPS 16.4
+#define MPU_DPS_TO_RADPS (3.14 / 180)
+
 /**
  * @brief Read a MPU register.
  *
@@ -116,6 +118,15 @@ int16_t get_gyro_z_raw(void)
 float get_gyro_z_dps(void)
 {
 	return (get_gyro_z_raw() / MPU_GYRO_SENSITIVITY_2000_DPS);
+}
+
+/**
+ * @brief Get gyroscope's Z-axis angular speed in radians per second.
+ */
+float get_gyro_z_radps(void)
+{
+	return (get_gyro_z_raw() * MPU_DPS_TO_RADPS /
+		MPU_GYRO_SENSITIVITY_2000_DPS);
 }
 
 /**
