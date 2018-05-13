@@ -109,13 +109,6 @@ void disable_walls_control(void)
 	front_sensors_control(false);
 }
 
-static void change_speed(float speed)
-{
-	set_target_linear_speed(speed);
-	while (get_ideal_linear_speed() != speed)
-		;
-}
-
 /**
  * @brief Reach a target position at a target speed.
  *
@@ -143,7 +136,9 @@ void target_straight(int32_t start, float distance, float speed)
 			   (int32_t)required_micrometers_to_speed(speed))
 			;
 	}
-	change_speed(speed);
+	set_target_linear_speed(speed);
+	while (get_ideal_linear_speed() != speed)
+		;
 }
 
 /**
