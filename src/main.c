@@ -58,7 +58,9 @@ void solve(void)
 int main(void)
 {
 	setup();
+	systick_interrupt_disable();
 	gyro_z_calibration();
+	systick_interrupt_enable();
 	initialize_solver_direction();
 	while (1) {
 		if (button_left_read_consecutive(500)) {

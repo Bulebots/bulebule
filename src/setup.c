@@ -248,7 +248,22 @@ static void setup_systick(void)
 {
 	systick_set_frequency(SYSTICK_FREQUENCY_HZ, SYSCLK_FREQUENCY_HZ);
 	systick_counter_enable();
+}
+
+/**
+ * @brief Enable SysTick interruption.
+ */
+void enable_systick_interruption(void)
+{
 	systick_interrupt_enable();
+}
+
+/**
+ * @brief Disable SysTick interruption.
+ */
+void disable_systick_interruption(void)
+{
+	systick_interrupt_disable();
 }
 
 /**

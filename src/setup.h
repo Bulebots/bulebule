@@ -58,5 +58,7 @@
 void setup(void);
 void setup_spi_low_speed(void);
 void setup_spi_high_speed(void);
+void enable_systick_interruption(void);
+void disable_systick_interruption(void);
 
 #endif /* __SETUP_H */
