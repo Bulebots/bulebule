@@ -304,11 +304,18 @@ void turn_back(void)
 {
 	enum step_direction side;
 
+	if (current_side_wall(LEFT) == current_side_wall(RIGHT))
+		side = choose_random_side();
+	else if (current_side_wall(RIGHT))
+		side = RIGHT;
+	else
+		side = LEFT;
+
 	keep_front_wall_distance(CELL_DIMENSION / 2., 0.001);
-	side = choose_random_side();
 	turn_side(side);
 	keep_front_wall_distance(CELL_DIMENSION / 2., 0.001);
 	turn_side(side);
+
 	current_cell_start_micrometers =
 	    get_encoder_average_micrometers() -
 	    (CELL_DIMENSION / 2.) * MICROMETERS_PER_METER;

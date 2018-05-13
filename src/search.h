@@ -39,6 +39,7 @@ void set_goal_classic(void);
 void set_search_initial_direction(enum compass_direction direction);
 void set_search_initial_state(void);
 enum compass_direction search_direction(void);
+bool current_side_wall(enum step_direction side);
 void move_search_position(enum step_direction step);
 enum step_direction best_neighbor_step(struct walls_around walls);
 uint8_t search_position(void);

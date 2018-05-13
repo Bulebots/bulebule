@@ -128,6 +128,36 @@ static enum compass_direction next_compass_direction(enum step_direction step)
 }
 
 /**
+ * @brief Check if there is a wall at the current position and provided side.
+ *
+ * @param[in] side Where to look for the wall.
+ */
+bool current_side_wall(enum step_direction side)
+{
+	uint8_t bit = 0;
+	enum compass_direction direction;
+
+	direction = next_compass_direction(side);
+	switch (direction) {
+	case EAST:
+		bit = EAST_BIT;
+		break;
+	case SOUTH:
+		bit = SOUTH_BIT;
+		break;
+	case WEST:
+		bit = WEST_BIT;
+		break;
+	case NORTH:
+		bit = NORTH_BIT;
+		break;
+	default:
+		break;
+	}
+	return (maze_walls[current_position] & bit);
+}
+
+/**
  * @brief Return the position after a given step.
  */
 static uint8_t next_step_position(enum step_direction step)
