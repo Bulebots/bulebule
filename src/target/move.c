@@ -138,11 +138,11 @@ static void wait_front_perpendicular(float error)
 	float average = 0.;
 
 	while (true) {
-		for (i = 0; i < 10; i++) {
+		for (i = 0; i < 20; i++) {
 			average += get_front_sensors_error();
-			sleep_ticks(1);
+			sleep_ticks(2);
 		}
-		average /= 10;
+		average /= 20;
 		if (average < error)
 			break;
 	}
@@ -173,11 +173,11 @@ void keep_front_wall_distance(float distance, float error)
 		wait_front_perpendicular(error);
 
 		front_wall_distance = 0.;
-		for (i = 0; i < 10; i++) {
+		for (i = 0; i < 20; i++) {
 			front_wall_distance += get_front_wall_distance();
-			sleep_ticks(1);
+			sleep_ticks(2);
 		}
-		front_wall_distance /= 10;
+		front_wall_distance /= 20;
 		diff = front_wall_distance - distance;
 		if (fabsf(diff) < error)
 			break;
