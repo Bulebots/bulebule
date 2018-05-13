@@ -7,11 +7,11 @@ static volatile float ideal_angular_speed;
 
 static volatile float kp_linear = 1600.;
 static volatile float kd_linear = 100.;
-static volatile float kp_angular = 60.;
-static volatile float kd_angular = 50.;
-static volatile float ki_angular_front = 30.;
+static volatile float kp_angular = 40.;
+static volatile float kd_angular = 160.;
+static volatile float ki_angular_front = 20.;
 static volatile float ki_angular_side = 10.;
-static volatile float side_sensors_error_factor = 750.;
+static volatile float side_sensors_error_factor = 400.;
 static volatile float front_sensors_error_factor = 100.;
 static volatile float linear_error;
 static volatile float angular_error;
