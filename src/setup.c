@@ -146,6 +146,61 @@ static void setup_usart(void)
 }
 
 /**
+ * @brief Setup SPI.
+ *
+ * SPI2 is configured as follows:
+ *
+ * - Master mode.
+ * - Clock baud rate: PCLK1 / speed_div; PCLK1 = 36MHz.
+ * - Clock polarity: 0 (idle low; leading edge is a rising edge).
+ * - Clock phase: 0 (out changes on the trailing edge and input data
+ *   captured on rising edge).
+ * - Data frame format: 8-bits.
+ * - Frame format: MSB first.
+ *
+ * NSS is configured to be managed by software.
+ */
+static void setup_spi(uint8_t speed_div)
+{
+	gpio_set_mode(GPIOB, GPIO_MODE_OUTPUT_50_MHZ,
+		      GPIO_CNF_OUTPUT_ALTFN_PUSHPULL, GPIO13 | GPIO15);
+	gpio_set_mode(GPIOB, GPIO_MODE_OUTPUT_50_MHZ, GPIO_CNF_OUTPUT_PUSHPULL,
+		      GPIO12);
+	gpio_set_mode(GPIOB, GPIO_MODE_INPUT, GPIO_CNF_INPUT_FLOAT, GPIO14);
+
+	spi_reset(SPI2);
+
+	spi_init_master(SPI2, speed_div, SPI_CR1_CPOL_CLK_TO_0_WHEN_IDLE,
+			SPI_CR1_CPHA_CLK_TRANSITION_1, SPI_CR1_DFF_8BIT,
+			SPI_CR1_MSBFIRST);
+
+	spi_enable_software_slave_management(SPI2);
+	spi_set_nss_high(SPI2);
+
+	spi_enable(SPI2);
+}
+
+/**
+ * @brief Setup SPI for gyroscope read, less than 20 MHz.
+ *
+ * The clock baudrate is 36 MHz / 2 = 18 MHz.
+ */
+void setup_spi_high_speed(void)
+{
+	setup_spi(SPI_CR1_BAUDRATE_FPCLK_DIV_2);
+}
+
+/**
+ * @brief Setup SPI for gyroscope Write, less than 1 MHz.
+ *
+ * The clock baudrate is 36 MHz / 64 = 0.5625 MHz.
+ */
+void setup_spi_low_speed(void)
+{
+	setup_spi(SPI_CR1_BAUDRATE_FPCLK_DIV_64);
+}
+
+/**
  * @brief Setup PWM for the motor drivers.
  *
  * TIM3 is used to generate both PWM signals (left and right motor):
@@ -360,59 +415,4 @@ void setup(void)
 	setup_systick();
 	setup_timer1();
 	setup_adc1();
-}
-
-/**
- * @brief Setup SPI.
- *
- * SPI2 is configured as follows:
- *
- * - Master mode.
- * - Clock baud rate: PCLK1 / speed_div; PCLK1 = 36MHz.
- * - Clock polarity: 0 (idle low; leading edge is a rising edge).
- * - Clock phase: 0 (out changes on the trailing edge and input data
- *   captured on rising edge).
- * - Data frame format: 8-bits.
- * - Frame format: MSB first.
- *
- * NSS is configured to be managed by software.
- */
-static void setup_spi(uint8_t speed_div)
-{
-	gpio_set_mode(GPIOB, GPIO_MODE_OUTPUT_50_MHZ,
-		      GPIO_CNF_OUTPUT_ALTFN_PUSHPULL, GPIO13 | GPIO15);
-	gpio_set_mode(GPIOB, GPIO_MODE_OUTPUT_50_MHZ, GPIO_CNF_OUTPUT_PUSHPULL,
-		      GPIO12);
-	gpio_set_mode(GPIOB, GPIO_MODE_INPUT, GPIO_CNF_INPUT_FLOAT, GPIO14);
-
-	spi_reset(SPI2);
-
-	spi_init_master(SPI2, speed_div, SPI_CR1_CPOL_CLK_TO_0_WHEN_IDLE,
-			SPI_CR1_CPHA_CLK_TRANSITION_1, SPI_CR1_DFF_8BIT,
-			SPI_CR1_MSBFIRST);
-
-	spi_enable_software_slave_management(SPI2);
-	spi_set_nss_high(SPI2);
-
-	spi_enable(SPI2);
-}
-
-/**
- * @brief Setup SPI for gyroscope read, less than 20 MHz.
- *
- * The clock baudrate is 36 MHz / 2 = 18 MHz.
- */
-void setup_spi_high_speed(void)
-{
-	setup_spi(SPI_CR1_BAUDRATE_FPCLK_DIV_2);
-}
-
-/**
- * @brief Setup SPI for gyroscope Write, less than 1 MHz.
- *
- * The clock baudrate is 36 MHz / 64 = 0.5625 MHz.
- */
-void setup_spi_low_speed(void)
-{
-	setup_spi(SPI_CR1_BAUDRATE_FPCLK_DIV_64);
 }
