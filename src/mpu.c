@@ -26,8 +26,8 @@
 #define MPU_GYRO_SENSITIVITY_2000_DPS 16.4
 #define MPU_DPS_TO_RADPS (3.14 / 180)
 
-static float deg_integ;
-static int16_t gyro_z_raw;
+static volatile float deg_integ;
+static volatile int16_t gyro_z_raw;
 /**
  * @brief Read a MPU register.
  *
