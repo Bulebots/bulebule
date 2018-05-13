@@ -27,6 +27,7 @@
 #define MPU_DPS_TO_RADPS (3.14 / 180)
 
 static float deg_integ;
+static int16_t gyro_z_raw;
 /**
  * @brief Read a MPU register.
  *
@@ -109,25 +110,9 @@ void setup_mpu(void)
  */
 int16_t get_gyro_z_raw(void)
 {
+
 	return ((mpu_read_register(MPU_GYRO_ZOUT_H) << BYTE) |
 		mpu_read_register(MPU_GYRO_ZOUT_L));
-}
-
-/**
- * @brief Get gyroscope's Z-axis angular speed in degrees per second.
- */
-float get_gyro_z_dps(void)
-{
-	return ((float)get_gyro_z_raw() / MPU_GYRO_SENSITIVITY_2000_DPS);
-}
-
-/**
- * @brief Get gyroscope's Z-axis angular speed in radians per second.
- */
-float get_gyro_z_radps(void)
-{
-	return ((float)get_gyro_z_raw() * MPU_DPS_TO_RADPS /
-		MPU_GYRO_SENSITIVITY_2000_DPS);
 }
 
 /**
@@ -164,13 +149,42 @@ void gyro_z_calibration(void)
  */
 void update_gyro_readings(void)
 {
-	deg_integ = deg_integ - get_gyro_z_dps() / SYSTICK_FREQUENCY_HZ;
+	gyro_z_raw = get_gyro_z_raw();
+	deg_integ = deg_integ - get_systick_gyro_z_dps() / SYSTICK_FREQUENCY_HZ;
 }
 
 /**
- * @brief Get gyroscope's Z-axis degrees.
+ * @brief Get gyroscope's Z-axis degrees updated with the systick.
  */
-float get_gyro_z_degrees(void)
+float get_systick_gyro_z_degrees(void)
 {
 	return deg_integ;
+}
+
+/**
+ * @brief Get gyroscope's Z-axis angular speed in bits per second updated with
+ * the systick.
+ */
+int16_t get_systick_gyro_z_raw(void)
+{
+	return gyro_z_raw;
+}
+
+/**
+ * @brief Get gyroscope's Z-axis angular speed in radians per second updated
+ * with the systick.
+ */
+float get_systick_gyro_z_radps(void)
+{
+	return ((float)gyro_z_raw * MPU_DPS_TO_RADPS /
+		MPU_GYRO_SENSITIVITY_2000_DPS);
+}
+
+/**
+ * @brief Get gyroscope's Z-axis angular speed in degrees per second updated
+ * with the systick.
+ */
+float get_systick_gyro_z_dps(void)
+{
+	return ((float)gyro_z_raw / MPU_GYRO_SENSITIVITY_2000_DPS);
 }
