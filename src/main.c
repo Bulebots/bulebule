@@ -12,6 +12,7 @@
 #include "serial.h"
 #include "setup.h"
 #include "solve.h"
+#include "speed.h"
 
 static bool solved;
 static void solve(void);
@@ -62,6 +63,7 @@ int main(void)
 	gyro_z_calibration();
 	systick_interrupt_enable();
 	initialize_solver_direction();
+	set_speed_mode(0);
 	while (1) {
 		if (button_left_read_consecutive(500)) {
 			reset_motion();
