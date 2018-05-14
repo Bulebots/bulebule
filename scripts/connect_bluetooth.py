@@ -194,6 +194,7 @@ class Bulebule(cmd.Cmd):
     prompt = '>>> '
     LOG_SUBCOMMANDS = ['all', 'clear', 'save']
     PLOT_SUBCOMMANDS = ['linear_speed_profile', 'angular_speed_profile']
+    MOVE_SUBCOMMANDS = ['O', 'F', 'L', 'R', 'B', 'M', 'H', 'E', 'l', 'r', 'b']
     RUN_SUBCOMMANDS = [
         'angular_speed_profile',
         'linear_speed_profile',
@@ -294,6 +295,14 @@ class Bulebule(cmd.Cmd):
         else:
             print('Please, specify what to run!')
 
+    def do_move(self, extra):
+        """Execute a series of movements."""
+        if all(movement in self.MOVE_SUBCOMMANDS for movement in set(extra)):
+            self.proxy.send_bt('move %s\0' % extra)
+        else:
+            print('Please, specify a valid movement sequence!')
+            print('{}'.format(self.MOVE_SUBCOMMANDS))
+
     def complete_log(self, text, line, begidx, endidx):
         return complete_subcommands(text, self.LOG_SUBCOMMANDS)
 
@@ -302,6 +311,9 @@ class Bulebule(cmd.Cmd):
 
     def complete_run(self, text, line, begidx, endidx):
         return complete_subcommands(text, self.RUN_SUBCOMMANDS)
+
+    def complete_move(self, text, line, begidx, endidx):
+        return self.MOVE_SUBCOMMANDS
 
     def complete_set(self, text, line, begidx, endidx):
         return complete_subcommands(text, self.SET_SUBCOMMANDS)

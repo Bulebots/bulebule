@@ -11,6 +11,7 @@ static bool run_angular_speed_profile_signal;
 static bool run_linear_speed_profile_signal;
 static bool run_static_turn_right_profile_signal;
 static bool run_front_sensors_calibration_signal;
+static char run_movement_sequence_signal[BUFFER_SIZE];
 
 /**
  * @brief Push a single char to the serial received buffer.
@@ -99,6 +100,8 @@ static void process_command(void)
 		run_static_turn_right_profile_signal = true;
 	else if (!strcmp(buffer.data, "run front_sensors_calibration"))
 		run_front_sensors_calibration_signal = true;
+	else if (starts_with("move "))
+		strcpy(run_movement_sequence_signal, buffer.data);
 	else if (starts_with("set micrometers_per_count "))
 		set_micrometers_per_count(parse_spaced_float(2));
 	else if (starts_with("set wheels_separation "))
@@ -170,5 +173,8 @@ void execute_commands(void)
 	} else if (run_front_sensors_calibration_signal) {
 		run_front_sensors_calibration_signal = false;
 		run_front_sensors_calibration();
+	} else if (strlen(run_movement_sequence_signal)) {
+		run_movement_sequence(run_movement_sequence_signal);
+		run_movement_sequence_signal[0] = '\0';
 	}
 }
