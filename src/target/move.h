@@ -12,8 +12,6 @@
 #include "speed.h"
 
 void set_starting_position(void);
-float get_max_linear_speed(void);
-void set_max_linear_speed(float value);
 uint32_t required_micrometers_to_speed(float speed);
 float required_time_to_speed(float speed);
 uint32_t required_ticks_to_speed(float speed);

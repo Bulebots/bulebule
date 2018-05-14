@@ -10,10 +10,12 @@
 static volatile float linear_acceleration;
 static volatile float linear_deceleration;
 static volatile float angular_acceleration;
+static volatile float max_linear_speed;
 
 const float linear_acceleration_defaults[NUM_MODES] = {5., 0., 0.};
 const float linear_deceleration_defaults[NUM_MODES] = {5., 0., 0.};
 const float angular_acceleration_defaults[NUM_MODES] = {32. * PI, 0., 0.};
+const float max_linear_speed_defaults[NUM_MODES] = {.5, 0., 0.};
 
 float get_linear_acceleration(void)
 {
@@ -45,6 +47,16 @@ void set_angular_acceleration(float value)
 	angular_acceleration = value;
 }
 
+float get_max_linear_speed(void)
+{
+	return max_linear_speed;
+}
+
+void set_max_linear_speed(float value)
+{
+	max_linear_speed = value;
+}
+
 /**
  * @brief Set speed parameters with default values from a predefined mode.
  */
@@ -53,4 +65,5 @@ void set_speed_mode(uint8_t mode)
 	linear_acceleration = linear_acceleration_defaults[mode];
 	linear_deceleration = linear_deceleration_defaults[mode];
 	angular_acceleration = angular_acceleration_defaults[mode];
+	max_linear_speed = max_linear_speed_defaults[mode];
 }

@@ -1,7 +1,5 @@
 #include "move.h"
 
-static volatile float max_linear_speed = .5;
-
 /* Assume the mouse tail is initially touching a wall */
 static int32_t current_cell_start_micrometers;
 
@@ -10,16 +8,6 @@ void set_starting_position(void)
 	current_cell_start_micrometers =
 	    get_encoder_average_micrometers() -
 	    (MOUSE_TAIL + WALL_WIDTH / 2) * MICROMETERS_PER_METER;
-}
-
-float get_max_linear_speed(void)
-{
-	return max_linear_speed;
-}
-
-void set_max_linear_speed(float value)
-{
-	max_linear_speed = value;
 }
 
 /**
@@ -124,13 +112,13 @@ void target_straight(int32_t start, float distance, float speed)
 
 	target_distance = start + (int32_t)(distance * MICROMETERS_PER_METER);
 	if (distance > 0) {
-		set_target_linear_speed(max_linear_speed);
+		set_target_linear_speed(get_max_linear_speed());
 		while (get_encoder_average_micrometers() <
 		       target_distance -
 			   (int32_t)required_micrometers_to_speed(speed))
 			;
 	} else {
-		set_target_linear_speed(-max_linear_speed);
+		set_target_linear_speed(-get_max_linear_speed());
 		while (get_encoder_average_micrometers() >
 		       target_distance +
 			   (int32_t)required_micrometers_to_speed(speed))
@@ -323,7 +311,7 @@ void move_front(void)
 {
 	enable_walls_control();
 	target_straight(current_cell_start_micrometers, CELL_DIMENSION,
-			max_linear_speed);
+			get_max_linear_speed());
 	entered_next_cell();
 }
 
@@ -339,7 +327,8 @@ static void move_side(enum step_direction side)
 	turn_side(side);
 	enable_walls_control();
 	target_straight(get_encoder_average_micrometers(),
-			0.02 + MOUSE_AXIS_SEPARATION / 2., max_linear_speed);
+			0.02 + MOUSE_AXIS_SEPARATION / 2.,
+			get_max_linear_speed());
 	entered_next_cell();
 }
 
