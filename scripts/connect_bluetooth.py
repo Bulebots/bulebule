@@ -214,8 +214,8 @@ class Bulebule(cmd.Cmd):
         'kd_angular ',
         'ki_angular_side ',
         'ki_angular_front ',
-        'side_sensors_error_factor ',
-        'front_sensors_error_factor ',
+        'kp_angular_side ',
+        'kp_angular_front ',
     ]
 
     def cmdloop(self, intro=None):

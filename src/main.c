@@ -24,9 +24,9 @@ void sys_tick_handler(void)
 {
 	clock_tick();
 	update_ideal_speed();
-	update_encoder_readings();
 	update_distance_readings();
 	update_gyro_readings();
+	update_encoder_readings();
 	motor_control();
 }
 
@@ -59,8 +59,6 @@ void solve(void)
 int main(void)
 {
 	setup();
-	systick_interrupt_disable();
-	gyro_z_calibration();
 	systick_interrupt_enable();
 	initialize_solver_direction();
 	set_speed_mode(0);
@@ -68,16 +66,19 @@ int main(void)
 		if (button_left_read_consecutive(500)) {
 			reset_motion();
 			disable_walls_control();
-			enable_motor_control();
 			blink_burst();
-			sleep_ticks(5000);
+			sleep_us(5000000);
 			led_left_on();
 			led_right_on();
 			wait_front_sensor_close_signal(0.12);
 			led_left_off();
 			led_right_off();
-			sleep_ticks(2000);
+			sleep_us(2000000);
 			side_sensors_calibration();
+			systick_interrupt_disable();
+			gyro_z_calibration();
+			systick_interrupt_enable();
+			enable_motor_control();
 			solve();
 			if (collision_detected()) {
 				reset_motion();

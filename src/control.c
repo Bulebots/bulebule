@@ -7,12 +7,12 @@ static volatile float ideal_angular_speed;
 
 static volatile float kp_linear = 1600.;
 static volatile float kd_linear = 100.;
-static volatile float kp_angular = 40.;
-static volatile float kd_angular = 160.;
-static volatile float ki_angular_front = 20.;
-static volatile float ki_angular_side = 10.;
-static volatile float side_sensors_error_factor = 400.;
-static volatile float front_sensors_error_factor = 100.;
+static volatile float kp_angular = 5.;
+static volatile float kd_angular = 100.;
+static volatile float ki_angular_front = 200.;
+static volatile float ki_angular_side = 400.;
+static volatile float kp_angular_front = 50.;
+static volatile float kp_angular_side = 200.;
 static volatile float linear_error;
 static volatile float angular_error;
 static volatile float last_linear_error;
@@ -27,26 +27,6 @@ static volatile bool side_sensors_control_enabled;
 static volatile bool front_sensors_control_enabled;
 static volatile float side_sensors_integral;
 static volatile float front_sensors_integral;
-
-float get_side_sensors_error_factor(void)
-{
-	return side_sensors_error_factor;
-}
-
-void set_side_sensors_error_factor(float value)
-{
-	side_sensors_error_factor = value;
-}
-
-float get_front_sensors_error_factor(void)
-{
-	return front_sensors_error_factor;
-}
-
-void set_front_sensors_error_factor(float value)
-{
-	front_sensors_error_factor = value;
-}
 
 float get_kp_linear(void)
 {
@@ -85,6 +65,26 @@ float get_kd_angular(void)
 void set_kd_angular(float value)
 {
 	kd_angular = value;
+}
+
+float get_kp_angular_side(void)
+{
+	return kp_angular_side;
+}
+
+void set_kp_angular_side(float value)
+{
+	kp_angular_side = value;
+}
+
+float get_kp_angular_front(void)
+{
+	return kp_angular_front;
+}
+
+void set_kp_angular_front(float value)
+{
+	kp_angular_front = value;
 }
 
 float get_ki_angular_side(void)
@@ -338,19 +338,17 @@ void motor_control(void)
 	left_speed = get_encoder_left_speed();
 	right_speed = get_encoder_right_speed();
 	encoder_feedback_linear = (left_speed + right_speed) / 2.;
-	encoder_feedback_angular = get_encoder_angular_speed();
+	encoder_feedback_angular = -get_gyro_z_radps();
 
 	if (side_sensors_control_enabled) {
-		side_sensors_feedback =
-		    get_side_sensors_error() * side_sensors_error_factor;
+		side_sensors_feedback = get_side_sensors_error();
 		side_sensors_integral += side_sensors_feedback;
 	} else {
 		side_sensors_feedback = 0;
 	}
 
 	if (front_sensors_control_enabled) {
-		front_sensors_feedback =
-		    get_front_sensors_error() * front_sensors_error_factor;
+		front_sensors_feedback = get_front_sensors_error();
 		front_sensors_integral += front_sensors_feedback;
 
 	} else {
@@ -362,9 +360,10 @@ void motor_control(void)
 
 	linear_pwm = kp_linear * linear_error +
 		     kd_linear * (linear_error - last_linear_error);
-	angular_pwm = kp_angular * (angular_error + side_sensors_feedback +
-				    front_sensors_feedback) +
+	angular_pwm = kp_angular * angular_error +
 		      kd_angular * (angular_error - last_angular_error) +
+		      kp_angular_side * side_sensors_feedback +
+		      kp_angular_front * front_sensors_feedback +
 		      ki_angular_side * side_sensors_integral +
 		      ki_angular_front * front_sensors_integral;
 

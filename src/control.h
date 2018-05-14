@@ -8,10 +8,6 @@
 #include "setup.h"
 #include "speed.h"
 
-float get_side_sensors_error_factor(void);
-void set_side_sensors_error_factor(float value);
-float get_front_sensors_error_factor(void);
-void set_front_sensors_error_factor(float value);
 float get_kp_linear(void);
 void set_kp_linear(float value);
 float get_kd_linear(void);
@@ -20,6 +16,10 @@ float get_kp_angular(void);
 void set_kp_angular(float value);
 float get_kd_angular(void);
 void set_kd_angular(float value);
+float get_kp_angular_side(void);
+void set_kp_angular_side(float value);
+float get_kp_angular_front(void);
+void set_kp_angular_front(float value);
 float get_ki_angular_side(void);
 void set_ki_angular_side(float value);
 float get_ki_angular_front(void);
