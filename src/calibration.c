@@ -87,6 +87,9 @@ void run_static_turn_right_profile(void)
  * - 'M': to stop at the middle of the cell.
  * - 'H': to stop touching the front wall of the cell.
  * - 'E': to stop at the end of the cell.
+ * - 'l': to turn left (in place).
+ * - 'r': to turn right (in place).
+ * - 'b': to turn back (in place).
  */
 void run_movement_sequence(const char *sequence)
 {
@@ -123,6 +126,15 @@ void run_movement_sequence(const char *sequence)
 			break;
 		case 'E':
 			stop_end();
+			break;
+		case 'l':
+			turn_left();
+			break;
+		case 'r':
+			turn_right();
+			break;
+		case 'b':
+			turn_back();
 			break;
 		default:
 			break;
