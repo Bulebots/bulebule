@@ -74,10 +74,7 @@ int main(void)
 			led_left_off();
 			led_right_off();
 			sleep_us(2000000);
-			side_sensors_calibration();
-			systick_interrupt_disable();
-			gyro_z_calibration();
-			systick_interrupt_enable();
+			calibrate();
 			enable_motor_control();
 			solve();
 			if (collision_detected()) {

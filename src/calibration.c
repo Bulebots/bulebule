@@ -1,6 +1,19 @@
 #include "calibration.h"
 
 /**
+ * @brief Calibrate side sensors and gyroscope's Z axis.
+ *
+ * Should be executed only when the robot is static in the middle of a cell.
+ */
+void calibrate(void)
+{
+	side_sensors_calibration();
+	systick_interrupt_disable();
+	gyro_z_calibration();
+	systick_interrupt_enable();
+}
+
+/**
  * @brief Run a full linear profile test.
  *
  * The robot will accelerate and maintain the target speed for 0.5 m and then
@@ -12,6 +25,7 @@ void run_linear_speed_profile(void)
 {
 	int32_t start_micrometers;
 
+	calibrate();
 	disable_walls_control();
 	enable_motor_control();
 	each(10, log_linear_speed, 1000);
@@ -42,6 +56,7 @@ void run_angular_speed_profile(void)
 {
 	float target_angular_speed = 4 * PI;
 
+	calibrate();
 	disable_walls_control();
 	enable_motor_control();
 	each(10, log_angular_speed, 1000);
@@ -64,6 +79,7 @@ void run_static_turn_right_profile(void)
 {
 	float target_angular_speed = 4 * PI;
 
+	calibrate();
 	disable_walls_control();
 	enable_motor_control();
 	each(10, log_angular_speed, 1000);
@@ -95,6 +111,7 @@ void run_movement_sequence(const char *sequence)
 {
 	char movement;
 
+	calibrate();
 	reset_motion();
 	enable_motor_control();
 	while (true) {
@@ -163,6 +180,7 @@ void run_front_sensors_calibration(void)
 	int32_t micrometers_to_stop;
 	uint32_t ticks_to_stop;
 
+	calibrate();
 	disable_walls_control();
 	enable_motor_control();
 
