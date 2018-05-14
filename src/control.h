@@ -6,13 +6,8 @@
 #include "hmi.h"
 #include "motor.h"
 #include "setup.h"
+#include "speed.h"
 
-float get_linear_acceleration(void);
-void set_linear_acceleration(float value);
-float get_linear_deceleration(void);
-void set_linear_deceleration(float value);
-float get_angular_acceleration(void);
-void set_angular_acceleration(float value);
 float get_side_sensors_error_factor(void);
 void set_side_sensors_error_factor(float value);
 float get_front_sensors_error_factor(void);

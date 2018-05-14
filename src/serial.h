@@ -11,6 +11,7 @@
 #include "encoder.h"
 #include "logging.h"
 #include "move.h"
+#include "speed.h"
 
 void execute_commands(void);
 

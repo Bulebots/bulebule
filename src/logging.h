@@ -8,6 +8,7 @@
 #include "formatting.h"
 #include "move.h"
 #include "mpu.h"
+#include "speed.h"
 
 void log_battery_voltage(void);
 void log_configuration_variables(void);

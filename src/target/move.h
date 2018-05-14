@@ -9,6 +9,7 @@
 #include "motor.h"
 #include "search.h"
 #include "setup.h"
+#include "speed.h"
 
 void set_starting_position(void);
 float get_max_linear_speed(void);
