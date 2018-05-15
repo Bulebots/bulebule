@@ -236,11 +236,11 @@ void turn_left(void)
 {
 	uint32_t starting_time = get_clock_ticks();
 
-	set_target_angular_speed(-3 * PI);
-	while (get_clock_ticks() - starting_time <= 166)
+	set_target_angular_speed(-get_max_angular_speed());
+	while (get_clock_ticks() - starting_time <= get_turn_t0())
 		;
 	set_target_angular_speed(0);
-	while (get_clock_ticks() - starting_time <= 260)
+	while (get_clock_ticks() - starting_time <= get_turn_t1())
 		;
 }
 
@@ -251,11 +251,11 @@ void turn_right(void)
 {
 	uint32_t starting_time = get_clock_ticks();
 
-	set_target_angular_speed(3 * PI);
-	while (get_clock_ticks() - starting_time <= 166)
+	set_target_angular_speed(get_max_angular_speed());
+	while (get_clock_ticks() - starting_time <= get_turn_t0())
 		;
 	set_target_angular_speed(0);
-	while (get_clock_ticks() - starting_time <= 260)
+	while (get_clock_ticks() - starting_time <= get_turn_t1())
 		;
 }
 
@@ -322,12 +322,15 @@ static void move_side(enum step_direction side)
 {
 	enable_walls_control();
 	target_straight(current_cell_start_micrometers,
-			0.02 - MOUSE_AXIS_SEPARATION / 2., 0.448);
+			CELL_DIMENSION / 2 - get_turn_radius() -
+			    MOUSE_AXIS_SEPARATION / 2.,
+			get_turn_linear_speed());
 	disable_walls_control();
 	turn_side(side);
 	enable_walls_control();
 	target_straight(get_encoder_average_micrometers(),
-			0.02 + MOUSE_AXIS_SEPARATION / 2.,
+			CELL_DIMENSION / 2 - get_turn_radius() +
+			    MOUSE_AXIS_SEPARATION / 2.,
 			get_max_linear_speed());
 	entered_next_cell();
 }
