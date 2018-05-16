@@ -355,20 +355,21 @@ float get_side_right_distance(void)
  */
 float get_side_sensors_error(void)
 {
-	float sensors_error;
+	float left_error;
+	float right_error;
 
-	if ((distance[SENSOR_SIDE_LEFT_ID] > MIDDLE_MAZE_DISTANCE) &&
-	    (distance[SENSOR_SIDE_RIGHT_ID] < MIDDLE_MAZE_DISTANCE)) {
-		sensors_error =
-		    distance[SENSOR_SIDE_RIGHT_ID] - MIDDLE_MAZE_DISTANCE;
-	} else if ((distance[SENSOR_SIDE_RIGHT_ID] > MIDDLE_MAZE_DISTANCE) &&
-		   (distance[SENSOR_SIDE_LEFT_ID] < MIDDLE_MAZE_DISTANCE)) {
-		sensors_error =
-		    MIDDLE_MAZE_DISTANCE - distance[SENSOR_SIDE_LEFT_ID];
-	} else {
-		sensors_error = 0;
-	}
-	return sensors_error;
+	left_error = distance[SENSOR_SIDE_LEFT_ID] - MIDDLE_MAZE_DISTANCE;
+	right_error = distance[SENSOR_SIDE_RIGHT_ID] - MIDDLE_MAZE_DISTANCE;
+
+	if ((left_error > 0.) && (right_error < 0.))
+		return right_error;
+	if ((right_error > 0.) && (left_error < 0.))
+		return -left_error;
+	if ((left_error > 0.05) && (right_error < 0.05))
+		return right_error;
+	if ((right_error > 0.05) && (left_error < 0.05))
+		return -left_error;
+	return 0.;
 }
 
 /**
