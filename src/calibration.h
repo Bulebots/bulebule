@@ -9,6 +9,7 @@
 #include "logging.h"
 #include "move.h"
 #include "mpu.h"
+#include "setup.h"
 #include "speed.h"
 
 void calibrate(void);

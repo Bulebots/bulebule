@@ -194,7 +194,7 @@ class Bulebule(cmd.Cmd):
     prompt = '>>> '
     LOG_SUBCOMMANDS = ['all', 'clear', 'save']
     PLOT_SUBCOMMANDS = ['linear_speed_profile', 'angular_speed_profile']
-    MOVE_SUBCOMMANDS = ['O', 'F', 'L', 'R', 'B', 'M', 'H', 'E', 'l', 'r', 'b']
+    MOVE_SUBCOMMANDS = list('OFLRBMHElrbkj')
     RUN_SUBCOMMANDS = [
         'angular_speed_profile',
         'linear_speed_profile',
