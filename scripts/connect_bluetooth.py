@@ -187,7 +187,10 @@ class Proxy(Agent):
     def get_configuration_variables(self):
         self.filter_next(function='log_configuration_variables')
         self.send_bt('configuration_variables\0')
-        return json.loads(self.wait_filtered()[-1])
+        result = self.wait_filtered()
+        if result is None:
+            return {}
+        return json.loads(result[-1])
 
 
 class Bulebule(cmd.Cmd):
