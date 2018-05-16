@@ -15,7 +15,7 @@
 #include "speed.h"
 
 static bool solved;
-static void solve(void);
+static void competition(void);
 
 /**
  * @brief Handle the SysTick interruptions.
@@ -33,7 +33,7 @@ void sys_tick_handler(void)
 /**
  * @brief Solve an unknown maze.
  */
-void solve(void)
+static void solve(void)
 {
 	if (!solved)
 		initialize_search();
@@ -54,6 +54,84 @@ void solve(void)
 }
 
 /**
+ * @brief Includes the user configurations.
+ */
+static void user_configuration(void)
+{
+	uint8_t mode;
+
+	mode = speed_mode_configuration();
+	set_speed_mode(mode);
+}
+
+/**
+ * @brief Includes the functions to be executed before robot starts to move.
+ */
+static void before_moving(void)
+{
+	reset_motion();
+	disable_walls_control();
+	repeat_blink(10, 100);
+	sleep_us(5000000);
+	led_left_on();
+	led_right_on();
+	wait_front_sensor_close_signal(0.12);
+	led_left_off();
+	led_right_off();
+	sleep_us(2000000);
+	calibrate();
+	enable_motor_control();
+}
+
+/**
+ * @brief Functions to be executed when the solve phase is finished.
+ */
+static void after_moving(void)
+{
+	if (collision_detected()) {
+		reset_motion();
+		blink_collision();
+	} else {
+		repeat_blink(10, 100);
+	}
+	reset_motion();
+}
+
+/**
+ * @brief Includes the functions to be executed during exploration phase.
+ */
+static void exploration(void)
+{
+	user_configuration();
+	before_moving();
+	solve();
+	after_moving();
+}
+
+/**
+ * @brief Includes the functions to be executed during the run phase.
+ */
+static void run(void)
+{
+	user_configuration();
+	before_moving();
+	solve();
+	after_moving();
+}
+
+/**
+ * @brief Competition routine.
+ */
+static void competition(void)
+{
+	setup();
+	systick_interrupt_enable();
+	exploration();
+	while (1)
+		run();
+}
+
+/**
  * @brief Initial setup and infinite wait.
  */
 int main(void)
@@ -64,26 +142,9 @@ int main(void)
 	set_speed_mode(0);
 	while (1) {
 		if (button_left_read_consecutive(500)) {
-			reset_motion();
-			disable_walls_control();
-			blink_burst();
-			sleep_us(5000000);
-			led_left_on();
-			led_right_on();
-			wait_front_sensor_close_signal(0.12);
-			led_left_off();
-			led_right_off();
-			sleep_us(2000000);
-			calibrate();
-			enable_motor_control();
+			before_moving();
 			solve();
-			if (collision_detected()) {
-				reset_motion();
-				blink_collision();
-			} else {
-				blink_burst();
-			}
-			reset_motion();
+			after_moving();
 		}
 		execute_commands();
 	}

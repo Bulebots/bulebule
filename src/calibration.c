@@ -221,5 +221,5 @@ void run_front_sensors_calibration(void)
 	set_linear_acceleration(linear_acceleration);
 	set_linear_deceleration(linear_deceleration);
 
-	blink_burst();
+	repeat_blink(10, 100);
 }

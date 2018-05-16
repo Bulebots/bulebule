@@ -73,19 +73,22 @@ void led_bluepill_off(void)
 }
 
 /**
- * @brief Blink both LEDs a couple of times.
+ * @brief Blink LEDs a defined number of times.
+ *
+ * @param[in] count number of blinks.
+ * @param[in] time that LEDs are ON and OFF.
  */
-void blink_burst(void)
+void repeat_blink(uint8_t count, uint16_t time)
 {
 	int i;
 
-	for (i = 0; i < 10; i++) {
+	for (i = 0; i < count; i++) {
 		led_left_on();
 		led_right_on();
-		sleep_ticks(100);
+		sleep_ticks(time);
 		led_left_off();
 		led_right_off();
-		sleep_ticks(100);
+		sleep_ticks(time);
 	}
 }
 
@@ -191,4 +194,29 @@ void initialize_solver_direction(void)
 		}
 	}
 	sleep_ticks(2000);
+}
+
+/**
+ * @brief Configure the default speed mode with buttons and leds.
+ */
+uint8_t speed_mode_configuration(void)
+{
+	uint8_t mode = 0;
+
+	while (1) {
+		if (button_right_read_consecutive(500)) {
+			if (mode == NUM_MODES - 1)
+				mode = 0;
+			else
+				mode++;
+
+			repeat_blink(mode + 1, 300);
+		}
+		if (button_left_read_consecutive(1000)) {
+			led_left_on();
+			led_right_on();
+			sleep_ticks(2000);
+			return mode;
+		}
+	}
 }
