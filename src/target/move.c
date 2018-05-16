@@ -152,9 +152,8 @@ static void wait_front_perpendicular(float error)
  * @brief Keep a specified distance from the front wall.
  *
  * @param[in] distance Distance to keep from the front wall, in meters.
- * @param[in] error Allowed error, in meters.
  */
-void keep_front_wall_distance(float distance, float error)
+void keep_front_wall_distance(float distance)
 {
 	int i;
 	float diff;
@@ -170,7 +169,7 @@ void keep_front_wall_distance(float distance, float error)
 		front_sensors_control(true);
 		side_sensors_control(false);
 
-		wait_front_perpendicular(error);
+		wait_front_perpendicular(KEEP_FRONT_DISTANCE_TOLERANCE);
 
 		front_wall_distance = 0.;
 		for (i = 0; i < 20; i++) {
@@ -179,7 +178,7 @@ void keep_front_wall_distance(float distance, float error)
 		}
 		front_wall_distance /= 20;
 		diff = front_wall_distance - distance;
-		if (fabsf(diff) < error)
+		if (fabsf(diff) < KEEP_FRONT_DISTANCE_TOLERANCE)
 			break;
 		target_straight(get_encoder_average_micrometers(), diff, 0.);
 	}
@@ -294,9 +293,9 @@ void turn_back(void)
 	else
 		side = LEFT;
 
-	keep_front_wall_distance(CELL_DIMENSION / 2., 0.001);
+	keep_front_wall_distance(CELL_DIMENSION / 2.);
 	turn_side(side);
-	keep_front_wall_distance(CELL_DIMENSION / 2., 0.001);
+	keep_front_wall_distance(CELL_DIMENSION / 2.);
 	turn_side(side);
 
 	current_cell_start_micrometers =

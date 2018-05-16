@@ -156,10 +156,10 @@ void run_movement_sequence(const char *sequence)
 			turn_back();
 			break;
 		case 'k':
-			keep_front_wall_distance(CELL_DIMENSION / 2., 0.001);
+			keep_front_wall_distance(CELL_DIMENSION / 2.);
 			break;
 		case 'j':
-			keep_front_wall_distance(CELL_DIMENSION, 0.001);
+			keep_front_wall_distance(CELL_DIMENSION);
 			break;
 		default:
 			break;

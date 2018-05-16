@@ -47,6 +47,9 @@
  */
 #define MAX_PWM_SATURATION_PERIOD 0.01
 
+/** Tolerance when trying to keep a defined distance from the front wall */
+#define KEEP_FRONT_DISTANCE_TOLERANCE 0.001
+
 /** ADC constants */
 #define ADC_RESOLUTION 4096
 #define ADC_LSB (3.3 / ADC_RESOLUTION)

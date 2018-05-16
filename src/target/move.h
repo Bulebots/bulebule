@@ -17,7 +17,7 @@ float required_time_to_speed(float speed);
 uint32_t required_ticks_to_speed(float speed);
 void disable_walls_control(void);
 void target_straight(int32_t start, float distance, float speed);
-void keep_front_wall_distance(float distance, float error);
+void keep_front_wall_distance(float distance);
 void stop_end(void);
 void stop_head_front_wall(void);
 void stop_middle(void);
