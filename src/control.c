@@ -326,7 +326,7 @@ void motor_control(void)
 	float left_speed;
 	float right_speed;
 	float encoder_feedback_linear;
-	float encoder_feedback_angular;
+	float gyro_feedback_angular;
 	float linear_pwm;
 	float angular_pwm;
 	float side_sensors_feedback;
@@ -338,7 +338,7 @@ void motor_control(void)
 	left_speed = get_encoder_left_speed();
 	right_speed = get_encoder_right_speed();
 	encoder_feedback_linear = (left_speed + right_speed) / 2.;
-	encoder_feedback_angular = -get_gyro_z_radps();
+	gyro_feedback_angular = -get_gyro_z_radps();
 
 	if (side_sensors_control_enabled) {
 		side_sensors_feedback = get_side_sensors_error();
@@ -356,7 +356,7 @@ void motor_control(void)
 	}
 
 	linear_error += ideal_linear_speed - encoder_feedback_linear;
-	angular_error += ideal_angular_speed - encoder_feedback_angular;
+	angular_error += ideal_angular_speed - gyro_feedback_angular;
 
 	linear_pwm = kp_linear * linear_error +
 		     kd_linear * (linear_error - last_linear_error);
