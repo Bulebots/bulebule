@@ -119,6 +119,8 @@ void set_turn_t1(float value)
 
 /**
  * @brief Set speed parameters with default values from a predefined mode.
+ *
+ * @param[in] mode Speed mode from 0 to (NUM_MODES - 1).
  */
 void set_speed_mode(uint8_t mode)
 {

@@ -3,10 +3,6 @@
 
 #include "setup.h"
 
-/* Speed modes*/
-#define SLOW_MODE 0
-#define NORMAL_MODE 1
-#define FAST_MODE 2
 #define NUM_MODES 3
 
 float get_linear_acceleration(void);
