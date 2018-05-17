@@ -17,15 +17,16 @@ static volatile float turn_radius;
 static volatile float turn_t0;
 static volatile float turn_t1;
 
-const float linear_acceleration_defaults[NUM_MODES] = {5., 0., 0.};
-const float linear_deceleration_defaults[NUM_MODES] = {5., 0., 0.};
-const float angular_acceleration_defaults[NUM_MODES] = {32. * PI, 0., 0.};
-const float max_linear_speed_defaults[NUM_MODES] = {.5, 0., 0.};
-const float max_angular_speed_defaults[NUM_MODES] = {3 * PI, 0., 0.};
-const float turn_linear_speed_defaults[NUM_MODES] = {0.448, 0., 0.};
-const float turn_radius_defaults[NUM_MODES] = {0.07, 0., 0.};
-const float turn_t0_defaults[NUM_MODES] = {166, 0., 0.};
-const float turn_t1_defaults[NUM_MODES] = {260, 0., 0.};
+const float linear_acceleration_defaults[NUM_MODES] = {5., 5., 5.};
+const float linear_deceleration_defaults[NUM_MODES] = {5., 5., 5.};
+const float angular_acceleration_defaults[NUM_MODES] = {32. * PI, 48. * PI,
+							64. * PI};
+const float max_linear_speed_defaults[NUM_MODES] = {.5, 0.61, 0.72};
+const float max_angular_speed_defaults[NUM_MODES] = {3. * PI, 4. * PI, 6. * PI};
+const float turn_linear_speed_defaults[NUM_MODES] = {0.448, 0.566, 0.670};
+const float turn_radius_defaults[NUM_MODES] = {0.07, 0.07, 0.07};
+const float turn_t0_defaults[NUM_MODES] = {166, 124., 88.};
+const float turn_t1_defaults[NUM_MODES] = {260, 208., 176.};
 
 float get_linear_acceleration(void)
 {
