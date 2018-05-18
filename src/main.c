@@ -48,6 +48,8 @@ static void solve(void)
 	set_target_goal();
 
 	explore();
+	if (collision_detected())
+		return;
 
 	stop_middle();
 	solved = true;
