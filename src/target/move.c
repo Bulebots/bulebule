@@ -143,6 +143,8 @@ void target_straight(int32_t start, float distance, float speed)
 
 /**
  * @brief Wait until the robot is perpendicular with respect to the front wall.
+ *
+ * @param[in] error Allowed error, in meters.
  */
 static void wait_front_perpendicular(float error)
 {
