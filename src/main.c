@@ -43,9 +43,7 @@ static void solve(void)
 	set_starting_position();
 
 	initialize_search();
-	/* set_goal_classic(); */
-	add_goal(3, 5);
-	set_target_goal();
+	set_goal_classic();
 
 	explore();
 	if (collision_detected())
