@@ -3,6 +3,18 @@
 /* Assume the mouse tail is initially touching a wall */
 static int32_t current_cell_start_micrometers;
 
+/**
+ * @brief Return the current robot shift inside the cell, in meters.
+ *
+ * The shift is the traveled distance since the start of the cell.
+ */
+float current_cell_shift(void)
+{
+	return (float)(get_encoder_average_micrometers() -
+		       current_cell_start_micrometers) /
+	       MICROMETERS_PER_METER;
+}
+
 void set_starting_position(void)
 {
 	current_cell_start_micrometers =
