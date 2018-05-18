@@ -26,6 +26,7 @@ void turn_left(void);
 void turn_right(void);
 void turn_back(void);
 void move_front(void);
+void move_front_many(int cells);
 void move_left(void);
 void move_right(void);
 void move_back(void);

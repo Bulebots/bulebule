@@ -14,7 +14,6 @@
 #include "solve.h"
 #include "speed.h"
 
-static bool solved;
 static void competition(void);
 
 /**
@@ -31,37 +30,20 @@ void sys_tick_handler(void)
 }
 
 /**
- * @brief Solve an unknown maze.
+ * @brief Let the user configure the mouse before exploring or running.
+ *
+ * The user selects the speed mode with the buttons. Then, depending on the
+ * phase (exploration or run), speed configurations will be selected according
+ * to the speed mode.
+ *
+ * @param[in] run Whether the user is configuring for the run phase or not.
  */
-static void solve(void)
-{
-	if (!solved)
-		initialize_search();
-
-	reset_motion();
-	enable_motor_control();
-	set_starting_position();
-
-	initialize_search();
-	set_goal_classic();
-
-	explore();
-	if (collision_detected())
-		return;
-
-	stop_middle();
-	solved = true;
-}
-
-/**
- * @brief Includes the user configurations.
- */
-static void user_configuration(void)
+static void user_configuration(bool run)
 {
 	uint8_t mode;
 
 	mode = speed_mode_configuration();
-	set_speed_mode(mode);
+	set_speed_mode(mode, run);
 }
 
 /**
@@ -81,6 +63,7 @@ static void before_moving(void)
 	sleep_us(2000000);
 	calibrate();
 	enable_motor_control();
+	set_starting_position();
 }
 
 /**
@@ -100,22 +83,22 @@ static void after_moving(void)
 /**
  * @brief Includes the functions to be executed during exploration phase.
  */
-static void exploration(void)
+static void exploration_phase(void)
 {
-	user_configuration();
+	user_configuration(false);
 	before_moving();
-	solve();
+	explore();
 	after_moving();
 }
 
 /**
- * @brief Includes the functions to be executed during the run phase.
+ * @brief Includes the functions to be executed during the running phase.
  */
-static void run(void)
+static void running_phase(void)
 {
-	user_configuration();
+	user_configuration(true);
 	before_moving();
-	solve();
+	run();
 	after_moving();
 }
 
@@ -124,11 +107,13 @@ static void run(void)
  */
 static void competition(void)
 {
-	setup();
-	systick_interrupt_enable();
-	exploration();
+	initialize_solver_direction();
+	set_goal_classic();
+	set_target_goal();
+	exploration_phase();
+	set_run_sequence();
 	while (1)
-		run();
+		running_phase();
 }
 
 /**
@@ -138,12 +123,15 @@ int main(void)
 {
 	setup();
 	systick_interrupt_enable();
+	competition();
+	add_goal(3, 5);
+	set_target_goal();
 	initialize_solver_direction();
-	set_speed_mode(0);
+	set_speed_mode(0, false);
 	while (1) {
 		if (button_left_read_consecutive(500)) {
 			before_moving();
-			solve();
+			explore();
 			after_moving();
 		}
 		execute_commands();

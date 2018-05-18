@@ -310,7 +310,20 @@ void move_front(void)
 {
 	enable_walls_control();
 	target_straight(current_cell_start_micrometers, CELL_DIMENSION,
-			get_max_linear_speed());
+			get_max_end_linear_speed());
+	entered_next_cell();
+}
+
+/**
+ * @brief Move front many cells.
+ *
+ * @param[in] cells Number of cells to move front consecutively.
+ */
+void move_front_many(int cells)
+{
+	enable_walls_control();
+	target_straight(current_cell_start_micrometers, CELL_DIMENSION * cells,
+			get_max_end_linear_speed());
 	entered_next_cell();
 }
 
@@ -330,7 +343,7 @@ static void move_side(enum step_direction side)
 	target_straight(get_encoder_average_micrometers(),
 			CELL_DIMENSION / 2 - get_turn_radius() +
 			    MOUSE_AXIS_SEPARATION / 2.,
-			get_max_linear_speed());
+			get_max_end_linear_speed());
 	entered_next_cell();
 }
 

@@ -46,11 +46,11 @@ uint8_t search_position(void);
 uint8_t search_distance(void);
 enum step_direction search_step(bool left, bool front, bool right);
 void initialize_maze_walls(void);
-void initialize_search(void);
 void set_distances(void);
 void set_target_cell(uint8_t cell);
 void set_target_goal(void);
 void search_update(struct walls_around walls);
+struct walls_around current_walls_around(void);
 uint8_t find_unexplored_interesting_cell(void);
 
 #endif /* __SEARCH_H */

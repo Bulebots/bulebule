@@ -10,6 +10,7 @@
 static volatile float linear_acceleration;
 static volatile float linear_deceleration;
 static volatile float angular_acceleration;
+static volatile float max_end_linear_speed;
 static volatile float max_linear_speed;
 static volatile float max_angular_speed;
 static volatile float turn_linear_speed;
@@ -21,7 +22,9 @@ const float linear_acceleration_defaults[NUM_MODES] = {5., 5., 5.};
 const float linear_deceleration_defaults[NUM_MODES] = {5., 5., 5.};
 const float angular_acceleration_defaults[NUM_MODES] = {32. * PI, 48. * PI,
 							64. * PI};
+const float max_end_linear_speed_defaults[NUM_MODES] = {.5, 0.61, 0.72};
 const float max_linear_speed_defaults[NUM_MODES] = {.5, 0.61, 0.72};
+const float max_linear_speed_run_defaults[NUM_MODES] = {1., 1.5, 2.};
 const float max_angular_speed_defaults[NUM_MODES] = {3. * PI, 4. * PI, 6. * PI};
 const float turn_linear_speed_defaults[NUM_MODES] = {0.448, 0.566, 0.670};
 const float turn_radius_defaults[NUM_MODES] = {0.07, 0.07, 0.07};
@@ -66,6 +69,16 @@ float get_max_linear_speed(void)
 void set_max_linear_speed(float value)
 {
 	max_linear_speed = value;
+}
+
+float get_max_end_linear_speed(void)
+{
+	return max_end_linear_speed;
+}
+
+void set_max_end_linear_speed(float value)
+{
+	max_end_linear_speed = value;
 }
 
 float get_max_angular_speed(void)
@@ -122,13 +135,18 @@ void set_turn_t1(float value)
  * @brief Set speed parameters with default values from a predefined mode.
  *
  * @param[in] mode Speed mode from 0 to (NUM_MODES - 1).
+ * @param[in] run Whether or not to use run speed (as opposed to exploration).
  */
-void set_speed_mode(uint8_t mode)
+void set_speed_mode(uint8_t mode, bool run)
 {
 	linear_acceleration = linear_acceleration_defaults[mode];
 	linear_deceleration = linear_deceleration_defaults[mode];
 	angular_acceleration = angular_acceleration_defaults[mode];
-	max_linear_speed = max_linear_speed_defaults[mode];
+	if (run)
+		max_linear_speed = max_linear_speed_run_defaults[mode];
+	else
+		max_linear_speed = max_linear_speed_defaults[mode];
+	max_end_linear_speed = max_end_linear_speed_defaults[mode];
 	max_angular_speed = max_angular_speed_defaults[mode];
 	turn_linear_speed = turn_linear_speed_defaults[mode];
 	turn_radius = turn_radius_defaults[mode];

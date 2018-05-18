@@ -388,15 +388,6 @@ void move_search_position(enum step_direction step)
 	current_direction = next;
 }
 
-/**
- * @brief Initialize maze walls and set initial search state.
- */
-void initialize_search(void)
-{
-	initialize_maze_walls();
-	set_search_initial_state();
-}
-
 void search_update(struct walls_around walls)
 {
 	update_walls(walls);
@@ -406,7 +397,7 @@ void search_update(struct walls_around walls)
 /**
  * @brief Return the walls around at the current position.
  */
-static struct walls_around current_walls_around(void)
+struct walls_around current_walls_around(void)
 {
 	struct walls_around walls;
 	uint8_t cell;
