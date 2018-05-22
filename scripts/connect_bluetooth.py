@@ -142,7 +142,7 @@ class Proxy(Agent):
             try:
                 self.rfcomm.settimeout(1.)
                 self.rfcomm.send(message)
-            except Exception as error:
+            except Exception:
                 print_exc()
             # Wait for the robot ACK
             t0 = time.time()
