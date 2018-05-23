@@ -220,9 +220,14 @@ static void update_raw_readings(void)
 {
 	uint8_t i = 0;
 
-	inject_readings();
-	for (i = 0; i < NUM_SENSOR; i++)
+	for (i = 0; i < NUM_SENSOR; i++) {
+		inject_readings();
 		sensors_off[i] = adc_read_injected(ADC1, (i + 1));
+	}
+	for (i = 0; i < NUM_SENSOR; i++) {
+		inject_readings();
+		sensors_off[i] = adc_read_injected(ADC1, (i + 1));
+	}
 
 	for (i = 0; i < NUM_SENSOR; i++) {
 		set_emitter_on(i);
