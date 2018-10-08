@@ -202,7 +202,7 @@ void get_sensors_raw(uint16_t *off, uint16_t *on)
 }
 
 /**
- * @brief Update the sensors raw readings.
+ * @brief Start and wait for complete injection of sensor readings.
  */
 static void inject_readings(void)
 {
