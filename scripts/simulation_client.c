@@ -88,7 +88,6 @@ int main(void)
 	zmq_send(requester, "reset", 5, 0);
 	wait_response();
 
-	initialize_search();
 	set_goal_classic();
 	set_target_goal();
 
