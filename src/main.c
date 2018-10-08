@@ -117,6 +117,20 @@ static void competition(void)
 }
 
 /**
+ * @brief Training routine.
+ */
+static void training(void)
+{
+	initialize_solver_direction();
+	add_goal(3, 5);
+	set_target_goal();
+	exploration_phase();
+	set_run_sequence();
+	while (1)
+		running_phase();
+}
+
+/**
  * @brief Initial setup and infinite wait.
  */
 int main(void)
@@ -124,16 +138,9 @@ int main(void)
 	setup();
 	systick_interrupt_enable();
 	competition();
-	add_goal(3, 5);
-	set_target_goal();
-	initialize_solver_direction();
-	set_speed_mode(0, false);
 	while (1) {
-		if (button_left_read_consecutive(500)) {
-			before_moving();
-			explore();
-			after_moving();
-		}
+		if (button_left_read_consecutive(500))
+			training();
 		execute_commands();
 	}
 
