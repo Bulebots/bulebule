@@ -137,11 +137,10 @@ int main(void)
 {
 	setup();
 	systick_interrupt_enable();
-	// competition();
+	competition();
 	while (1) {
-		if (button_left_read_consecutive(500)) {
+		if (button_left_read_consecutive(500))
 			training();
-		}
 		execute_commands();
 	}
 
