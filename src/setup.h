@@ -26,6 +26,7 @@
 
 /** System clock frequency is set in `setup_clock` */
 #define SYSCLK_FREQUENCY_HZ 72000000
+#define SPEAKER_BASE_FREQUENCY_HZ 1000000
 #define SYSTICK_FREQUENCY_HZ 1000
 #define DRIVER_PWM_PERIOD 1024
 
@@ -59,6 +60,8 @@
 #define BATTERY_LOW_LIMIT_VOLTAGE 3.3
 
 void setup(void);
+void setup_emitters(void);
+void setup_speaker(void);
 void setup_spi_low_speed(void);
 void setup_spi_high_speed(void);
 void enable_systick_interruption(void);
