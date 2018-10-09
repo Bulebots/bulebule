@@ -214,7 +214,7 @@ void setup_spi_low_speed(void)
  * @see Reference manual (RM0008) "TIMx functional description" and in
  * particular "PWM mode" section.
  */
-static void setup_pwm(void)
+static void setup_motor_driver(void)
 {
 	timer_set_mode(TIM3, TIM_CR1_CKD_CK_INT, TIM_CR1_CMS_EDGE,
 		       TIM_CR1_DIR_UP);
@@ -246,6 +246,44 @@ static void setup_pwm(void)
 	timer_enable_oc_output(TIM3, TIM_OC4);
 
 	timer_enable_counter(TIM3);
+}
+
+/**
+ * @brief Setup PWM for the speaker.
+ *
+ * TIM1 is used to generate the PWM signals for the speaker:
+ *
+ * - Configure channel 3 as output GPIO.
+ * - Edge-aligned, up-counting timer.
+ * - Prescale to increment timer counter at TIM1CLK_FREQUENCY_HZ.
+ * - Set output compare mode to PWM1 (output is active when the counter is
+ *   less than the compare register contents and inactive otherwise.
+ * - Disable output compare output (speaker is off by default).
+ * - Enable outputs in the break subsystem.
+ *
+ * @see Reference manual (RM0008) "TIMx functional description" and in
+ * particular "PWM mode" section.
+ */
+static void setup_speaker(void)
+{
+	gpio_set_mode(GPIOA, GPIO_MODE_OUTPUT_50_MHZ,
+		      GPIO_CNF_OUTPUT_ALTFN_PUSHPULL, GPIO_TIM1_CH3);
+
+	rcc_periph_reset_pulse(RST_TIM1);
+
+	timer_set_mode(TIM1, TIM_CR1_CKD_CK_INT, TIM_CR1_CMS_EDGE,
+		       TIM_CR1_DIR_UP);
+
+	timer_set_prescaler(TIM1,
+			    (rcc_apb2_frequency / TIM1CLK_FREQUENCY_HZ - 1));
+	timer_set_repetition_counter(TIM1, 0);
+	timer_enable_preload(TIM1);
+	timer_continuous_mode(TIM1);
+
+	timer_disable_oc_output(TIM1, TIM_OC3);
+	timer_set_oc_mode(TIM1, TIM_OC3, TIM_OCM_PWM1);
+
+	timer_enable_break_main_output(TIM1);
 }
 
 /**
@@ -373,7 +411,8 @@ void setup(void)
 	setup_adc1();
 	setup_usart();
 	setup_encoders();
-	setup_pwm();
+	setup_motor_driver();
+	setup_speaker();
 	setup_mpu();
 	setup_systick();
 }

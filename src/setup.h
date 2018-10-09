@@ -26,6 +26,7 @@
 
 /** System clock frequency is set in `setup_clock` */
 #define SYSCLK_FREQUENCY_HZ 72000000
+#define TIM1CLK_FREQUENCY_HZ 1000000
 #define SYSTICK_FREQUENCY_HZ 1000
 #define DRIVER_PWM_PERIOD 1024
 
