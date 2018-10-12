@@ -48,6 +48,24 @@ static void user_configuration(bool run)
 }
 
 /**
+ * @brief Check battery voltage and warn if the voltage is getting too low.
+ */
+static void check_battery_voltage(void)
+{
+	float voltage;
+
+	voltage = get_battery_voltage();
+	if (voltage < 3.6)
+		warn_low_battery();
+	if (voltage < 3.5)
+		warn_low_battery();
+	if (voltage < 3.4)
+		warn_low_battery();
+	if (voltage < 3.3)
+		speaker_play('C', 3, 0, 2.);
+}
+
+/**
  * @brief Includes the functions to be executed before robot starts to move.
  */
 static void before_moving(void)
@@ -56,6 +74,7 @@ static void before_moving(void)
 	disable_walls_control();
 	repeat_blink(10, 100);
 	sleep_us(5000000);
+	check_battery_voltage();
 	led_left_on();
 	led_right_on();
 	wait_front_sensor_close_signal(0.12);
@@ -79,6 +98,7 @@ static void after_moving(void)
 		repeat_blink(10, 100);
 	}
 	reset_motion();
+	check_battery_voltage();
 }
 
 /**
