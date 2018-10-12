@@ -322,6 +322,23 @@ void disable_systick_interruption(void)
 }
 
 /**
+ * @brief Start the given ADC register base address.
+ *
+ * - Power on the ADC and wait for ADC starting up (at least 3 us).
+ * - Calibrate the ADC.
+ *
+ * @see Reference manual (RM0008) "Analog-to-digital converter".
+ */
+static void start_adc(uint32_t adc)
+{
+	adc_power_on(adc);
+	for (int i = 0; i < 800000; i++)
+		__asm__("nop");
+	adc_reset_calibration(adc);
+	adc_calibrate(adc);
+}
+
+/**
  * @brief Setup for ADC 1: Four injected channels on scan mode.
  *
  * - Initialize channel_sequence structure to map physical channels
@@ -331,9 +348,8 @@ void disable_systick_interruption(void)
  * - Enable scan mode with single conversion mode triggered by software.
  * - Configure the alignment (right) and the sample time (13.5 cycles of ADC
  *   clock).
- * - Set injected sequence with channel_sequence structure.
- * - Power on the ADC and wait for ADC starting up (at least 3 us).
- * - Calibrate the ADC.
+ * - Set injected sequence with `channel_sequence` structure.
+ * - Start the ADC.
  *
  * @note This ADC reads phototransistor sensors measurements.
  *
@@ -345,8 +361,6 @@ void disable_systick_interruption(void)
  */
 static void setup_adc1(void)
 {
-	int i;
-
 	uint8_t channel_sequence[4] = {ADC_CHANNEL4, ADC_CHANNEL3, ADC_CHANNEL5,
 				       ADC_CHANNEL2};
 
@@ -359,11 +373,37 @@ static void setup_adc1(void)
 	adc_set_injected_sequence(
 	    ADC1, sizeof(channel_sequence) / sizeof(channel_sequence[0]),
 	    channel_sequence);
-	adc_power_on(ADC1);
-	for (i = 0; i < 800000; i++)
-		__asm__("nop");
-	adc_reset_calibration(ADC1);
-	adc_calibrate(ADC1);
+	start_adc(ADC1);
+}
+
+/**
+ * @brief Setup for ADC 2: configured for regular conversion.
+ *
+ * - Power off the ADC to be sure that does not run during configuration.
+ * - Disable scan mode.
+ * - Set single conversion mode triggered by software.
+ * - Configure the alignment (right) and the sample time (13.5 cycles of ADC
+ *   clock).
+ * - Set regular sequence with `channel_sequence` structure.
+ * - Start the ADC.
+ *
+ * @note This ADC reads the battery status.
+ *
+ * @see Reference manual (RM0008) "Analog-to-digital converter".
+ */
+static void setup_adc2(void)
+{
+	uint8_t channel_sequence[16];
+
+	channel_sequence[0] = ADC_CHANNEL0;
+	adc_power_off(ADC2);
+	adc_disable_scan_mode(ADC2);
+	adc_set_single_conversion_mode(ADC2);
+	adc_disable_external_trigger_regular(ADC2);
+	adc_set_right_aligned(ADC2);
+	adc_set_sample_time_on_all_channels(ADC2, ADC_SMPR_SMP_13DOT5CYC);
+	adc_set_regular_sequence(ADC2, 1, channel_sequence);
+	start_adc(ADC2);
 }
 
 /**
@@ -408,6 +448,8 @@ void setup(void)
 	setup_clock();
 	setup_exceptions();
 	setup_gpio();
+	setup_adc1();
+	setup_adc2();
 	setup_usart();
 	setup_encoders();
 	setup_pwm();
