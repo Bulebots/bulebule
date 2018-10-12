@@ -5,6 +5,7 @@
 
 #include "clock.h"
 #include "detection.h"
+#include "speaker.h"
 #include "speed.h"
 
 void led_left_toggle(void);
@@ -18,6 +19,7 @@ void led_right_off(void);
 void led_bluepill_off(void);
 void repeat_blink(uint8_t count, uint16_t time);
 void blink_collision(void);
+void speaker_warn_low_battery(void);
 bool button_left_read(void);
 bool button_right_read(void);
 bool button_left_read_consecutive(uint32_t count);

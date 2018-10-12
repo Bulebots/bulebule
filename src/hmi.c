@@ -111,6 +111,17 @@ void blink_collision(void)
 }
 
 /**
+ * @brief Warn low battery using speaker sounds.
+ */
+void speaker_warn_low_battery(void)
+{
+	speaker_play('C', 4, 0, 0.05);
+	sleep_ticks(50);
+	speaker_play('C', 3, 0, 0.05);
+	sleep_ticks(50);
+}
+
+/**
  * @brief Function to read button left.
  */
 bool button_left_read(void)
