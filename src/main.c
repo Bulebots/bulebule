@@ -95,6 +95,7 @@ static void after_moving(void)
 		reset_motion();
 		blink_collision();
 	} else {
+		speaker_play_success();
 		repeat_blink(10, 100);
 	}
 	reset_motion();
