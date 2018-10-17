@@ -122,6 +122,17 @@ void speaker_warn_low_battery(void)
 }
 
 /**
+ * @brief Play three fast, high tones to note a successful operation.
+ */
+void speaker_play_success(void)
+{
+	for (int i = 0; i < 3; i++) {
+		speaker_play('C', 8, 0, 0.05);
+		sleep_ticks(50);
+	}
+}
+
+/**
  * @brief Function to read button left.
  */
 bool button_left_read(void)

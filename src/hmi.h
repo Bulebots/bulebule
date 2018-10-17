@@ -20,6 +20,7 @@ void led_bluepill_off(void);
 void repeat_blink(uint8_t count, uint16_t time);
 void blink_collision(void);
 void speaker_warn_low_battery(void);
+void speaker_play_success(void);
 bool button_left_read(void);
 bool button_right_read(void);
 bool button_left_read_consecutive(uint32_t count);
