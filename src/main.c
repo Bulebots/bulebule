@@ -136,6 +136,7 @@ static void training(void)
 int main(void)
 {
 	setup();
+	set_speed_mode(0, false);
 	systick_interrupt_enable();
 	competition();
 	while (1) {
