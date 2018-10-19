@@ -5,10 +5,10 @@ static volatile float target_angular_speed;
 static volatile float ideal_linear_speed;
 static volatile float ideal_angular_speed;
 
-static volatile float kp_linear = 1600.;
-static volatile float kd_linear = 100.;
+static volatile float kp_linear = 800.;
+static volatile float kd_linear = 1600.;
 static volatile float kp_angular = 5.;
-static volatile float kd_angular = 100.;
+static volatile float kd_angular = 50.;
 static volatile float ki_angular_front = 200.;
 static volatile float ki_angular_side = 400.;
 static volatile float kp_angular_front = 50.;
