@@ -2,6 +2,7 @@
 #include "clock.h"
 #include "control.h"
 #include "detection.h"
+#include "eeprom.h"
 #include "encoder.h"
 #include "hmi.h"
 #include "logging.h"
