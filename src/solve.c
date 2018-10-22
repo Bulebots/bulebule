@@ -10,9 +10,15 @@ static void go_to_target(void)
 	enum step_direction step;
 	struct walls_around walls;
 
+	set_distances();
 	do {
-		walls = read_walls();
-		search_update(walls);
+		if (!current_cell_is_visited()) {
+			walls = read_walls();
+			update_walls(walls);
+			set_distances();
+		} else {
+			walls = current_walls_around();
+		}
 #ifdef MMSIM_SIMULATION
 		send_state();
 #endif
@@ -24,7 +30,7 @@ static void go_to_target(void)
 	} while (search_distance() > 0);
 
 	walls = read_walls();
-	search_update(walls);
+	update_walls(walls);
 }
 
 /**

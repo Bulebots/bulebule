@@ -215,7 +215,7 @@ static bool place_wall(uint8_t bit)
 	return false;
 }
 
-static void update_walls(struct walls_around walls)
+void update_walls(struct walls_around walls)
 {
 	bool windrose[4] = {false, false, false, false};
 
@@ -388,10 +388,12 @@ void move_search_position(enum step_direction step)
 	current_direction = next;
 }
 
-void search_update(struct walls_around walls)
+/**
+ * @brief Return whether the current cell has already been visited before.
+ */
+bool current_cell_is_visited(void)
 {
-	update_walls(walls);
-	set_distances();
+	return (bool)(maze_walls[current_position] & VISITED_BIT);
 }
 
 /**
@@ -451,7 +453,7 @@ uint8_t find_unexplored_interesting_cell(void)
 	while (search_distance() > 0) {
 		step = best_neighbor_step(current_walls_around());
 		move_search_position(step);
-		if (!(maze_walls[current_position] & VISITED_BIT)) {
+		if (!current_cell_is_visited()) {
 			interesting = current_position;
 			break;
 		}

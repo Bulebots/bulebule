@@ -49,7 +49,8 @@ void initialize_maze_walls(void);
 void set_distances(void);
 void set_target_cell(uint8_t cell);
 void set_target_goal(void);
-void search_update(struct walls_around walls);
+void update_walls(struct walls_around walls);
+bool current_cell_is_visited(void);
 struct walls_around current_walls_around(void);
 uint8_t find_unexplored_interesting_cell(void);
 
