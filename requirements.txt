@@ -1,5 +1,6 @@
 -r docs/requirements.txt
 cadquery
+cffi
 numpy
 osbrain
 matplotlib
