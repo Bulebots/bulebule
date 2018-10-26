@@ -88,7 +88,13 @@ void set_run_sequence(void)
 		}
 		move_search_position(step);
 	}
-	run_sequence[i++] = 'M';
+	while (best_neighbor_step(current_walls_around()) == FRONT) {
+		move_search_position(FRONT);
+		run_sequence[i++] = 'F';
+		if (search_distance() != 0)
+			break;
+	}
+	run_sequence[i++] = 'S';
 	run_sequence[i] = '\0';
 }
 
@@ -122,7 +128,7 @@ void run(void)
 		case 'R':
 			move_right();
 			break;
-		case 'M':
+		case 'S':
 			stop_middle();
 			break;
 		default:
