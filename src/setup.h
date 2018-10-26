@@ -59,6 +59,22 @@
 #define VOLT_DIV_FACTOR 2
 #define BATTERY_LOW_LIMIT_VOLTAGE 3.3
 
+/**
+ * Flash module organization
+ *
+ * The memory organization is based on a main memory block containing 64 pages *
+ * of 1 Kbyte (for medium-density devices), and an information block.
+ *
+ * The linker file was modified to reserve the last memory page for EEPROM.
+ * FLASH_EEPROM_ADDRESS = FLASH_BASE + FLASH_EEPROM_PAGE_NUM * FLASH_PAGE_SIZE
+ * FLASH_BASE = 0x08000000
+ * FLASH_EEPROM_PAGE_NUM = 63
+ * FLASH_PAGE_SIZE = 0x400 (1 Kbyte)
+ *
+ * @see Programming manual (PM0075) "Flash module organization"
+ */
+#define FLASH_EEPROM_ADDRESS_MAZE ((uint32_t)(0x0800fc00))
+
 void setup(void);
 void setup_emitters(void);
 void setup_speaker(void);

@@ -1,5 +1,7 @@
 #include "solve.h"
 
+#define EEPROM_NUM_BYTES_ERASED_CHECKED ((uint8_t)1)
+#define EEPROM_BYTE_ERASED_VALUE 255
 static char run_sequence[MAZE_AREA];
 
 /**
@@ -7,30 +9,30 @@ static char run_sequence[MAZE_AREA];
  */
 static void go_to_target(void)
 {
-	enum step_direction step;
-	struct walls_around walls;
+        enum step_direction step;
+        struct walls_around walls;
 
-	set_distances();
-	do {
-		if (!current_cell_is_visited()) {
-			walls = read_walls();
-			update_walls(walls);
-			set_distances();
-		} else {
-			walls = current_walls_around();
-		}
+        set_distances();
+        do {
+                if (!current_cell_is_visited()) {
+                        walls = read_walls();
+                        update_walls(walls);
+                        set_distances();
+                } else {
+                        walls = current_walls_around();
+                }
 #ifdef MMSIM_SIMULATION
-		send_state();
+                send_state();
 #endif
-		step = best_neighbor_step(walls);
-		move_search_position(step);
-		move(step);
-		if (collision_detected())
-			return;
-	} while (search_distance() > 0);
+                step = best_neighbor_step(walls);
+                move_search_position(step);
+                move(step);
+                if (collision_detected())
+                        return;
+        } while (search_distance() > 0);
 
-	walls = read_walls();
-	update_walls(walls);
+        walls = read_walls();
+        update_walls(walls);
 }
 
 /**
@@ -41,21 +43,21 @@ static void go_to_target(void)
  */
 void explore(void)
 {
-	uint8_t cell;
+        uint8_t cell;
 
-	initialize_maze_walls();
-	set_search_initial_state();
+        initialize_maze_walls();
+        set_search_initial_state();
 
-	while (true) {
-		go_to_target();
-		if (collision_detected())
-			return;
-		if (search_position() == 0)
-			break;
-		cell = find_unexplored_interesting_cell();
-		set_target_cell(cell);
-	}
-	stop_middle();
+        while (true) {
+                go_to_target();
+                if (collision_detected())
+                        return;
+                if (search_position() == 0)
+                        break;
+                cell = find_unexplored_interesting_cell();
+                set_target_cell(cell);
+        }
+        stop_middle();
 }
 
 /**
@@ -63,31 +65,31 @@ void explore(void)
  */
 void set_run_sequence(void)
 {
-	int i = 0;
-	enum step_direction step;
+        int i = 0;
+        enum step_direction step;
 
-	set_search_initial_state();
-	set_target_goal();
-	set_distances();
-	while (search_distance() > 0) {
-		step = best_neighbor_step(current_walls_around());
-		switch (step) {
-		case FRONT:
-			run_sequence[i++] = 'F';
-			break;
-		case LEFT:
-			run_sequence[i++] = 'L';
-			break;
-		case RIGHT:
-			run_sequence[i++] = 'R';
-			break;
-		default:
-			break;
-		}
-		move_search_position(step);
-	}
-	run_sequence[i++] = 'M';
-	run_sequence[i] = '\0';
+        set_search_initial_state();
+        set_target_goal();
+        set_distances();
+        while (search_distance() > 0) {
+                step = best_neighbor_step(current_walls_around());
+                switch (step) {
+                case FRONT:
+                        run_sequence[i++] = 'F';
+                        break;
+                case LEFT:
+                        run_sequence[i++] = 'L';
+                        break;
+                case RIGHT:
+                        run_sequence[i++] = 'R';
+                        break;
+                default:
+                        break;
+                }
+                move_search_position(step);
+        }
+        run_sequence[i++] = 'M';
+        run_sequence[i] = '\0';
 }
 
 /**
@@ -95,38 +97,93 @@ void set_run_sequence(void)
  */
 void run(void)
 {
-	int i = 0;
-	int many = 0;
-	char movement;
+        int i = 0;
+        int many = 0;
+        char movement;
 
-	while (true) {
-		movement = run_sequence[i++];
-		if (!movement)
-			break;
-		switch (movement) {
-		case 'F':
-			many = 0;
-			while (true) {
-				many += 1;
-				if (run_sequence[i] != 'F')
-					break;
-				i++;
-			}
-			move_front_many(many);
-			break;
-		case 'L':
-			move_left();
-			break;
-		case 'R':
-			move_right();
-			break;
-		case 'M':
-			stop_middle();
-			break;
-		default:
-			break;
-		}
-		if (collision_detected())
-			return;
-	}
+        while (true) {
+                movement = run_sequence[i++];
+                if (!movement)
+                        break;
+                switch (movement) {
+                case 'F':
+                        many = 0;
+                        while (true) {
+                                many += 1;
+                                if (run_sequence[i] != 'F')
+                                        break;
+                                i++;
+                        }
+                        move_front_many(many);
+                        break;
+                case 'L':
+                        move_left();
+                        break;
+                case 'R':
+                        move_right();
+                        break;
+                case 'M':
+                        stop_middle();
+                        break;
+                default:
+                        break;
+                }
+                if (collision_detected())
+                        return;
+        }
+}
+
+/**
+ * @brief Function to save the maze sequence on EEPROM
+ */
+void eeprom_save_maze(void)
+{
+        uint32_t save_status = 0;
+
+        save_status = eeprom_flash_page(FLASH_EEPROM_ADDRESS_MAZE,
+                                        (uint8_t *)run_sequence, MAZE_AREA);
+
+        if (save_status != RESULT_OK)
+                LOG_INFO("Eeprom save error %" PRIu32, save_status);
+}
+
+/**
+ * @brief Function to load the maze sequence from EEPROM to static on RAM
+ */
+void eeprom_load_maze(void)
+{
+        eeprom_read_data(FLASH_EEPROM_ADDRESS_MAZE, MAZE_AREA,
+                         (uint8_t *)run_sequence);
+}
+
+/**
+ * @brief Function to reset the maze sequence on EEPROM
+ */
+void eeprom_reset_maze(void)
+{
+        uint32_t erase_status = 0;
+
+        erase_status = eeprom_erase_page(FLASH_EEPROM_ADDRESS_MAZE);
+        if (erase_status != RESULT_OK)
+                LOG_INFO("Eeprom reset error %" PRIu32, erase_status);
+}
+
+/**
+ * @brief Function to check if the maze sequence is saved on EEPROM
+ *
+ *@return bool true if maze is saved, false if it is not
+ */
+bool eeprom_maze_is_saved(void)
+{
+        uint8_t maze_sample[EEPROM_NUM_BYTES_ERASED_CHECKED];
+
+        eeprom_read_data(FLASH_EEPROM_ADDRESS_MAZE,
+                         EEPROM_NUM_BYTES_ERASED_CHECKED, maze_sample);
+
+        for (uint8_t iter = 0; iter < EEPROM_NUM_BYTES_ERASED_CHECKED; iter++) {
+                if (maze_sample[iter] != EEPROM_BYTE_ERASED_VALUE)
+                        return true;
+        }
+
+        return false;
 }
