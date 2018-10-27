@@ -16,24 +16,28 @@ Board
 Microcontroller
 ===============
 
-The microcontroller reference is STM32F103CBT6 LQFP64,
-that means:
+The microcontroller reference is STM32F103C8T6, that means:
 
 STM32
-  ST microcontroller with 32-bit
+  ARM-based 32-bit ST microcontroller
 
-F1
-  ARM Cortex M3-based, performance line
+F
+  General purpose
 
-03
-  72MHz, with motor control, USB and CAN
+103
+  Performance line
 
-CB
-  Medium-density up to 1 Mbyte
+C
+  Pin count, 48 pins
 
-LQFP64
-  Pinout
+8
+  Medium-density, 64 Kbytes of Flash memory
 
+T
+  Package type, LQFP
+
+6
+  Temperature range, -40 to 85 ºC
 
 .. index:: dependencies
 
