@@ -75,7 +75,7 @@ void speaker_play(char note, uint8_t octave, int8_t accidental, float duration)
 	setup_speaker();
 	speaker_set_frequency(frequency);
 	speaker_on();
-	sleep_ticks((uint32_t)(duration * 1000));
+	sleep_seconds(duration);
 	speaker_off();
 	setup_emitters();
 }

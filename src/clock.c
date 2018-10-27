@@ -52,6 +52,16 @@ void sleep_ticks(uint32_t ticks)
 }
 
 /**
+ * @brief Sleep (i.e.: do nothing) for a number of seconds.
+ *
+ * @param[in] seconds Sleep duration, in seconds.
+ */
+void sleep_seconds(float seconds)
+{
+	sleep_ticks((uint32_t)(seconds * SYSTICK_FREQUENCY_HZ));
+}
+
+/**
  * @brief Start the stopwatch to measure elapsed time.
  *
  * To be used with `stopwatch_stop()` function.
