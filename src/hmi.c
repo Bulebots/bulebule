@@ -254,7 +254,7 @@ uint8_t speed_mode_configuration(void)
 /**
  * @brief Function to choose if reuse the saved EEPROM maze.
  *
- * @return true if the maze saved on EEPROM is restored to RAM
+ * @return true if the maze saved on EEPROM is restored to RAM.
  */
 bool reuse_maze(void)
 {

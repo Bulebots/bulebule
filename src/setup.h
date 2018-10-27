@@ -60,9 +60,9 @@
 #define BATTERY_LOW_LIMIT_VOLTAGE 3.3
 
 /**
- * Flash module organization
+ * Flash module organization.
  *
- * The memory organization is based on a main memory block containing 64 pages *
+ * The memory organization is based on a main memory block containing 64 pages
  * of 1 Kbyte (for medium-density devices), and an information block.
  *
  * The linker file was modified to reserve the last memory page for EEPROM.
