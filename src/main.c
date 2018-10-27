@@ -130,11 +130,15 @@ static void running_phase(void)
  */
 static void competition(void)
 {
-	initialize_solver_direction();
-	set_goal_classic();
-	set_target_goal();
-	exploration_phase();
-	set_run_sequence();
+	if (!reuse_maze()) {
+		initialize_solver_direction();
+		set_goal_classic();
+		set_target_goal();
+		exploration_phase();
+		set_run_sequence();
+		save_maze();
+		led_bluepill_on();
+	}
 	while (1)
 		running_phase();
 }

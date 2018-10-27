@@ -5,6 +5,7 @@
 
 #include "clock.h"
 #include "detection.h"
+#include "solve.h"
 #include "speaker.h"
 #include "speed.h"
 
@@ -28,6 +29,7 @@ bool button_left_read_consecutive(uint32_t count);
 bool button_right_read_consecutive(uint32_t count);
 void wait_front_sensor_close_signal(float close_distance);
 void initialize_solver_direction(void);
+bool reuse_maze(void);
 uint8_t speed_mode_configuration(void);
 
 #endif /* __HMI_H */

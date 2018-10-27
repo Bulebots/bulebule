@@ -136,7 +136,7 @@ void run(void)
 /**
  * @brief Function to save the maze sequence on EEPROM
  */
-void eeprom_save_maze(void)
+void save_maze(void)
 {
         uint32_t save_status = 0;
 
@@ -144,13 +144,13 @@ void eeprom_save_maze(void)
                                         (uint8_t *)run_sequence, MAZE_AREA);
 
         if (save_status != RESULT_OK)
-                LOG_INFO("Eeprom save error %" PRIu32, save_status);
+                LOG_ERROR("EEPROM save error %" PRIu32, save_status);
 }
 
 /**
  * @brief Function to load the maze sequence from EEPROM to static on RAM
  */
-void eeprom_load_maze(void)
+void load_maze(void)
 {
         eeprom_read_data(FLASH_EEPROM_ADDRESS_MAZE, MAZE_AREA,
                          (uint8_t *)run_sequence);
@@ -159,13 +159,13 @@ void eeprom_load_maze(void)
 /**
  * @brief Function to reset the maze sequence on EEPROM
  */
-void eeprom_reset_maze(void)
+void reset_maze(void)
 {
         uint32_t erase_status = 0;
 
         erase_status = eeprom_erase_page(FLASH_EEPROM_ADDRESS_MAZE);
         if (erase_status != RESULT_OK)
-                LOG_INFO("Eeprom reset error %" PRIu32, erase_status);
+                LOG_ERROR("EEPROM reset error %" PRIu32, erase_status);
 }
 
 /**
@@ -173,7 +173,7 @@ void eeprom_reset_maze(void)
  *
  *@return bool true if maze is saved, false if it is not
  */
-bool eeprom_maze_is_saved(void)
+bool maze_is_saved(void)
 {
         uint8_t maze_sample[EEPROM_NUM_BYTES_ERASED_CHECKED];
 

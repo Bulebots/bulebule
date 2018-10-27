@@ -250,3 +250,27 @@ uint8_t speed_mode_configuration(void)
 		}
 	}
 }
+
+/**
+ * @brief Function to choose if reuse the saved EEPROM maze.
+ *
+ * @return true if the maze saved on EEPROM is restored to RAM
+ */
+bool reuse_maze(void)
+{
+	if (maze_is_saved()) {
+		led_bluepill_on();
+		while (1) {
+			if (button_left_read_consecutive(500)) {
+				load_maze();
+				return true;
+			}
+			if (button_right_read_consecutive(500)) {
+				reset_maze();
+				break;
+			}
+		}
+	}
+	led_bluepill_off();
+	return false;
+}
