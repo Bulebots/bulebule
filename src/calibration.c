@@ -129,10 +129,10 @@ void run_movement_sequence(const char *sequence)
 			move_front();
 			break;
 		case 'L':
-			move_left();
+			move_side(LEFT);
 			break;
 		case 'R':
-			move_right();
+			move_side(RIGHT);
 			break;
 		case 'B':
 			move_back();

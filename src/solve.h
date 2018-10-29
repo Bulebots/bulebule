@@ -5,6 +5,7 @@
 #include "eeprom.h"
 #include "formatting.h"
 #include "move.h"
+#include "path.h"
 #include "search.h"
 #include "setup.h"
 
@@ -13,7 +14,7 @@ void explore(void);
 void send_state(void);
 #endif
 void set_run_sequence(void);
-void run(void);
+void run(uint8_t speed);
 void save_maze(void);
 void load_maze(void);
 void reset_maze(void);

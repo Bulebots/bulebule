@@ -1,6 +1,9 @@
 #ifndef __SPEED_H
 #define __SPEED_H
 
+#include "formatting.h"
+#include "move.h"
+#include "path.h"
 #include "setup.h"
 
 #define NUM_MODES 3
@@ -26,5 +29,9 @@ void set_turn_t0(float value);
 float get_turn_t1(void);
 void set_turn_t1(float value);
 void set_speed_mode(uint8_t mode, bool run);
+float get_move_turn_space(enum movement move, uint8_t speed);
+float get_move_turn_linear_speed(enum movement move, uint8_t speed);
+
+void speed_turn(enum movement turn, uint8_t speed);
 
 #endif /* __SPEED_H */

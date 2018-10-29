@@ -3,6 +3,7 @@
 #define EEPROM_NUM_BYTES_ERASED_CHECKED ((uint8_t)4)
 #define EEPROM_BYTE_ERASED_VALUE 255
 static char run_sequence[MAZE_AREA];
+static enum movement smooth_path[MAZE_AREA];
 
 /**
  * @brief Move from the current position to the defined target.
@@ -100,39 +101,58 @@ void set_run_sequence(void)
 
 /**
  * @brief Execute the speed run movement sequence.
+ *
+ * @param[in] speed The speed level at which to execute the run sequence.
  */
-void run(void)
+void run(uint8_t speed)
 {
 	int i = 0;
 	int many = 0;
 	char movement;
+	float distance = 0;
+	bool begin = true;
 
+	make_smooth_path(run_sequence, smooth_path);
 	while (true) {
-		movement = run_sequence[i++];
-		if (!movement)
+		movement = smooth_path[i++];
+		if (movement == MOVE_END)
 			break;
 		switch (movement) {
-		case 'F':
+		case MOVE_FRONT:
 			many = 0;
 			while (true) {
 				many += 1;
-				if (run_sequence[i] != 'F')
+				if (smooth_path[i] != MOVE_FRONT)
 					break;
 				i++;
 			}
-			move_front_many(many);
+			distance += many * CELL_DIMENSION;
+			if (begin) {
+				distance -= (MOUSE_TAIL + WALL_WIDTH / 2 +
+					     MOUSE_AXIS_SEPARATION / 2);
+				begin = false;
+			}
 			break;
-		case 'L':
-			move_left();
+		case MOVE_LEFT:
+		case MOVE_RIGHT:
+		case MOVE_LEFT_90:
+		case MOVE_RIGHT_90:
+		case MOVE_LEFT_180:
+		case MOVE_RIGHT_180:
+			distance += get_move_turn_space(movement, speed);
+			parametric_move_front(
+			    distance,
+			    get_move_turn_linear_speed(movement, speed));
+			speed_turn(movement, speed);
+			distance = get_move_turn_space(movement, speed);
 			break;
-		case 'R':
-			move_right();
-			break;
-		case 'S':
-			stop_middle();
+		case MOVE_STOP:
+			distance += CELL_DIMENSION / 2;
+			parametric_move_front(distance, 0.);
 			break;
 		default:
-			break;
+			LOG_ERROR("Unable to process command [%d]!", movement);
+			return;
 		}
 		if (collision_detected())
 			return;

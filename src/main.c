@@ -39,13 +39,16 @@ void sys_tick_handler(void)
  * to the speed mode.
  *
  * @param[in] run Whether the user is configuring for the run phase or not.
+ *
+ * @return The selected speed mode.
  */
-static void user_configuration(bool run)
+static uint8_t user_configuration(bool run)
 {
 	uint8_t mode;
 
 	mode = speed_mode_configuration();
 	set_speed_mode(mode, run);
+	return mode;
 }
 
 /**
@@ -119,9 +122,11 @@ static void exploration_phase(void)
  */
 static void running_phase(void)
 {
-	user_configuration(true);
+	uint8_t speed;
+
+	speed = user_configuration(true);
 	before_moving();
-	run();
+	run(speed);
 	after_moving();
 }
 

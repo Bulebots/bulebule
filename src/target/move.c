@@ -243,18 +243,28 @@ void stop_middle(void)
 }
 
 /**
+ * @brief Perform a turn based on angular speed and defined time spans.
+ */
+void parametric_turn(float max_angular_speed, float rise_time,
+		     float elapsed_time)
+{
+	uint32_t starting_time = get_clock_ticks();
+
+	disable_walls_control();
+	set_target_angular_speed(max_angular_speed);
+	while (get_clock_ticks() - starting_time <= rise_time)
+		;
+	set_target_angular_speed(0);
+	while (get_clock_ticks() - starting_time <= elapsed_time)
+		;
+}
+
+/**
  * @brief Turn left (90-degree turn with zero linear speed).
  */
 void turn_left(void)
 {
-	uint32_t starting_time = get_clock_ticks();
-
-	set_target_angular_speed(-get_max_angular_speed());
-	while (get_clock_ticks() - starting_time <= get_turn_t0())
-		;
-	set_target_angular_speed(0);
-	while (get_clock_ticks() - starting_time <= get_turn_t1())
-		;
+	parametric_turn(-get_max_angular_speed(), get_turn_t0(), get_turn_t1());
 }
 
 /**
@@ -262,14 +272,7 @@ void turn_left(void)
  */
 void turn_right(void)
 {
-	uint32_t starting_time = get_clock_ticks();
-
-	set_target_angular_speed(get_max_angular_speed());
-	while (get_clock_ticks() - starting_time <= get_turn_t0())
-		;
-	set_target_angular_speed(0);
-	while (get_clock_ticks() - starting_time <= get_turn_t1())
-		;
+	parametric_turn(get_max_angular_speed(), get_turn_t0(), get_turn_t1());
 }
 
 /**
@@ -342,9 +345,24 @@ void move_front_many(int cells)
 }
 
 /**
- * @brief Move left or right into the next cell.
+ * @brief Move front a defined distance ending at a defined speed.
+ *
+ * @param[in] distance Distance to travel.
+ * @param[in] end_linear_speed Speed at which to end the movement.
  */
-static void move_side(enum step_direction side)
+void parametric_move_front(float distance, float end_linear_speed)
+{
+	enable_walls_control();
+	target_straight(get_encoder_average_micrometers(), distance,
+			end_linear_speed);
+}
+
+/**
+ * @brief Move left or right into the next cell.
+ *
+ * @param[in] step_direction Turn direction (left or right).
+ */
+void move_side(enum step_direction side)
 {
 	enable_walls_control();
 	target_straight(current_cell_start_micrometers,
@@ -359,22 +377,6 @@ static void move_side(enum step_direction side)
 			    MOUSE_AXIS_SEPARATION / 2.,
 			get_max_end_linear_speed());
 	entered_next_cell();
-}
-
-/**
- * @brief Move left into the next cell.
- */
-void move_left(void)
-{
-	move_side(LEFT);
-}
-
-/**
- * @brief Move right into the next cell.
- */
-void move_right(void)
-{
-	move_side(RIGHT);
 }
 
 /**
@@ -395,9 +397,9 @@ void move_back(void)
 void move(enum step_direction direction)
 {
 	if (direction == LEFT)
-		move_left();
+		move_side(LEFT);
 	else if (direction == RIGHT)
-		move_right();
+		move_side(RIGHT);
 	else if (direction == FRONT)
 		move_front();
 	else if (direction == BACK)

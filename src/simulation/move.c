@@ -13,11 +13,7 @@ void move_front_many(int cells)
 {
 }
 
-void move_left(void)
-{
-}
-
-void move_right(void)
+void move_side(enum step_direction direction)
 {
 }
 
