@@ -1,3 +1,5 @@
+dist: xenial
+
 language: python
 
 python:
@@ -6,10 +8,10 @@ python:
 addons:
   apt:
     sources:
-      - llvm-toolchain-trusty-5.0
+      - llvm-toolchain-trusty-6.0
       - sourceline: 'ppa:team-gcc-arm-embedded/ppa'
     packages:
-      - clang-format-5.0
+      - clang-format-6.0
       - gcc-arm-embedded
       - libbluetooth-dev
 
@@ -17,7 +19,7 @@ install:
   - pip install -r requirements.txt
 
 before_script:
-  - clang-format() { clang-format-5.0 $@; }
+  - clang-format() { clang-format-6.0 $@; }
   - export -f clang-format
   - ./scripts/setup_libopencm3.sh
 
