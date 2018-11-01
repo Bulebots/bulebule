@@ -19,7 +19,7 @@ void set_starting_position(void)
 {
 	current_cell_start_micrometers =
 	    get_encoder_average_micrometers() -
-	    (MOUSE_TAIL + WALL_WIDTH / 2) * MICROMETERS_PER_METER;
+	    MOUSE_START_SHIFT * MICROMETERS_PER_METER;
 }
 
 /**
@@ -354,15 +354,13 @@ void move_side(enum step_direction side)
 {
 	enable_walls_control();
 	target_straight(current_cell_start_micrometers,
-			CELL_DIMENSION / 2 - get_turn_radius() -
-			    MOUSE_AXIS_SEPARATION / 2.,
+			CELL_DIMENSION / 2 - get_turn_radius(),
 			get_turn_linear_speed());
 	disable_walls_control();
 	turn_side(side);
 	enable_walls_control();
 	target_straight(get_encoder_average_micrometers(),
-			CELL_DIMENSION / 2 - get_turn_radius() +
-			    MOUSE_AXIS_SEPARATION / 2.,
+			CELL_DIMENSION / 2 - get_turn_radius(),
 			get_max_end_linear_speed());
 	entered_next_cell();
 }

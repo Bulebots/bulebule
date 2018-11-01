@@ -194,10 +194,9 @@ void run_front_sensors_calibration(void)
 
 	set_linear_acceleration(3.);
 
-	target_micrometers =
-	    get_encoder_average_micrometers() +
-	    (2 * CELL_DIMENSION - MOUSE_TAIL - MOUSE_HEAD - WALL_WIDTH) *
-		MICROMETERS_PER_METER;
+	target_micrometers = get_encoder_average_micrometers() +
+			     (2 * CELL_DIMENSION - MOUSE_LENGTH - WALL_WIDTH) *
+				 MICROMETERS_PER_METER;
 	set_target_angular_speed(0.);
 	set_target_linear_speed(calibration_linear_speed);
 	micrometers_to_stop = 15000;
