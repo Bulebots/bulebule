@@ -1,6 +1,6 @@
 #include "solve.h"
 
-#define EEPROM_NUM_BYTES_ERASED_CHECKED ((uint8_t)1)
+#define EEPROM_NUM_BYTES_ERASED_CHECKED ((uint8_t)4)
 #define EEPROM_BYTE_ERASED_VALUE 255
 static char run_sequence[MAZE_AREA];
 
@@ -175,15 +175,15 @@ void reset_maze(void)
  */
 bool maze_is_saved(void)
 {
-        uint8_t maze_sample[EEPROM_NUM_BYTES_ERASED_CHECKED];
+	uint8_t maze_sample[EEPROM_NUM_BYTES_ERASED_CHECKED];
 
 	eeprom_read_data(FLASH_EEPROM_ADDRESS_MAZE,
 			 EEPROM_NUM_BYTES_ERASED_CHECKED, maze_sample);
 
-        for (uint8_t iter = 0; iter < EEPROM_NUM_BYTES_ERASED_CHECKED; iter++) {
-                if (maze_sample[iter] != EEPROM_BYTE_ERASED_VALUE)
-                        return true;
-        }
+	for (uint8_t iter = 0; iter < EEPROM_NUM_BYTES_ERASED_CHECKED; iter++) {
+		if (maze_sample[iter] != EEPROM_BYTE_ERASED_VALUE)
+			return true;
+	}
 
-        return false;
+	return false;
 }
