@@ -323,7 +323,7 @@ void move_front(void)
  */
 void move_front_many(int cells)
 {
-	enable_walls_control();
+	side_sensors_control(true);
 	target_straight(current_cell_start_micrometers, CELL_DIMENSION * cells,
 			get_max_end_linear_speed());
 	entered_next_cell();
@@ -337,7 +337,7 @@ void move_front_many(int cells)
  */
 void parametric_move_front(float distance, float end_linear_speed)
 {
-	enable_walls_control();
+	side_sensors_control(true);
 	target_straight(get_encoder_average_micrometers(), distance,
 			end_linear_speed);
 }
