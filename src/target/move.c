@@ -137,8 +137,13 @@ void target_straight(int32_t start, float distance, float speed)
 			;
 	}
 	set_target_linear_speed(speed);
-	while (get_ideal_linear_speed() != speed)
-		;
+	if (speed == 0.) {
+		while (get_ideal_linear_speed() != speed)
+			;
+	} else {
+		while (get_encoder_average_micrometers() < target_distance)
+			;
+	}
 }
 
 /**
