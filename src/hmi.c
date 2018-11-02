@@ -141,6 +141,17 @@ void speaker_play_success(void)
 }
 
 /**
+ * @brief Play two fast, high tones to note that a button is pushed.
+ */
+void speaker_play_button(void)
+{
+	for (int i = 0; i < 2; i++) {
+		speaker_play('C', 8, 0, 0.05);
+		sleep_ticks(50);
+	}
+}
+
+/**
  * @brief Function to read button left.
  */
 bool button_left_read(void)
@@ -262,10 +273,14 @@ bool reuse_maze(void)
 		led_bluepill_on();
 		while (1) {
 			if (button_left_read_consecutive(500)) {
+				speaker_play_button();
+				sleep_seconds(1);
 				load_maze();
 				return true;
 			}
 			if (button_right_read_consecutive(500)) {
+				speaker_play_button();
+				sleep_seconds(1);
 				reset_maze();
 				break;
 			}
