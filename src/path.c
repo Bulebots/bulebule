@@ -15,6 +15,10 @@ static int from_straight(void)
 		*destination = MOVE_FRONT;
 		return 1;
 	}
+	if (!strncmp(source, "BF", 2)) {
+		*destination = MOVE_START;
+		return 1;
+	}
 	if (!strncmp(source, "LF", 2)) {
 		*destination = MOVE_LEFT_90;
 		return 1;
@@ -42,6 +46,10 @@ static int from_straight(void)
  */
 static int from_diagonal(void)
 {
+	if (!strncmp(source, "B", 1)) {
+		*destination = MOVE_START;
+		return 1;
+	}
 	if (!strncmp(source, "L", 1)) {
 		*destination = MOVE_LEFT;
 		return 1;

@@ -6,6 +6,7 @@
 
 enum movement {
 	MOVE_END,
+	MOVE_START,
 	MOVE_STOP,
 	MOVE_FRONT,
 	MOVE_LEFT,

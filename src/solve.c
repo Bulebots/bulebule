@@ -95,6 +95,7 @@ void set_run_sequence(void)
 		if (search_distance() != 0)
 			break;
 	}
+	run_sequence[0] = 'B';
 	run_sequence[i++] = 'S';
 	run_sequence[i] = '\0';
 }
@@ -110,7 +111,6 @@ void run(uint8_t speed)
 	int many = 0;
 	char movement;
 	float distance = 0;
-	bool begin = true;
 
 	make_smooth_path(run_sequence, smooth_path);
 	while (true) {
@@ -118,6 +118,11 @@ void run(uint8_t speed)
 		if (movement == MOVE_END)
 			break;
 		switch (movement) {
+		case MOVE_START:
+			distance =
+			    CELL_DIMENSION - (MOUSE_TAIL + WALL_WIDTH / 2 +
+					      MOUSE_AXIS_SEPARATION / 2);
+			break;
 		case MOVE_FRONT:
 			many = 0;
 			while (true) {
@@ -127,11 +132,6 @@ void run(uint8_t speed)
 				i++;
 			}
 			distance += many * CELL_DIMENSION;
-			if (begin) {
-				distance -= (MOUSE_TAIL + WALL_WIDTH / 2 +
-					     MOUSE_AXIS_SEPARATION / 2);
-				begin = false;
-			}
 			break;
 		case MOVE_LEFT:
 		case MOVE_RIGHT:

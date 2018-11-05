@@ -33,6 +33,14 @@ def interface():
     ('FLRS', ['FRONT', 'LEFT', 'RIGHT', 'STOP']),
     ('FRLS', ['FRONT', 'RIGHT', 'LEFT', 'STOP']),
     ('FRLLF', ['FRONT', 'RIGHT', 'LEFT', 'LEFT', 'FRONT']),
+    ('BS', ['START', 'STOP']),
+    ('BFS', ['START', 'FRONT', 'STOP']),
+    ('BFFS', ['START', 'FRONT', 'FRONT', 'STOP']),
+    ('BLF', ['START', 'LEFT', 'FRONT']),
+    ('BRF', ['START', 'RIGHT', 'FRONT']),
+    ('BLLF', ['START', 'LEFT', 'LEFT', 'FRONT']),
+    ('BRRF', ['START', 'RIGHT', 'RIGHT', 'FRONT']),
+    ('BRFLLFS', ['START', 'RIGHT', 'FRONT', 'LEFT_180', 'FRONT', 'STOP']),
 ], ids=[
     'Move front once',
     'Move front twice',
@@ -51,6 +59,14 @@ def interface():
     'Left-right zig-zag with stop',
     'Right-left zig-zag with stop',
     'Once we start zig-zag, we keep 90-degrees turns',
+    'Start and stop',
+    'Start, front once and stop',
+    'Start, front twice and stop',
+    'Start-to-straight 90-degrees left turn',
+    'Start-to-straight 90-degrees right turn',
+    'Start-to-straight 180-degrees left turn',
+    'Start-to-straight 180-degrees right turn',
+    'Start-to-straight 90-degrees right turn, then 180-degrees left and stop',
 ])
 def test_path_smoother_no_diagonals(interface, sharp, smooth):
     """
