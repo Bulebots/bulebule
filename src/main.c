@@ -82,6 +82,7 @@ static void before_moving(void)
 	led_left_on();
 	led_right_on();
 	wait_front_sensor_close_signal(0.12);
+	srand(read_cycle_counter());
 	led_left_off();
 	led_right_off();
 	sleep_us(2000000);

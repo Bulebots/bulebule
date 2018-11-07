@@ -4,6 +4,7 @@
 /** Locomotion-related constants */
 #define MICROMETERS_PER_COUNT 8.32
 #define WHEELS_SEPARATION 0.0785
+#define SHIFT_AFTER_180_DEG_TURN -0.008
 
 /** Calibration constants for sensors */
 #define SENSOR_SIDE_LEFT_A 2.806

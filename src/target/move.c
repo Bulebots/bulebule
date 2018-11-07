@@ -287,37 +287,25 @@ void turn_side(enum step_direction side)
 }
 
 /**
- * @brief Randomly choose between `LEFT` and `RIGHT`.
- */
-static enum step_direction choose_random_side(void)
-{
-	if (read_cycle_counter() % 2)
-		return RIGHT;
-	return LEFT;
-}
-
-/**
  * @brief Turn back (180-degree turn) and correct with front walls if possible.
  */
 void turn_back(void)
 {
-	enum step_direction side;
+	enum movement side;
 
-	if (current_side_wall(LEFT) == current_side_wall(RIGHT))
-		side = choose_random_side();
-	else if (current_side_wall(RIGHT))
-		side = RIGHT;
+	if (rand() % 2)
+		side = MOVE_LEFT_180;
 	else
-		side = LEFT;
+		side = MOVE_RIGHT_180;
 
 	keep_front_wall_distance(CELL_DIMENSION / 2.);
-	turn_side(side);
-	keep_front_wall_distance(CELL_DIMENSION / 2.);
-	turn_side(side);
+	disable_walls_control();
+	speed_turn(side, 0);
 
 	current_cell_start_micrometers =
 	    get_encoder_average_micrometers() -
-	    (CELL_DIMENSION / 2.) * MICROMETERS_PER_METER;
+	    (CELL_DIMENSION / 2. + SHIFT_AFTER_180_DEG_TURN) *
+		MICROMETERS_PER_METER;
 }
 
 /**
