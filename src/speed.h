@@ -6,7 +6,7 @@
 #include "path.h"
 #include "setup.h"
 
-#define NUM_MODES 3
+#define NUM_MODES 4
 
 float get_linear_acceleration(void);
 void set_linear_acceleration(float value);
