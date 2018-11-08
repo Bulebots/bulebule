@@ -100,6 +100,8 @@ static void process_command(void)
 		run_static_turn_right_profile_signal = true;
 	else if (!strcmp(buffer.data, "run front_sensors_calibration"))
 		run_front_sensors_calibration_signal = true;
+	else if (!strcmp(buffer.data, "get diagnostics_matrix"))
+		log_diagnostic_matrix();
 	else if (starts_with("move "))
 		strcpy(run_movement_sequence_signal, buffer.data);
 	else if (starts_with("set micrometers_per_count "))
