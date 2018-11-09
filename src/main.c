@@ -96,14 +96,11 @@ static void before_moving(void)
  */
 static void after_moving(void)
 {
-	if (collision_detected()) {
-		reset_motion();
-		blink_collision();
-	} else {
-		speaker_play_success();
-		repeat_blink(10, 100);
-	}
 	reset_motion();
+	if (collision_detected())
+		blink_collision();
+	else
+		speaker_play_success();
 	check_battery_voltage();
 }
 
