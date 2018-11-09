@@ -89,11 +89,11 @@ void set_run_sequence(void)
 		}
 		move_search_position(step);
 	}
-	while (best_neighbor_step(current_walls_around()) == FRONT) {
+	while (true) {
 		move_search_position(FRONT);
-		run_sequence[i++] = 'F';
 		if (search_distance() != 0)
 			break;
+		run_sequence[i++] = 'F';
 	}
 	run_sequence[0] = 'B';
 	run_sequence[i++] = 'S';
