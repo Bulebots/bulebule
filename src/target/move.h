@@ -24,16 +24,13 @@ void stop_end(void);
 void stop_head_front_wall(void);
 void stop_middle(void);
 void parametric_turn(float angular_speed, float rise_time, float elapsed_time);
-void turn_side(enum step_direction side);
-void turn_left(void);
-void turn_right(void);
-void turn_back(void);
+void turn_back(uint8_t speed);
 void move_front(void);
 void move_front_many(int cells);
 void parametric_move_front(float distance, float end_linear_speed);
-void move_side(enum step_direction side);
-void move_back(void);
-void move(enum step_direction direction);
+void move_side(enum movement turn, uint8_t speed);
+void move_back(uint8_t speed);
+void move(enum step_direction direction, uint8_t speed);
 void reset_motion(void);
 
 #endif /* __MOVE_H */

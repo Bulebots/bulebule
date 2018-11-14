@@ -7,8 +7,10 @@ static enum movement smooth_path[MAZE_AREA];
 
 /**
  * @brief Move from the current position to the defined target.
+ *
+ * @param[in] speed The speed level at which to go to the target.
  */
-static void go_to_target(void)
+static void go_to_target(uint8_t speed)
 {
 	enum step_direction step;
 	struct walls_around walls;
@@ -27,7 +29,7 @@ static void go_to_target(void)
 #endif
 		step = best_neighbor_step(walls);
 		move_search_position(step);
-		move(step);
+		move(step, speed);
 		if (collision_detected())
 			return;
 	} while (search_distance() > 0);
@@ -39,10 +41,12 @@ static void go_to_target(void)
 /**
  * @brief Execute the maze exploration.
  *
+ * @param[in] speed The speed level at which to explore.
+ *
  * After reaching the goal, it will try to explore remaining parts until
  * finding an optimal path.
  */
-void explore(void)
+void explore(uint8_t speed)
 {
 	uint8_t cell;
 
@@ -50,7 +54,7 @@ void explore(void)
 	set_search_initial_state();
 
 	while (true) {
-		go_to_target();
+		go_to_target(speed);
 		if (collision_detected())
 			return;
 		if (search_position() == 0)

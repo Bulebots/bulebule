@@ -12,11 +12,6 @@ static volatile float linear_deceleration;
 static volatile float angular_acceleration;
 static volatile float max_end_linear_speed;
 static volatile float max_linear_speed;
-static volatile float max_angular_speed;
-static volatile float turn_linear_speed;
-static volatile float turn_radius;
-static volatile float turn_t0;
-static volatile float turn_t1;
 
 const float linear_acceleration_defaults[NUM_MODES] = {4., 4., 5., 5.};
 const float linear_deceleration_defaults[NUM_MODES] = {4., 4., 5., 5.};
@@ -25,12 +20,6 @@ const float angular_acceleration_defaults[NUM_MODES] = {32. * PI, 32. * PI,
 const float max_end_linear_speed_defaults[NUM_MODES] = {.5, .55, 0.61, 0.72};
 const float max_linear_speed_defaults[NUM_MODES] = {.5, .55, 0.61, 0.72};
 const float max_linear_speed_run_defaults[NUM_MODES] = {1., 1.5, 2., 2.5};
-const float max_angular_speed_defaults[NUM_MODES] = {2.35 * PI, 3. * PI,
-						     4. * PI, 6. * PI};
-const float turn_linear_speed_defaults[NUM_MODES] = {0.4, 0.448, 0.566, 0.670};
-const float turn_radius_defaults[NUM_MODES] = {0.07, 0.07, 0.07, 0.07};
-const float turn_t0_defaults[NUM_MODES] = {219., 166., 124., 88.};
-const float turn_t1_defaults[NUM_MODES] = {291., 260., 208., 176.};
 
 uint8_t speed_configuration;
 
@@ -47,14 +36,14 @@ struct turn_parameters turns[][NUM_MODES] = {
     [MOVE_LEFT] = {
 	{0.02, .400, 219, 291, -2.35 * PI},
 	{0.02, .448, 166, 260, -3. * PI},
-	{0.02, .448, 166, 260, -3. * PI},
-	{0.02, .448, 166, 260, -3. * PI},
+	{0.02, .566, 124, 208, -4. * PI},
+	{0.02, .670, 88, 176, -6. * PI},
     },
     [MOVE_RIGHT] = {
 	{0.02, .400, 219, 291, 2.35 * PI},
 	{0.02, .448, 166, 260, 3. * PI},
-	{0.02, .448, 166, 260, 3. * PI},
-	{0.02, .448, 166, 260, 3. * PI},
+	{0.02, .566, 124, 208, 4. * PI},
+	{0.02, .670, 88, 176, 6. * PI},
     },
     [MOVE_LEFT_90] = {
 	{-0.05, .8, 219, 291, -2.3 * PI},
@@ -133,56 +122,6 @@ void set_max_end_linear_speed(float value)
 	max_end_linear_speed = value;
 }
 
-float get_max_angular_speed(void)
-{
-	return max_angular_speed;
-}
-
-void set_max_angular_speed(float value)
-{
-	max_angular_speed = value;
-}
-
-float get_turn_linear_speed(void)
-{
-	return turn_linear_speed;
-}
-
-void set_turn_linear_speed(float value)
-{
-	turn_linear_speed = value;
-}
-
-float get_turn_radius(void)
-{
-	return turn_radius;
-}
-
-void set_turn_radius(float value)
-{
-	turn_radius = value;
-}
-
-float get_turn_t0(void)
-{
-	return turn_t0;
-}
-
-void set_turn_t0(float value)
-{
-	turn_t0 = value;
-}
-
-float get_turn_t1(void)
-{
-	return turn_t1;
-}
-
-void set_turn_t1(float value)
-{
-	turn_t1 = value;
-}
-
 /**
  * @brief Set speed parameters with default values from a predefined mode.
  *
@@ -200,11 +139,6 @@ void set_speed_mode(uint8_t mode, bool run)
 	else
 		max_linear_speed = max_linear_speed_defaults[mode];
 	max_end_linear_speed = max_end_linear_speed_defaults[mode];
-	max_angular_speed = max_angular_speed_defaults[mode];
-	turn_linear_speed = turn_linear_speed_defaults[mode];
-	turn_radius = turn_radius_defaults[mode];
-	turn_t0 = turn_t0_defaults[mode];
-	turn_t1 = turn_t1_defaults[mode];
 }
 
 /**

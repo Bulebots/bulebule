@@ -109,9 +109,11 @@ static void after_moving(void)
  */
 static void exploration_phase(void)
 {
-	user_configuration(false);
+	uint8_t speed;
+
+	speed = user_configuration(false);
 	before_moving();
-	explore();
+	explore(speed);
 	after_moving();
 }
 

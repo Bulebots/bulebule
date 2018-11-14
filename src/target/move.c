@@ -265,36 +265,11 @@ void parametric_turn(float max_angular_speed, float rise_time,
 }
 
 /**
- * @brief Turn left (90-degree turn with zero linear speed).
- */
-void turn_left(void)
-{
-	parametric_turn(-get_max_angular_speed(), get_turn_t0(), get_turn_t1());
-}
-
-/**
- * @brief Turn right (90-degree turn with zero linear speed).
- */
-void turn_right(void)
-{
-	parametric_turn(get_max_angular_speed(), get_turn_t0(), get_turn_t1());
-}
-
-/**
- * @brief Turn left or right in-place (90-degree turn with zero linear speed).
- */
-void turn_side(enum step_direction side)
-{
-	if (side == RIGHT)
-		turn_right();
-	else
-		turn_left();
-}
-
-/**
  * @brief Turn back (180-degree turn) and correct with front walls if possible.
+ *
+ * @param[in] speed The speed level at which to turn back.
  */
-void turn_back(void)
+void turn_back(uint8_t speed)
 {
 	enum movement side;
 
@@ -305,7 +280,7 @@ void turn_back(void)
 
 	keep_front_wall_distance(CELL_DIMENSION / 2.);
 	disable_walls_control();
-	speed_turn(side, 0);
+	speed_turn(side, speed);
 
 	current_cell_start_micrometers =
 	    get_encoder_average_micrometers() -
@@ -353,30 +328,33 @@ void parametric_move_front(float distance, float end_linear_speed)
 /**
  * @brief Move left or right into the next cell.
  *
- * @param[in] step_direction Turn direction (left or right).
+ * @param[in] movement Turn direction (left or right).
+ * @param[in] speed The speed level at which to move side.
  */
-void move_side(enum step_direction side)
+void move_side(enum movement turn, uint8_t speed)
 {
 	enable_walls_control();
 	target_straight(current_cell_start_micrometers,
-			CELL_DIMENSION / 2 - get_turn_radius(),
-			get_turn_linear_speed());
+			get_move_turn_space(turn, speed),
+			get_move_turn_linear_speed(turn, speed));
 	disable_walls_control();
-	turn_side(side);
+	speed_turn(turn, speed);
 	enable_walls_control();
 	target_straight(get_encoder_average_micrometers(),
-			CELL_DIMENSION / 2 - get_turn_radius(),
+			get_move_turn_space(turn, speed),
 			get_max_end_linear_speed());
 	entered_next_cell();
 }
 
 /**
  * @brief Move back into the previous cell.
+ *
+ * @param[in] speed The speed level at which to move back.
  */
-void move_back(void)
+void move_back(uint8_t speed)
 {
 	stop_middle();
-	turn_back();
+	turn_back(speed);
 	move_front();
 }
 
@@ -384,17 +362,18 @@ void move_back(void)
  * @brief Move into the next cell according to a movement direction.
  *
  * @param[in] direction Movement direction.
+ * @param[in] speed The speed level at which to move to the next cell.
  */
-void move(enum step_direction direction)
+void move(enum step_direction direction, uint8_t speed)
 {
 	if (direction == LEFT)
-		move_side(LEFT);
+		move_side(MOVE_LEFT, speed);
 	else if (direction == RIGHT)
-		move_side(RIGHT);
+		move_side(MOVE_RIGHT, speed);
 	else if (direction == FRONT)
 		move_front();
 	else if (direction == BACK)
-		move_back();
+		move_back(speed);
 	else
 		stop_middle();
 }

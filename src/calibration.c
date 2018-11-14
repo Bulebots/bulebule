@@ -112,6 +112,7 @@ void run_static_turn_right_profile(void)
 void run_movement_sequence(const char *sequence)
 {
 	char movement;
+	uint8_t speed = 0;
 
 	calibrate();
 	reset_motion();
@@ -129,13 +130,13 @@ void run_movement_sequence(const char *sequence)
 			move_front();
 			break;
 		case 'L':
-			move_side(LEFT);
+			move_side(LEFT, speed);
 			break;
 		case 'R':
-			move_side(RIGHT);
+			move_side(RIGHT, speed);
 			break;
 		case 'B':
-			move_back();
+			move_back(speed);
 			break;
 		case 'M':
 			stop_middle();
@@ -147,13 +148,13 @@ void run_movement_sequence(const char *sequence)
 			stop_end();
 			break;
 		case 'l':
-			turn_left();
+			speed_turn(MOVE_LEFT, speed);
 			break;
 		case 'r':
-			turn_right();
+			speed_turn(MOVE_RIGHT, speed);
 			break;
 		case 'b':
-			turn_back();
+			turn_back(speed);
 			break;
 		case 'k':
 			keep_front_wall_distance(CELL_DIMENSION / 2.);
