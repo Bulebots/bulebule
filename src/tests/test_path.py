@@ -73,7 +73,74 @@ def test_path_smoother_no_diagonals(interface, sharp, smooth):
     Test correct path smoothing when diagonals are disallowed.
     """
     ffi, lib = interface
-    result = ffi.new('enum movement destination[20]')
+    result = ffi.new('enum movement destination[30]')
+    assert len(smooth) + 1 <= len(result)
+
+    lib.make_smooth_path(sharp.encode('ascii'), result)
+    result = stringify_enums(result, ffi, 'enum movement')
+    result = [x[5:] for x in result]
+    assert result[:len(smooth)] == smooth
+    assert result[len(smooth)] == 'END'
+
+
+@pytest.mark.parametrize('sharp,smooth', [
+    ('FLRF', ['FRONT', 'LEFT_TO_45', 'RIGHT_FROM_45', 'FRONT']),
+    ('FRLF', ['FRONT', 'RIGHT_TO_45', 'LEFT_FROM_45', 'FRONT']),
+    ('FLRLF', ['FRONT', 'LEFT_TO_45', 'DIAGONAL', 'LEFT_FROM_45', 'FRONT']),
+    ('FRLRF', ['FRONT', 'RIGHT_TO_45', 'DIAGONAL', 'RIGHT_FROM_45', 'FRONT']),
+    ('FLLRRF', ['FRONT', 'LEFT_TO_135', 'RIGHT_FROM_135', 'FRONT']),
+    ('FRRLLF', ['FRONT', 'RIGHT_TO_135', 'LEFT_FROM_135', 'FRONT']),
+    ('FLLRLLF',
+     ['FRONT', 'LEFT_TO_135', 'DIAGONAL', 'LEFT_FROM_135', 'FRONT']),
+    ('FRRLRRF',
+     ['FRONT', 'RIGHT_TO_135', 'DIAGONAL', 'RIGHT_FROM_135', 'FRONT']),
+    ('FLRRF', ['FRONT', 'LEFT_TO_45', 'RIGHT_FROM_135', 'FRONT']),
+    ('FRLLF', ['FRONT', 'RIGHT_TO_45', 'LEFT_FROM_135', 'FRONT']),
+    ('FLRLLF', ['FRONT', 'LEFT_TO_45', 'DIAGONAL', 'LEFT_FROM_135', 'FRONT']),
+    ('FRLRRF',
+     ['FRONT', 'RIGHT_TO_45', 'DIAGONAL', 'RIGHT_FROM_135', 'FRONT']),
+    ('FLLRF', ['FRONT', 'LEFT_TO_135', 'RIGHT_FROM_45', 'FRONT']),
+    ('FRRLF', ['FRONT', 'RIGHT_TO_135', 'LEFT_FROM_45', 'FRONT']),
+    ('FLLRLF', ['FRONT', 'LEFT_TO_135', 'DIAGONAL', 'LEFT_FROM_45', 'FRONT']),
+    ('FRRLRF',
+     ['FRONT', 'RIGHT_TO_135', 'DIAGONAL', 'RIGHT_FROM_45', 'FRONT']),
+    ('FRLLRF',
+     ['FRONT', 'RIGHT_TO_45', 'LEFT_DIAGONAL', 'RIGHT_FROM_45', 'FRONT']),
+    ('FLRRLF',
+     ['FRONT', 'LEFT_TO_45', 'RIGHT_DIAGONAL', 'LEFT_FROM_45', 'FRONT']),
+    ('FFRLRLRRFRLLRRFRFFLRRLRRFRLRLFF',
+     ['FRONT', 'FRONT', 'RIGHT_TO_45', 'DIAGONAL', 'DIAGONAL', 'DIAGONAL',
+      'RIGHT_FROM_135', 'FRONT', 'RIGHT_TO_45', 'LEFT_DIAGONAL',
+      'RIGHT_FROM_135', 'FRONT', 'RIGHT_90', 'FRONT', 'FRONT', 'LEFT_TO_45',
+      'RIGHT_DIAGONAL', 'DIAGONAL', 'RIGHT_FROM_135', 'FRONT', 'RIGHT_TO_45',
+      'DIAGONAL', 'DIAGONAL', 'LEFT_FROM_45', 'FRONT', 'FRONT']),
+], ids=[
+    '45-degrees left in and right out',
+    '45-degrees right in and left out',
+    '45-degrees left in and left out (one diagonal)',
+    '45-degrees right in and left out (one diagonal)',
+    '135-degrees left in and right out',
+    '135-degrees right in and left out',
+    '135-degrees left in and left out (one diagonal)',
+    '135-degrees right in and right out (one diagonal)',
+    '45-degrees left in and 135-degrees right out',
+    '45-degrees right in and 135-degrees left out',
+    '45-degrees left in and 135-degrees right out (one diagonal)',
+    '45-degrees right in and 135-degrees left out (one diagonal)',
+    '135-degrees left in and 45-degrees right out',
+    '135-degrees right in and 45-degrees left out',
+    '135-degrees left in and 45-degrees right out (one diagonal)',
+    '135-degrees right in and 45-degrees left out (one diagonal)',
+    'Left V-turn',
+    'Right V-turn',
+    'Challenge 0',
+])
+def test_path_smoother_with_diagonals(interface, sharp, smooth):
+    """
+    Test correct path smoothing when diagonals are allowed.
+    """
+    ffi, lib = interface
+    result = ffi.new('enum movement destination[30]')
     assert len(smooth) + 1 <= len(result)
 
     lib.make_smooth_path(sharp.encode('ascii'), result)

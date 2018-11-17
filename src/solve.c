@@ -128,14 +128,18 @@ void run(uint8_t speed)
 					      MOUSE_AXIS_SEPARATION / 2);
 			break;
 		case MOVE_FRONT:
+		case MOVE_DIAGONAL:
 			many = 0;
 			while (true) {
 				many += 1;
-				if (smooth_path[i] != MOVE_FRONT)
+				if (smooth_path[i] != movement)
 					break;
 				i++;
 			}
-			distance += many * CELL_DIMENSION;
+			if (movement == MOVE_FRONT)
+				distance += many * CELL_DIMENSION;
+			else
+				distance += many * CELL_DIAGONAL;
 			break;
 		case MOVE_LEFT:
 		case MOVE_RIGHT:
@@ -143,15 +147,35 @@ void run(uint8_t speed)
 		case MOVE_RIGHT_90:
 		case MOVE_LEFT_180:
 		case MOVE_RIGHT_180:
-			distance += get_move_turn_space(movement, speed);
+		case MOVE_LEFT_TO_45:
+		case MOVE_RIGHT_TO_45:
+		case MOVE_LEFT_TO_135:
+		case MOVE_RIGHT_TO_135:
+			distance += get_move_turn_before(movement, speed);
+			side_sensors_control(true);
 			parametric_move_front(
 			    distance,
 			    get_move_turn_linear_speed(movement, speed));
 			speed_turn(movement, speed);
-			distance = get_move_turn_space(movement, speed);
+			distance = get_move_turn_after(movement, speed);
+			break;
+		case MOVE_LEFT_FROM_45:
+		case MOVE_RIGHT_FROM_45:
+		case MOVE_LEFT_FROM_135:
+		case MOVE_RIGHT_FROM_135:
+		case MOVE_LEFT_DIAGONAL:
+		case MOVE_RIGHT_DIAGONAL:
+			distance += get_move_turn_before(movement, speed);
+			side_sensors_control(false);
+			parametric_move_front(
+			    distance,
+			    get_move_turn_linear_speed(movement, speed));
+			speed_turn(movement, speed);
+			distance = get_move_turn_after(movement, speed);
 			break;
 		case MOVE_STOP:
 			distance += CELL_DIMENSION / 2;
+			side_sensors_control(true);
 			parametric_move_front(distance, 0.);
 			break;
 		default:

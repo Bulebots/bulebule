@@ -12,27 +12,47 @@ static enum movement *destination;
 static int from_straight(void)
 {
 	if (!strncmp(source, "F", 1)) {
-		*destination = MOVE_FRONT;
+		*destination++ = MOVE_FRONT;
 		return 1;
 	}
 	if (!strncmp(source, "BF", 2)) {
-		*destination = MOVE_START;
+		*destination++ = MOVE_START;
+		return 1;
+	}
+	if (!strncmp(source, "LR", 2)) {
+		*destination++ = MOVE_LEFT_TO_45;
+	        straight = false;
+		return 1;
+	}
+	if (!strncmp(source, "RL", 2)) {
+		*destination++ = MOVE_RIGHT_TO_45;
+	        straight = false;
 		return 1;
 	}
 	if (!strncmp(source, "LF", 2)) {
-		*destination = MOVE_LEFT_90;
+		*destination++ = MOVE_LEFT_90;
 		return 1;
 	}
 	if (!strncmp(source, "RF", 2)) {
-		*destination = MOVE_RIGHT_90;
+		*destination++ = MOVE_RIGHT_90;
 		return 1;
 	}
+	if (!strncmp(source, "LLR", 3)) {
+		*destination++ = MOVE_LEFT_TO_135;
+	        straight = false;
+		return 2;
+	}
+	if (!strncmp(source, "RRL", 3)) {
+		*destination++ = MOVE_RIGHT_TO_135;
+	        straight = false;
+		return 2;
+	}
 	if (!strncmp(source, "LLF", 3)) {
-		*destination = MOVE_LEFT_180;
+		*destination++ = MOVE_LEFT_180;
 		return 2;
 	}
 	if (!strncmp(source, "RRF", 3)) {
-		*destination = MOVE_RIGHT_180;
+		*destination++ = MOVE_RIGHT_180;
 		return 2;
 	}
 	straight = false;
@@ -47,15 +67,47 @@ static int from_straight(void)
 static int from_diagonal(void)
 {
 	if (!strncmp(source, "B", 1)) {
-		*destination = MOVE_START;
+		*destination++ = MOVE_START;
+		return 1;
+	}
+	if (!strncmp(source, "LF", 2)) {
+		*destination++ = MOVE_LEFT_FROM_45;
+		return 1;
+	}
+	if (!strncmp(source, "RF", 2)) {
+		*destination++ = MOVE_RIGHT_FROM_45;
+		return 1;
+	}
+	if (!strncmp(source, "LLR", 3)) {
+		*destination++ = MOVE_LEFT_DIAGONAL;
+		return 2;
+	}
+	if (!strncmp(source, "RRL", 3)) {
+		*destination++ = MOVE_RIGHT_DIAGONAL;
+		return 2;
+	}
+	if (!strncmp(source, "LLF", 3)) {
+		*destination++ = MOVE_LEFT_FROM_135;
+		return 2;
+	}
+	if (!strncmp(source, "RRF", 3)) {
+		*destination++ = MOVE_RIGHT_FROM_135;
+		return 2;
+	}
+	if (!strncmp(source, "LR", 2)) {
+		*destination++ = MOVE_DIAGONAL;
+		return 1;
+	}
+	if (!strncmp(source, "RL", 2)) {
+		*destination++ = MOVE_DIAGONAL;
 		return 1;
 	}
 	if (!strncmp(source, "L", 1)) {
-		*destination = MOVE_LEFT;
+		*destination++ = MOVE_LEFT;
 		return 1;
 	}
 	if (!strncmp(source, "R", 1)) {
-		*destination = MOVE_RIGHT;
+		*destination++ = MOVE_RIGHT;
 		return 1;
 	}
 	return 0;
@@ -84,7 +136,6 @@ void make_smooth_path(char *raw_path, enum movement *smooth_path)
 			source += from_straight();
 		if (!straight)
 			source += from_diagonal();
-		destination++;
 	}
 	*destination = MOVE_END;
 }

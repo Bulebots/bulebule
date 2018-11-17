@@ -20,6 +20,7 @@
 
 /** Maze dimensions */
 #define CELL_DIMENSION 0.18
+#define CELL_DIAGONAL 0.1273
 #define WALL_WIDTH 0.012
 #define MIDDLE_MAZE_DISTANCE ((CELL_DIMENSION - WALL_WIDTH) / 2.)
 
