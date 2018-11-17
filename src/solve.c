@@ -124,8 +124,7 @@ void run(uint8_t speed)
 		switch (movement) {
 		case MOVE_START:
 			distance =
-			    CELL_DIMENSION - (MOUSE_TAIL + WALL_WIDTH / 2 +
-					      MOUSE_AXIS_SEPARATION / 2);
+			    CELL_DIMENSION - MOUSE_START_SHIFT;
 			break;
 		case MOVE_FRONT:
 		case MOVE_DIAGONAL:
