@@ -4,6 +4,12 @@
 #include <stdbool.h>
 #include <string.h>
 
+enum path_language {
+	PATH_SAFE,
+	PATH_DIAGONALS,
+	LANGUAGES_COUNT,
+};
+
 enum movement {
 	MOVE_END,
 	MOVE_START,
@@ -27,8 +33,10 @@ enum movement {
 	MOVE_DIAGONAL,
 	MOVE_LEFT_DIAGONAL,
 	MOVE_RIGHT_DIAGONAL,
+	MOVE_NONE,
 };
 
-void make_smooth_path(char *raw_path, enum movement *smooth_path);
+void make_smooth_path(char *raw_path, enum movement *smooth_path,
+		      enum path_language language);
 
 #endif /* __PATH_H */

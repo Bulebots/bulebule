@@ -118,7 +118,7 @@ void run(uint8_t speed)
 	char movement;
 	float distance = 0;
 
-	make_smooth_path(run_sequence, smooth_path);
+	make_smooth_path(run_sequence, smooth_path, PATH_DIAGONALS);
 	while (true) {
 		movement = smooth_path[i++];
 		if (movement == MOVE_END)

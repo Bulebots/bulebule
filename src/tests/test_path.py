@@ -77,7 +77,7 @@ def test_path_smoother_no_diagonals(interface, sharp, smooth):
     result = ffi.new('enum movement destination[30]')
     assert len(smooth) + 1 <= len(result)
 
-    lib.make_smooth_path(sharp.encode('ascii'), result)
+    lib.make_smooth_path(sharp.encode('ascii'), result, lib.PATH_DIAGONALS)
     result = stringify_enums(result, ffi, 'enum movement')
     result = [x[5:] for x in result]
     assert result[:len(smooth)] == smooth
@@ -144,7 +144,7 @@ def test_path_smoother_with_diagonals(interface, sharp, smooth):
     result = ffi.new('enum movement destination[30]')
     assert len(smooth) + 1 <= len(result)
 
-    lib.make_smooth_path(sharp.encode('ascii'), result)
+    lib.make_smooth_path(sharp.encode('ascii'), result, lib.PATH_DIAGONALS)
     result = stringify_enums(result, ffi, 'enum movement')
     result = [x[5:] for x in result]
     assert result[:len(smooth)] == smooth
