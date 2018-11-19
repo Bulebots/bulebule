@@ -86,7 +86,6 @@ def test_path_smoother_safe(interface, sharp, smooth):
     """
     Test correct path smoothing with the safe language.
     """
-    ffi, lib = interface
     assert smooth == smooth_path(interface, sharp, 'PATH_SAFE')
 
 
@@ -146,5 +145,4 @@ def test_path_smoother_diagonals(interface, sharp, smooth):
     """
     Test correct path smoothing with the diagonals language.
     """
-    ffi, lib = interface
     assert smooth == smooth_path(interface, sharp, 'PATH_DIAGONALS')
