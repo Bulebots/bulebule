@@ -1,116 +1,52 @@
 #include "path.h"
 
-static bool straight = true;
 static char *source;
 static enum movement *destination;
 
-/**
- * @brief Translate the source path when coming from a straight movement.
- *
- * @return Number of movements translated from source.
- */
-static int from_straight(void)
-{
-	if (!strncmp(source, "F", 1)) {
-		*destination++ = MOVE_FRONT;
-		return 1;
-	}
-	if (!strncmp(source, "BF", 2)) {
-		*destination++ = MOVE_START;
-		return 1;
-	}
-	if (!strncmp(source, "LR", 2)) {
-		*destination++ = MOVE_LEFT_TO_45;
-	        straight = false;
-		return 1;
-	}
-	if (!strncmp(source, "RL", 2)) {
-		*destination++ = MOVE_RIGHT_TO_45;
-	        straight = false;
-		return 1;
-	}
-	if (!strncmp(source, "LF", 2)) {
-		*destination++ = MOVE_LEFT_90;
-		return 1;
-	}
-	if (!strncmp(source, "RF", 2)) {
-		*destination++ = MOVE_RIGHT_90;
-		return 1;
-	}
-	if (!strncmp(source, "LLR", 3)) {
-		*destination++ = MOVE_LEFT_TO_135;
-	        straight = false;
-		return 2;
-	}
-	if (!strncmp(source, "RRL", 3)) {
-		*destination++ = MOVE_RIGHT_TO_135;
-	        straight = false;
-		return 2;
-	}
-	if (!strncmp(source, "LLF", 3)) {
-		*destination++ = MOVE_LEFT_180;
-		return 2;
-	}
-	if (!strncmp(source, "RRF", 3)) {
-		*destination++ = MOVE_RIGHT_180;
-		return 2;
-	}
-	straight = false;
-	return 0;
-}
+struct translation {
+	char *from;
+	enum movement to;
+};
+
+#define FROM_STRAIGHT_SIZE 8
+#define FROM_DIAGONAL_SIZE 10
+
+static struct translation from_straight[FROM_STRAIGHT_SIZE] = {
+    {"LR", MOVE_LEFT_TO_45},   {"RL", MOVE_RIGHT_TO_45},
+    {"LF", MOVE_LEFT_90},      {"RF", MOVE_RIGHT_90},
+    {"LLR", MOVE_LEFT_TO_135}, {"RRL", MOVE_RIGHT_TO_135},
+    {"LLF", MOVE_LEFT_180},    {"RRF", MOVE_RIGHT_180},
+};
+
+static struct translation from_diagonal[FROM_DIAGONAL_SIZE] = {
+    {"LR", MOVE_DIAGONAL},       {"RL", MOVE_DIAGONAL},
+    {"LLR", MOVE_LEFT_DIAGONAL}, {"RRL", MOVE_RIGHT_DIAGONAL},
+    {"LF", MOVE_LEFT_FROM_45},   {"RF", MOVE_RIGHT_FROM_45},
+    {"LLF", MOVE_LEFT_FROM_135}, {"RRF", MOVE_RIGHT_FROM_135},
+};
 
 /**
- * @brief Translate the source path when coming from a diagonal movement.
+ * @brief Translate the source path to a smooth path.
  *
- * @return Number of movements translated from source.
+ * @param[in] dictionary The collection of possible translations.
+ * @param[in] words Number of translations in the dictionary.
  */
-static int from_diagonal(void)
+static void translate(struct translation *dictionary, int words)
 {
-	if (!strncmp(source, "B", 1)) {
-		*destination++ = MOVE_START;
-		return 1;
+	struct translation candidate;
+	char *pattern;
+	int pattern_length;
+
+	for (int i = 0; i < words; i++) {
+		candidate = dictionary[i];
+		pattern = candidate.from;
+		pattern_length = strlen(pattern);
+		if (!strncmp(source, pattern, pattern_length)) {
+			*destination++ = candidate.to;
+			source += pattern_length - 1;
+			return;
+		}
 	}
-	if (!strncmp(source, "LF", 2)) {
-		*destination++ = MOVE_LEFT_FROM_45;
-		return 1;
-	}
-	if (!strncmp(source, "RF", 2)) {
-		*destination++ = MOVE_RIGHT_FROM_45;
-		return 1;
-	}
-	if (!strncmp(source, "LLR", 3)) {
-		*destination++ = MOVE_LEFT_DIAGONAL;
-		return 2;
-	}
-	if (!strncmp(source, "RRL", 3)) {
-		*destination++ = MOVE_RIGHT_DIAGONAL;
-		return 2;
-	}
-	if (!strncmp(source, "LLF", 3)) {
-		*destination++ = MOVE_LEFT_FROM_135;
-		return 2;
-	}
-	if (!strncmp(source, "RRF", 3)) {
-		*destination++ = MOVE_RIGHT_FROM_135;
-		return 2;
-	}
-	if (!strncmp(source, "LR", 2)) {
-		*destination++ = MOVE_DIAGONAL;
-		return 1;
-	}
-	if (!strncmp(source, "RL", 2)) {
-		*destination++ = MOVE_DIAGONAL;
-		return 1;
-	}
-	if (!strncmp(source, "L", 1)) {
-		*destination++ = MOVE_LEFT;
-		return 1;
-	}
-	if (!strncmp(source, "R", 1)) {
-		*destination++ = MOVE_RIGHT;
-		return 1;
-	}
-	return 0;
 }
 
 /**
@@ -121,21 +57,33 @@ static int from_diagonal(void)
  */
 void make_smooth_path(char *raw_path, enum movement *smooth_path)
 {
+	bool straight = false;
+
 	source = raw_path;
 	destination = smooth_path;
 	while (true) {
 		if (*source == '\0')
 			break;
+		if (*source == 'B') {
+			*destination++ = MOVE_START;
+			source++;
+			continue;
+		}
 		if (*source == 'S') {
 			*destination++ = MOVE_STOP;
 			break;
 		}
-		if (*source == 'F')
+		if (*source == 'F') {
 			straight = true;
+			*destination++ = MOVE_FRONT;
+			source++;
+			continue;
+		}
 		if (straight)
-			source += from_straight();
-		if (!straight)
-			source += from_diagonal();
+			translate(from_straight, FROM_STRAIGHT_SIZE);
+		else
+			translate(from_diagonal, FROM_DIAGONAL_SIZE);
+		straight = false;
 	}
 	*destination = MOVE_END;
 }

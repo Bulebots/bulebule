@@ -76,6 +76,8 @@ void set_run_sequence(void)
 	set_search_initial_state();
 	set_target_goal();
 	set_distances();
+
+	run_sequence[i++] = 'B';
 	while (search_distance() > 0) {
 		step = best_neighbor_step(current_walls_around());
 		switch (step) {
@@ -99,7 +101,7 @@ void set_run_sequence(void)
 			break;
 		run_sequence[i++] = 'F';
 	}
-	run_sequence[0] = 'B';
+	run_sequence[i++] = 'F';
 	run_sequence[i++] = 'S';
 	run_sequence[i] = '\0';
 }
@@ -123,8 +125,7 @@ void run(uint8_t speed)
 			break;
 		switch (movement) {
 		case MOVE_START:
-			distance =
-			    CELL_DIMENSION - MOUSE_START_SHIFT;
+			distance = -MOUSE_START_SHIFT;
 			break;
 		case MOVE_FRONT:
 		case MOVE_DIAGONAL:
@@ -173,7 +174,7 @@ void run(uint8_t speed)
 			distance = get_move_turn_after(movement, speed);
 			break;
 		case MOVE_STOP:
-			distance += CELL_DIMENSION / 2;
+			distance -= CELL_DIMENSION / 2;
 			side_sensors_control(true);
 			parametric_move_front(distance, 0.);
 			break;
