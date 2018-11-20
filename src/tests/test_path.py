@@ -15,6 +15,7 @@ def interface():
     yield from yield_cffi('./src/path')
 
 
+@pytest.mark.parametrize('language', ['PATH_SAFE', 'PATH_DIAGONALS'])
 @pytest.mark.parametrize('sharp,smooth', [
     ('F', ['FRONT']),
     ('FF', ['FRONT', 'FRONT']),
@@ -28,11 +29,6 @@ def interface():
     ('FRRF', ['FRONT', 'RIGHT_180', 'FRONT']),
     ('FLLFS', ['FRONT', 'LEFT_180', 'FRONT', 'STOP']),
     ('FRRFS', ['FRONT', 'RIGHT_180', 'FRONT', 'STOP']),
-    ('FLRF', ['FRONT', 'LEFT', 'RIGHT', 'FRONT']),
-    ('FRLF', ['FRONT', 'RIGHT', 'LEFT', 'FRONT']),
-    ('FLRFS', ['FRONT', 'LEFT', 'RIGHT', 'FRONT', 'STOP']),
-    ('FRLFS', ['FRONT', 'RIGHT', 'LEFT', 'FRONT', 'STOP']),
-    ('FRLLF', ['FRONT', 'RIGHT', 'LEFT', 'LEFT', 'FRONT']),
     ('BS', ['START', 'STOP']),
     ('BFS', ['START', 'FRONT', 'STOP']),
     ('BFFS', ['START', 'FRONT', 'FRONT', 'STOP']),
@@ -55,11 +51,6 @@ def interface():
     'Straight-to-straight 180-degrees right turn',
     'Straight-to-stop 180-degrees left turn',
     'Straight-to-stop 180-degrees right turn',
-    'Left-right zig-zag',
-    'Right-left zig-zag',
-    'Left-right zig-zag with stop',
-    'Right-left zig-zag with stop',
-    'Once we start zig-zag, we keep 90-degrees turns',
     'Start and stop',
     'Start, front once and stop',
     'Start, front twice and stop',
@@ -69,15 +60,44 @@ def interface():
     'Start-to-straight 180-degrees right turn',
     'Start-to-straight 90-degrees right turn, then 180-degrees left and stop',
 ])
-def test_path_smoother_no_diagonals(interface, sharp, smooth):
+def test_path_smoother_all(interface, sharp, smooth, language):
     """
-    Test correct path smoothing when diagonals are disallowed.
+    Test correct path smoothing for all path languages.
     """
     ffi, lib = interface
     result = ffi.new('enum movement destination[30]')
     assert len(smooth) + 1 <= len(result)
 
-    lib.make_smooth_path(sharp.encode('ascii'), result, lib.PATH_DIAGONALS)
+    language = getattr(lib, language)
+    lib.make_smooth_path(sharp.encode('ascii'), result, language)
+    result = stringify_enums(result, ffi, 'enum movement')
+    result = [x[5:] for x in result]
+    assert result[:len(smooth)] == smooth
+    assert result[len(smooth)] == 'END'
+
+
+@pytest.mark.parametrize('sharp,smooth', [
+    ('FLRF', ['FRONT', 'LEFT', 'RIGHT', 'FRONT']),
+    ('FRLF', ['FRONT', 'RIGHT', 'LEFT', 'FRONT']),
+    ('FLRFS', ['FRONT', 'LEFT', 'RIGHT', 'FRONT', 'STOP']),
+    ('FRLFS', ['FRONT', 'RIGHT', 'LEFT', 'FRONT', 'STOP']),
+    ('FRLLF', ['FRONT', 'RIGHT', 'LEFT', 'LEFT', 'FRONT']),
+], ids=[
+    'Left-right zig-zag',
+    'Right-left zig-zag',
+    'Left-right zig-zag with stop',
+    'Right-left zig-zag with stop',
+    'Once we start zig-zag, we keep 90-degrees turns',
+])
+def test_path_smoother_safe(interface, sharp, smooth):
+    """
+    Test correct path smoothing with the safe language.
+    """
+    ffi, lib = interface
+    result = ffi.new('enum movement destination[30]')
+    assert len(smooth) + 1 <= len(result)
+
+    lib.make_smooth_path(sharp.encode('ascii'), result, lib.PATH_SAFE)
     result = stringify_enums(result, ffi, 'enum movement')
     result = [x[5:] for x in result]
     assert result[:len(smooth)] == smooth
@@ -136,9 +156,9 @@ def test_path_smoother_no_diagonals(interface, sharp, smooth):
     'Right V-turn',
     'Challenge 0',
 ])
-def test_path_smoother_with_diagonals(interface, sharp, smooth):
+def test_path_smoother_diagonals(interface, sharp, smooth):
     """
-    Test correct path smoothing when diagonals are allowed.
+    Test correct path smoothing with the diagonals language.
     """
     ffi, lib = interface
     result = ffi.new('enum movement destination[30]')
