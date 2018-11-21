@@ -14,7 +14,7 @@
 
 float current_cell_shift(void);
 void set_starting_position(void);
-uint32_t required_micrometers_to_speed(float speed);
+int32_t required_micrometers_to_speed(float speed);
 float required_time_to_speed(float speed);
 uint32_t required_ticks_to_speed(float speed);
 void disable_walls_control(void);

@@ -49,7 +49,7 @@ static void entered_next_cell(void)
  * This functions assumes the current speed is the target speed and takes into
  * account the configured linear deceleration.
  */
-uint32_t required_micrometers_to_speed(float speed)
+int32_t required_micrometers_to_speed(float speed)
 {
 	float acceleration;
 	float current_speed = get_ideal_linear_speed();
@@ -57,8 +57,8 @@ uint32_t required_micrometers_to_speed(float speed)
 	acceleration = (current_speed > speed) ? -get_linear_deceleration()
 					       : get_linear_acceleration();
 
-	return (uint32_t)((speed * speed - current_speed * current_speed) /
-			  (2 * acceleration) * MICROMETERS_PER_METER);
+	return (int32_t)((speed * speed - current_speed * current_speed) /
+			 (2 * acceleration) * MICROMETERS_PER_METER);
 }
 
 /**
@@ -126,14 +126,12 @@ void target_straight(int32_t start, float distance, float speed)
 	if (distance > 0) {
 		set_target_linear_speed(get_max_linear_speed());
 		while (get_encoder_average_micrometers() <
-		       target_distance -
-			   (int32_t)required_micrometers_to_speed(speed))
+		       target_distance - required_micrometers_to_speed(speed))
 			;
 	} else {
 		set_target_linear_speed(-get_max_linear_speed());
 		while (get_encoder_average_micrometers() >
-		       target_distance +
-			   (int32_t)required_micrometers_to_speed(speed))
+		       target_distance - required_micrometers_to_speed(speed))
 			;
 	}
 	set_target_linear_speed(speed);
