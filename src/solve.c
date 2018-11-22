@@ -189,8 +189,10 @@ static void execute_movement_sequence(char *sequence, uint8_t speed,
 			LOG_ERROR("Unable to process command [%d]!", movement);
 			return;
 		}
-		if (collision_detected())
+		if (collision_detected()) {
+			LOG_ERROR("Collision detected!");
 			return;
+		}
 	}
 }
 
