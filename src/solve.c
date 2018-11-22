@@ -3,7 +3,6 @@
 #define EEPROM_NUM_BYTES_ERASED_CHECKED ((uint8_t)4)
 #define EEPROM_BYTE_ERASED_VALUE 255
 static char run_sequence[MAZE_AREA];
-static enum movement smooth_path[MAZE_AREA];
 
 /**
  * @brief Move from the current position to the defined target.
@@ -107,18 +106,24 @@ void set_run_sequence(void)
 }
 
 /**
- * @brief Execute the speed run movement sequence.
+ * @brief Execute a movement sequence.
  *
- * @param[in] speed The speed level at which to execute the run sequence.
+ * The sequence is a raw/sharp path, which will be smoothed before execution.
+ *
+ * @param[in] sequence Sequence of raw movements to execute.
+ * @param[in] speed The speed level at which to execute the sequence.
+ * @param[in] language Language to use for the raw-to-smooth path translation.
  */
-void run(uint8_t speed)
+static void execute_movement_sequence(char *sequence, uint8_t speed,
+				      enum path_language language)
 {
 	int i = 0;
 	int many = 0;
 	char movement;
 	float distance = 0;
+	enum movement smooth_path[MAZE_AREA];
 
-	make_smooth_path(run_sequence, smooth_path, PATH_DIAGONALS);
+	make_smooth_path(sequence, smooth_path, language);
 	while (true) {
 		movement = smooth_path[i++];
 		switch (movement) {
@@ -175,6 +180,8 @@ void run(uint8_t speed)
 			distance -= CELL_DIMENSION / 2;
 			side_sensors_control(true);
 			parametric_move_front(distance, 0.);
+			turn_to_start_position(speed);
+			speaker_play_success();
 			break;
 		case MOVE_END:
 			return;
@@ -185,6 +192,54 @@ void run(uint8_t speed)
 		if (collision_detected())
 			return;
 	}
+}
+
+/**
+ * @brief Run from the start to the goal.
+ *
+ * @param[in] speed The speed level at which to run.
+ */
+void run(uint8_t speed)
+{
+	execute_movement_sequence(run_sequence, speed, PATH_DIAGONALS);
+}
+
+/**
+ * @brief Run back from the goal to the start.
+ *
+ * @param[in] speed The speed level at which to run.
+ */
+void run_back(uint8_t speed)
+{
+	int length;
+	char run_back[MAZE_AREA];
+	char translation = '\0';
+
+	length = strlen(run_sequence);
+	for (int i = 0; i < length; i++) {
+		switch (run_sequence[i]) {
+		case 'F':
+			translation = 'F';
+			break;
+		case 'L':
+			translation = 'R';
+			break;
+		case 'R':
+			translation = 'L';
+			break;
+		case 'B':
+			translation = 'S';
+			break;
+		case 'S':
+			translation = 'B';
+			break;
+		default:
+			continue;
+		}
+		run_back[length - i - 1] = translation;
+	}
+	run_back[length] = '\0';
+	execute_movement_sequence(run_back, speed, PATH_SAFE);
 }
 
 /**

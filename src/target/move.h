@@ -25,6 +25,7 @@ void stop_head_front_wall(void);
 void stop_middle(void);
 void parametric_turn(float angular_speed, float rise_time, float elapsed_time);
 void turn_back(uint8_t speed);
+void turn_to_start_position(uint8_t speed);
 void move_front(void);
 void move_front_many(int cells);
 void parametric_move_front(float distance, float end_linear_speed);

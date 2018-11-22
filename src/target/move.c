@@ -287,6 +287,31 @@ void turn_back(uint8_t speed)
 }
 
 /**
+ * @brief Turn back (180-degree turn) to a starting position.
+ *
+ * @param[in] speed The speed level at which to turn.
+ */
+void turn_to_start_position(uint8_t speed)
+{
+	float distance;
+
+	set_linear_acceleration(get_linear_acceleration() / 4.);
+	set_linear_deceleration(get_linear_deceleration() / 4.);
+
+	turn_back(speed);
+	distance = MOUSE_START_SHIFT - current_cell_shift();
+	target_straight(get_encoder_average_micrometers(), distance, 0.);
+
+	set_linear_acceleration(get_linear_acceleration() * 4.);
+	set_linear_deceleration(get_linear_deceleration() * 4.);
+
+	disable_walls_control();
+	reset_control_all();
+	enable_motor_control();
+	drive_break();
+}
+
+/**
  * @brief Move front into the next cell.
  */
 void move_front(void)

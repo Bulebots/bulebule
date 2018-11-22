@@ -127,6 +127,7 @@ static void running_phase(void)
 	speed = user_configuration(true);
 	before_moving();
 	run(speed);
+	run_back(speed);
 	after_moving();
 }
 
