@@ -29,6 +29,7 @@ void sys_tick_handler(void)
 	update_gyro_readings();
 	update_encoder_readings();
 	motor_control();
+	log_data();
 }
 
 /**

@@ -1,5 +1,39 @@
 #include "logging.h"
 
+#define TX_SIZE 100
+
+static volatile bool data_logging;
+static char data_log_buffer[TX_SIZE];
+
+void enable_data_logging(void)
+{
+	LOG_INFO("Data logging on");
+	sleep_ticks(2);
+	led_right_on();
+	data_logging = true;
+}
+
+void disable_data_logging(void)
+{
+	data_logging = false;
+	led_right_off();
+	sleep_ticks(2);
+	LOG_INFO("Data logging off");
+}
+
+void log_data(void)
+{
+	uint32_t time;
+
+	if (!data_logging)
+		return;
+	time = get_clock_ticks();
+	sprintf(data_log_buffer, "%" PRIu32 ",DATA,,,%.4f,%.4f,%.4f,%.4f\n",
+		time, get_front_left_distance(), get_front_right_distance(),
+		get_side_left_distance(), get_side_right_distance());
+	dma_write(data_log_buffer, strlen(data_log_buffer));
+}
+
 /**
  * @brief Log the current battery voltage.
  */

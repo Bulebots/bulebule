@@ -1,7 +1,6 @@
 #ifndef __SPEED_H
 #define __SPEED_H
 
-#include "formatting.h"
 #include "move.h"
 #include "path.h"
 #include "setup.h"

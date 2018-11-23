@@ -1,5 +1,4 @@
 #include "eeprom.h"
-#include "formatting.h"
 
 #define BYTES_PER_WORD 4
 

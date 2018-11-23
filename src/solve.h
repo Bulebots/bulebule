@@ -3,7 +3,7 @@
 
 #include "detection.h"
 #include "eeprom.h"
-#include "formatting.h"
+#include "logging.h"
 #include "move.h"
 #include "path.h"
 #include "search.h"

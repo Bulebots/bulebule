@@ -49,6 +49,9 @@ static void setup_clock(void)
 	rcc_periph_clock_enable(RCC_ADC1);
 	rcc_periph_clock_enable(RCC_ADC2);
 
+	/* DMA */
+	rcc_periph_clock_enable(RCC_DMA1);
+
 	/* Enable clock cycle counter */
 	dwt_enable_cycle_counter();
 }
@@ -79,9 +82,11 @@ static void setup_exceptions(void)
 {
 	nvic_set_priority(NVIC_TIM1_UP_IRQ, 0);
 	nvic_set_priority(NVIC_SYSTICK_IRQ, PRIORITY_FACTOR * 1);
-	nvic_set_priority(NVIC_USART3_IRQ, PRIORITY_FACTOR * 2);
+	nvic_set_priority(NVIC_DMA1_CHANNEL2_IRQ, PRIORITY_FACTOR * 2);
+	nvic_set_priority(NVIC_USART3_IRQ, PRIORITY_FACTOR * 3);
 
 	nvic_enable_irq(NVIC_TIM1_UP_IRQ);
+	nvic_enable_irq(NVIC_DMA1_CHANNEL2_IRQ);
 	nvic_enable_irq(NVIC_USART3_IRQ);
 }
 

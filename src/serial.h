@@ -13,6 +13,7 @@
 #include "move.h"
 #include "speed.h"
 
+void dma_write(char *data, int size);
 void execute_commands(void);
 
 #endif /* __SERIAL_H */
