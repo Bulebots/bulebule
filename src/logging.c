@@ -96,23 +96,6 @@ void log_sensors_distance(void)
 }
 
 /**
- * @brief Log all sensor distance readings, published for real-time.
- */
-void log_sensors_distance_pub(void)
-{
-	float reading;
-
-	reading = get_side_left_distance();
-	LOG_INFO("PUB,line,left-side,%f", reading);
-	reading = get_front_left_distance();
-	LOG_INFO("PUB,line,left-front,%f", reading);
-	reading = get_front_right_distance();
-	LOG_INFO("PUB,line,right-front,%f", reading);
-	reading = get_side_right_distance();
-	LOG_INFO("PUB,line,right-side,%f", reading);
-}
-
-/**
  * @brief Log all sensors raw readings.
  */
 void log_sensors_raw(void)
@@ -127,26 +110,6 @@ void log_sensors_raw(void)
 		 off[SENSOR_FRONT_RIGHT_ID], on[SENSOR_SIDE_LEFT_ID],
 		 on[SENSOR_SIDE_RIGHT_ID], on[SENSOR_FRONT_LEFT_ID],
 		 on[SENSOR_FRONT_RIGHT_ID]);
-}
-
-/**
- * @brief Log all sensor raw readings, published for real-time.
- */
-void log_sensors_raw_pub(void)
-{
-	uint16_t off[NUM_SENSOR];
-	uint16_t on[NUM_SENSOR];
-
-	get_sensors_raw(off, on);
-
-	LOG_INFO("PUB,line,left-side-raw-on,%u", on[SENSOR_SIDE_LEFT_ID]);
-	LOG_INFO("PUB,line,left-front-raw-on,%u", on[SENSOR_FRONT_LEFT_ID]);
-	LOG_INFO("PUB,line,right-front-raw-on,%u", on[SENSOR_FRONT_RIGHT_ID]);
-	LOG_INFO("PUB,line,right-side-raw-on,%u", on[SENSOR_SIDE_RIGHT_ID]);
-	LOG_INFO("PUB,line,left-side-raw-off,%u", off[SENSOR_SIDE_LEFT_ID]);
-	LOG_INFO("PUB,line,left-front-raw-off,%u", off[SENSOR_FRONT_LEFT_ID]);
-	LOG_INFO("PUB,line,right-front-raw-off,%u", off[SENSOR_FRONT_RIGHT_ID]);
-	LOG_INFO("PUB,line,right-side-raw-off,%u", off[SENSOR_SIDE_RIGHT_ID]);
 }
 
 /**
@@ -220,28 +183,4 @@ void log_walls_detection(void)
 		 "\"wall_right\":%d,"
 		 "\"wall_front\":%d}",
 		 left_wall, right_wall, front_wall);
-}
-
-/**
- * @brief Log gyroscope's Z-axis raw readings, published for real-time.
- */
-void log_gyro_raw_pub(void)
-{
-	LOG_INFO("PUB,line,gyro_raw,%f", (float)get_gyro_z_raw());
-}
-
-/**
- * @brief Log gyroscope's Z-axis DPS readings, published for real-time.
- */
-void log_gyro_dps_pub(void)
-{
-	LOG_INFO("PUB,line,gyro_dps,%f", (float)get_gyro_z_dps());
-}
-
-/**
- * @brief Log gyroscope's Z-axis degrees readings, published for real-time.
- */
-void log_gyro_degrees_pub(void)
-{
-	LOG_INFO("PUB,line,gyro_degrees,%f", get_gyro_z_degrees());
 }
