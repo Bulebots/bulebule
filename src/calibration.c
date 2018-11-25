@@ -106,6 +106,7 @@ void run_static_turn_right_profile(void)
  * - 'l': to turn left (in place).
  * - 'r': to turn right (in place).
  * - 'b': to turn back (in place).
+ * - 's': to stop now.
  * - 'k': keep half cell front distance.
  * - 'j': keep one cell front distance.
  */
@@ -155,6 +156,10 @@ void run_movement_sequence(const char *sequence)
 			break;
 		case 'b':
 			turn_back(speed);
+			break;
+		case 's':
+			set_target_linear_speed(0.);
+			sleep_seconds(1);
 			break;
 		case 'k':
 			keep_front_wall_distance(CELL_DIMENSION / 2.);
