@@ -182,7 +182,10 @@ class Proxy(Agent):
     def get_battery_voltage(self):
         self.filter_next(function='log_battery_voltage')
         self.send_bt('battery\0')
-        return float(self.wait_filtered()[-1])
+        result = self.wait_filtered()
+        if result is None:
+            return 0.
+        return float(result[-1])
 
     def get_configuration_variables(self):
         self.filter_next(function='log_configuration_variables')
