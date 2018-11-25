@@ -23,6 +23,16 @@ const float max_linear_speed_run_defaults[NUM_MODES] = {1., 1.5, 2., 2.5};
 
 uint8_t speed_configuration;
 
+/**
+ * Parameters that define a turn.
+ *
+ * - Meters to travel in straight line before turning
+ * - Meters to travel in straight line after turning
+ * - Linear speed, in meters per second, at which to turn
+ * - Duration, in milliseconds, of the positive angular acceleration phase
+ * - Duration, in milliseconds, of the whole turn
+ * - Maximum angular speed at which to turn, in radians per second
+ */
 struct turn_parameters {
 	float before;
 	float after;
