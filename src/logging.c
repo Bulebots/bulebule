@@ -1,19 +1,18 @@
 #include "logging.h"
 
-#define TX_SIZE 100
-
 static volatile bool data_logging;
-static char data_log_buffer[TX_SIZE];
+static void (*data_logging_function)(void);
 
-void enable_data_logging(void)
+void start_data_logging(void (*log_function)(void))
 {
 	LOG_INFO("Data logging on");
+	data_logging_function = log_function;
 	sleep_ticks(2);
 	led_right_on();
 	data_logging = true;
 }
 
-void disable_data_logging(void)
+void stop_data_logging(void)
 {
 	data_logging = false;
 	led_right_off();
@@ -23,15 +22,9 @@ void disable_data_logging(void)
 
 void log_data(void)
 {
-	uint32_t time;
-
 	if (!data_logging)
 		return;
-	time = get_clock_ticks();
-	sprintf(data_log_buffer, "%" PRIu32 ",DATA,,,%.4f,%.4f,%.4f,%.4f\n",
-		time, get_front_left_distance(), get_front_right_distance(),
-		get_side_left_distance(), get_side_right_distance());
-	dma_write(data_log_buffer, strlen(data_log_buffer));
+	data_logging_function();
 }
 
 /**
@@ -149,9 +142,8 @@ void log_sensors_raw(void)
 /**
  * @brief Log front sensors variables for calibration.
  */
-void log_front_sensors_calibration(void)
+void log_data_front_sensors_calibration(void)
 {
-	float sensors_error = get_front_sensors_error();
 	float left_distance = get_front_left_distance();
 	float right_distance = get_front_right_distance();
 	uint16_t off[NUM_SENSOR];
@@ -160,18 +152,10 @@ void log_front_sensors_calibration(void)
 
 	get_sensors_raw(off, on);
 
-	LOG_INFO("{\"micrometers\":%" PRId32 ","
-		 "\"left_raw_on\":%d,"
-		 "\"left_raw_off\":%d,"
-		 "\"right_raw_on\":%d,"
-		 "\"right_raw_off\":%d,"
-		 "\"left_distance\":%f,"
-		 "\"right_distance\":%f,"
-		 "\"distance_error\":%f}",
-		 micrometers, on[SENSOR_FRONT_LEFT_ID],
-		 off[SENSOR_FRONT_LEFT_ID], on[SENSOR_FRONT_RIGHT_ID],
-		 off[SENSOR_FRONT_RIGHT_ID], left_distance, right_distance,
-		 sensors_error);
+	LOG_DATA("[%" PRId32 ",%d,%d,%d,%d,%.4f,%.4f]", micrometers,
+		 on[SENSOR_FRONT_LEFT_ID], off[SENSOR_FRONT_LEFT_ID],
+		 on[SENSOR_FRONT_RIGHT_ID], off[SENSOR_FRONT_RIGHT_ID],
+		 left_distance, right_distance);
 }
 
 /**
