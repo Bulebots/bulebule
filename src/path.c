@@ -108,7 +108,8 @@ void make_smooth_path(char *source, enum movement *destination,
 		}
 		if (*source == 'S') {
 			*destination++ = MOVE_STOP;
-			break;
+			source++;
+			continue;
 		}
 		if (*source == 'F') {
 			straight = true;
