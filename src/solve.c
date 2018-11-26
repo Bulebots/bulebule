@@ -121,8 +121,6 @@ void run(uint8_t speed)
 	make_smooth_path(run_sequence, smooth_path, PATH_DIAGONALS);
 	while (true) {
 		movement = smooth_path[i++];
-		if (movement == MOVE_END)
-			break;
 		switch (movement) {
 		case MOVE_START:
 			distance = -MOUSE_START_SHIFT;
@@ -178,6 +176,8 @@ void run(uint8_t speed)
 			side_sensors_control(true);
 			parametric_move_front(distance, 0.);
 			break;
+		case MOVE_END:
+			return;
 		default:
 			LOG_ERROR("Unable to process command [%d]!", movement);
 			return;
