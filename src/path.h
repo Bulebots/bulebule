@@ -5,8 +5,8 @@
 #include <string.h>
 
 enum path_language {
-	PATH_SAFE,
-	PATH_DIAGONALS,
+	PATH_SAFE,      /**< Do not generate smooth diagonals */
+	PATH_DIAGONALS, /**< Generate smooth diagonals */
 	LANGUAGES_COUNT,
 };
 
