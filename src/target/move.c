@@ -276,7 +276,8 @@ void turn_back(uint8_t speed)
 	else
 		side = MOVE_RIGHT_180;
 
-	keep_front_wall_distance(CELL_DIMENSION / 2.);
+	if (get_front_wall_distance() < CELL_DIMENSION)
+		keep_front_wall_distance(CELL_DIMENSION / 2.);
 	disable_walls_control();
 	speed_turn(side, speed);
 
