@@ -62,6 +62,7 @@ void explore(uint8_t speed)
 		set_target_cell(cell);
 	}
 	stop_middle();
+	turn_to_start_position(speed);
 }
 
 /**
