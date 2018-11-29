@@ -125,13 +125,17 @@ static void setup_gpio(void)
 
 /**
  * @brief Setup USART for bluetooth communication.
+ *
+ * A pull-up resistor is used in RX to avoid a floating input when no
+ * bluetooth is connected, which could trigger incorrect interruptions.
  */
 static void setup_usart(void)
 {
 	gpio_set_mode(GPIOB, GPIO_MODE_OUTPUT_50_MHZ,
 		      GPIO_CNF_OUTPUT_ALTFN_PUSHPULL, GPIO_USART3_TX);
-	gpio_set_mode(GPIOB, GPIO_MODE_INPUT, GPIO_CNF_INPUT_FLOAT,
+	gpio_set_mode(GPIOB, GPIO_MODE_INPUT, GPIO_CNF_INPUT_PULL_UPDOWN,
 		      GPIO_USART3_RX);
+	gpio_set(GPIOB, GPIO_USART3_RX);
 
 	usart_set_baudrate(USART3, 921600);
 	usart_set_databits(USART3, 8);
