@@ -219,7 +219,7 @@ void disable_motor_control(void)
 /**
  * @brief Return the current PWM duty for the left motor.
  */
-float get_left_pwm(void)
+int32_t get_left_pwm(void)
 {
 	return pwm_left;
 }
@@ -227,7 +227,7 @@ float get_left_pwm(void)
 /**
  * @brief Return the current PWM duty for the right motor.
  */
-float get_right_pwm(void)
+int32_t get_right_pwm(void)
 {
 	return pwm_right;
 }
