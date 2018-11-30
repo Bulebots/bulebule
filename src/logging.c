@@ -159,6 +159,28 @@ void log_data_front_sensors_calibration(void)
 }
 
 /**
+ * @brief Log all interesting control variables.
+ */
+void log_data_control(void)
+{
+	float front_left_distance = get_front_left_distance();
+	float front_right_distance = get_front_right_distance();
+	float side_left_distance = get_side_left_distance();
+	float side_right_distance = get_side_right_distance();
+	float ideal_linear = get_ideal_linear_speed();
+	float ideal_angular = get_ideal_angular_speed();
+	float measured_linear = get_measured_linear_speed();
+	float measured_angular = get_measured_angular_speed();
+	int left_pwm = get_left_pwm();
+	int right_pwm = get_right_pwm();
+
+	LOG_DATA("[%.3f,%.3f,%.3f,%.3f,%.3f,%.3f,%.3f,%.3f,%d,%d]",
+		 front_left_distance, front_right_distance, side_left_distance,
+		 side_right_distance, ideal_linear, measured_linear,
+		 ideal_angular, measured_angular, left_pwm, right_pwm);
+}
+
+/**
  * @brief Log front sensors distances and error.
  */
 void log_front_sensors_error(void)

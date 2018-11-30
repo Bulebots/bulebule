@@ -49,6 +49,7 @@ void start_data_logging(void (*log_function)(void));
 void stop_data_logging(void);
 void log_data(void);
 void log_data_front_sensors_calibration(void);
+void log_data_control(void);
 void log_battery_voltage(void);
 void log_configuration_variables(void);
 void log_linear_speed(void);
