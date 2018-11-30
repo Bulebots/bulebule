@@ -265,6 +265,22 @@ float get_ideal_angular_speed(void)
 }
 
 /**
+ * @brief Return the current measured linear speed in meters per second.
+ */
+float get_measured_linear_speed(void)
+{
+	return (get_encoder_left_speed() + get_encoder_right_speed()) / 2.;
+}
+
+/**
+ * @brief Return the current measured angular speed in radians per second.
+ */
+float get_measured_angular_speed(void)
+{
+	return -get_gyro_z_radps();
+}
+
+/**
  * @brief Set target linear speed in meters per second.
  */
 void set_target_linear_speed(float speed)
@@ -323,10 +339,6 @@ void update_ideal_speed(void)
  */
 void motor_control(void)
 {
-	float left_speed;
-	float right_speed;
-	float encoder_feedback_linear;
-	float gyro_feedback_angular;
 	float linear_pwm;
 	float angular_pwm;
 	float side_sensors_feedback;
@@ -334,11 +346,6 @@ void motor_control(void)
 
 	if (!motor_control_enabled_signal)
 		return;
-
-	left_speed = get_encoder_left_speed();
-	right_speed = get_encoder_right_speed();
-	encoder_feedback_linear = (left_speed + right_speed) / 2.;
-	gyro_feedback_angular = -get_gyro_z_radps();
 
 	if (side_sensors_control_enabled) {
 		side_sensors_feedback = get_side_sensors_error();
@@ -355,8 +362,8 @@ void motor_control(void)
 		front_sensors_feedback = 0;
 	}
 
-	linear_error += ideal_linear_speed - encoder_feedback_linear;
-	angular_error += ideal_angular_speed - gyro_feedback_angular;
+	linear_error += ideal_linear_speed - get_measured_linear_speed();
+	angular_error += ideal_angular_speed - get_measured_angular_speed();
 
 	linear_pwm = kp_linear * linear_error +
 		     kd_linear * (linear_error - last_linear_error);

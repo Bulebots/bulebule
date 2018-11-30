@@ -39,6 +39,8 @@ float get_target_linear_speed(void);
 float get_target_angular_speed(void);
 float get_ideal_linear_speed(void);
 float get_ideal_angular_speed(void);
+float get_measured_linear_speed(void);
+float get_measured_angular_speed(void);
 void motor_control(void);
 void set_target_linear_speed(float speed);
 void set_target_angular_speed(float speed);
