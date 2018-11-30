@@ -241,7 +241,7 @@ float get_target_linear_speed(void)
 }
 
 /**
- * @brief Return the current target angular speed in degrees per second.
+ * @brief Return the current target angular speed in radians per second.
  */
 float get_target_angular_speed(void)
 {
@@ -257,7 +257,7 @@ float get_ideal_linear_speed(void)
 }
 
 /**
- * @brief Return the current ideal angular speed in degrees per second.
+ * @brief Return the current ideal angular speed in radians per second.
  */
 float get_ideal_angular_speed(void)
 {
