@@ -13,7 +13,9 @@
 #include "move.h"
 #include "speed.h"
 
-void dma_write(char *data, int size);
+bool serial_transfer_complete(void);
+void serial_wait_send_available(uint32_t timeout);
+void serial_send(char *data, int size);
 void execute_commands(void);
 
 #endif /* __SERIAL_H */

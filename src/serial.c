@@ -13,13 +13,34 @@ static bool run_static_turn_right_profile_signal;
 static bool run_front_sensors_calibration_signal;
 static char run_movement_sequence_signal[BUFFER_SIZE];
 
-void dma_write(char *data, int size)
+/**
+ * @brief Check if the serial transfer is complete.
+ *
+ * @return Whether the transfer has been completed.
+ */
+bool serial_transfer_complete(void)
 {
-	/*
-	 * Using channel 2 for USART3_TX
-	 */
+	return (bool)usart_get_flag(USART3, USART_SR_TC);
+}
 
-	/* Reset DMA channel*/
+/**
+ * @brief Wait until able to send through serial, or timeout.
+ *
+ * @param[in] timeout Timeout duration, in ticks.
+ */
+void serial_wait_send_available(uint32_t timeout)
+{
+	wait_until(serial_transfer_complete, timeout);
+}
+
+/**
+ * @brief Send data through serial.
+ *
+ * @param[in] data Data to send.
+ * @param[in] size Size (number of bytes) to send.
+ */
+void serial_send(char *data, int size)
+{
 	dma_channel_reset(DMA1, DMA_CHANNEL2);
 
 	dma_set_peripheral_address(DMA1, DMA_CHANNEL2, (uint32_t)&USART3_DR);
@@ -40,13 +61,11 @@ void dma_write(char *data, int size)
 
 void dma1_channel2_isr(void)
 {
-	if ((DMA1_ISR & DMA_ISR_TCIF7) != 0)
-		DMA1_IFCR |= DMA_IFCR_CTCIF7;
+	if (dma_get_interrupt_flag(DMA1, DMA_CHANNEL2, DMA_TCIF))
+		dma_clear_interrupt_flags(DMA1, DMA_CHANNEL2, DMA_TCIF);
 
 	dma_disable_transfer_complete_interrupt(DMA1, DMA_CHANNEL2);
-
 	usart_disable_tx_dma(USART3);
-
 	dma_disable_channel(DMA1, DMA_CHANNEL2);
 }
 

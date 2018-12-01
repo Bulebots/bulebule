@@ -131,3 +131,23 @@ void each(uint32_t period, void (*function)(void), uint32_t during)
 		ticks_current = get_clock_ticks();
 	}
 }
+
+/**
+ * @brief Wait until the given function returns true, or timeout.
+ *
+ * @param[in] timeout Timeout duration, in ticks.
+ * @param[in] function Function to execute.
+ *
+ * @return False if the timeout occurred before the function returned true.
+ */
+bool wait_until(bool (*function)(void), uint32_t timeout)
+{
+	uint32_t ticks_initial;
+
+	ticks_initial = get_clock_ticks();
+	while (get_clock_ticks() - ticks_initial < timeout) {
+		if (function())
+			return true;
+	}
+	return false;
+}

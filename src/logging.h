@@ -16,6 +16,8 @@
 #include "serial.h"
 #include "speed.h"
 
+#define LOG_MESSAGE_TIMEOUT 10
+
 enum { LOG_LEVEL_DEBUG, LOG_LEVEL_INFO, LOG_LEVEL_WARNING, LOG_LEVEL_ERROR };
 static const char *const log_level_strings[] = {"DEBUG", "INFO", "WARNING",
 						"ERROR"};
@@ -27,16 +29,19 @@ static const char *const log_level_strings[] = {"DEBUG", "INFO", "WARNING",
 		sprintf(tx_buffer, "%" PRIu32 ",%s,%s:%d,%s," format "\n",     \
 			time, log_level_strings[level], __FILE__, __LINE__,    \
 			__func__, ##arg);                                      \
-		dma_write(tx_buffer, strlen(tx_buffer));                       \
+		serial_wait_send_available(LOG_MESSAGE_TIMEOUT);               \
+		serial_send(tx_buffer, strlen(tx_buffer));                     \
 	} while (0)
 
 #define LOG_DATA(format, arg...)                                               \
 	do {                                                                   \
 		uint32_t time = get_clock_ticks();                             \
 		static char tx_buffer[100];                                    \
+		if (!serial_transfer_complete())                               \
+			break;                                                 \
 		sprintf(tx_buffer, "%" PRIu32 ",DATA,,," format "\n", time,    \
 			##arg);                                                \
-		dma_write(tx_buffer, strlen(tx_buffer));                       \
+		serial_send(tx_buffer, strlen(tx_buffer));                     \
 	} while (0)
 
 #define LOG_DEBUG(format, arg...) LOG_MESSAGE(LOG_LEVEL_DEBUG, format, ##arg)
