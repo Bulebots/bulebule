@@ -254,3 +254,13 @@ void log_gyro_degrees_pub(void)
 {
 	LOG_INFO("PUB,line,gyro_degrees,%f", get_gyro_z_degrees());
 }
+
+/**
+ * @brief Log diagnostic matrix, published for real time.
+ */
+void log_diagnostic_matrix(void)
+{
+	for (int i= 0; i < NUM_LOG_ELEMENTS; i++){
+	LOG_INFO("PUB,line,element,%f", get_log_matrix_element());
+}
+}

@@ -184,6 +184,11 @@ class Proxy(Agent):
         self.send_bt('battery\0')
         return float(self.wait_filtered()[-1])
 
+    def get_diagnostics_matrix(self):
+        self.filter_next(function='log_diagnostics_matrix')
+        self.send_bt('diagnostics_matrix\0')
+        return float(self.wait_filtered()[-1])
+
     def get_configuration_variables(self):
         self.filter_next(function='log_configuration_variables')
         self.send_bt('configuration_variables\0')
@@ -250,6 +255,10 @@ class Bulebule(cmd.Cmd):
     def do_battery(self, *args):
         """Get battery voltage."""
         print(self.proxy.get_battery_voltage())
+
+    def do_diagnostics_matrix(self, *args):
+        """Get diagnostics matrix."""
+        print(self.proxy.get_diagnostics_matrix())
 
     def do_configuration_variables(self, *args):
         """Get configuration variables."""

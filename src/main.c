@@ -2,6 +2,7 @@
 #include "clock.h"
 #include "control.h"
 #include "detection.h"
+#include "diagnostics.h"
 #include "eeprom.h"
 #include "encoder.h"
 #include "hmi.h"
@@ -29,6 +30,7 @@ void sys_tick_handler(void)
 	update_gyro_readings();
 	update_encoder_readings();
 	motor_control();
+	set_log_matrix();
 }
 
 /**
@@ -170,11 +172,24 @@ int main(void)
 	setup();
 	set_speed_mode(0, false);
 	systick_interrupt_enable();
-	competition();
+/*	LOG_INFO("diagnostics disabled, index %d", get_log_set_index());
+	sleep_seconds(1);
+	LOG_INFO("diagnostics enabled, index %d", get_log_set_index());
+	set_enable_diagnostics(true);
+	sleep_seconds(0.01);
+	LOG_INFO("diagnostics disabled, index %d", get_log_set_index());
+	set_enable_diagnostics(false);
+	sleep_seconds(1);
+	LOG_INFO("diagnostics disabled, index %d", get_log_set_index());*/
+	log_diagnostic_matrix();
+	//competition();
 	while (1) {
-		if (button_left_read_consecutive(500))
+	/*	if (button_left_read_consecutive(500))
 			training();
-		execute_commands();
+		execute_commands();*/
+	//	LOG_INFO("%d",get_log_matrix());
+		//sleep_seconds(0.1);
+
 	}
 
 	return 0;

@@ -4,6 +4,7 @@
 #include "battery.h"
 #include "control.h"
 #include "detection.h"
+#include "diagnostics.h"
 #include "encoder.h"
 #include "formatting.h"
 #include "move.h"
@@ -26,5 +27,6 @@ void log_walls_detection(void);
 void log_gyro_raw_pub(void);
 void log_gyro_dps_pub(void);
 void log_gyro_degrees_pub(void);
+void log_diagnostic_matrix(void);
 
 #endif /* __LOGGING_H */
