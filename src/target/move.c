@@ -48,6 +48,10 @@ static void entered_next_cell(void)
  *
  * This functions assumes the current speed is the target speed and takes into
  * account the configured linear deceleration.
+ *
+ * @param[in] speed Target speed.
+
+ * @return The required number of micrometers to reach the target speed.
  */
 int32_t required_micrometers_to_speed(float speed)
 {
