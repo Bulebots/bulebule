@@ -1,8 +1,9 @@
 #include "solve.h"
 
+#define RUN_SEQUENCE_LEN (MAZE_AREA + 3)
 #define EEPROM_NUM_BYTES_ERASED_CHECKED ((uint8_t)4)
 #define EEPROM_BYTE_ERASED_VALUE 255
-static char run_sequence[MAZE_AREA];
+static char run_sequence[RUN_SEQUENCE_LEN];
 
 /**
  * @brief Move from the current position to the defined target.
@@ -122,7 +123,7 @@ static void execute_movement_sequence(char *sequence, uint8_t speed,
 	int many = 0;
 	char movement;
 	float distance = 0;
-	enum movement smooth_path[MAZE_AREA];
+	enum movement smooth_path[RUN_SEQUENCE_LEN];
 
 	make_smooth_path(sequence, smooth_path, language);
 	while (true) {
