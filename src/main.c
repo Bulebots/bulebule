@@ -137,6 +137,7 @@ static void running_phase(void)
  */
 static void competition(void)
 {
+	speaker_play_competition();
 	if (!reuse_maze()) {
 		initialize_solver_direction();
 		set_goal_classic();

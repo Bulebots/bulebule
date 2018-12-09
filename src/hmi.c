@@ -152,6 +152,23 @@ void speaker_play_button(void)
 }
 
 /**
+ * @brief Play an epic composition before competition.
+ */
+void speaker_play_competition(void)
+{
+	speaker_play('C', 7, 0, 0.15);
+	sleep_seconds(0.15);
+	speaker_play('C', 7, 0, 0.15);
+	speaker_play('G', 7, 0, 0.60);
+	sleep_seconds(0.15);
+	speaker_play('G', 7, 0, 0.15);
+	speaker_play('A', 7, 0, 0.15);
+	speaker_play('G', 7, 0, 0.15);
+	speaker_play('F', 7, 0, 0.15);
+	speaker_play('G', 7, 0, 0.45);
+}
+
+/**
  * @brief Function to read button left.
  */
 bool button_left_read(void)
