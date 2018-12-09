@@ -172,10 +172,11 @@ int main(void)
 	setup();
 	set_speed_mode(0, false);
 	systick_interrupt_enable();
-	competition();
 	while (1) {
 		if (button_left_read_consecutive(500))
 			training();
+		if (button_right_read_consecutive(500))
+			competition();
 		execute_command();
 	}
 
