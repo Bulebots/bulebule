@@ -3,6 +3,14 @@
 static volatile bool data_logging;
 static void (*data_logging_function)(void);
 
+/**
+ * @brief Start data logging.
+ *
+ * This function is called from `main` and enables data logging. The provided
+ * data logging function will then be called on each SYSTICK.
+ *
+ * @param[in] log_function The data logging function to call on each SYSTICK.
+ */
 void start_data_logging(void (*log_function)(void))
 {
 	LOG_INFO("Data logging on");
@@ -12,6 +20,12 @@ void start_data_logging(void (*log_function)(void))
 	data_logging = true;
 }
 
+/**
+ * @brief Stop data logging.
+ *
+ * This function is called from `main` and disables any previously enabled
+ * data logging function.
+ */
 void stop_data_logging(void)
 {
 	data_logging = false;
@@ -20,6 +34,12 @@ void stop_data_logging(void)
 	LOG_INFO("Data logging off");
 }
 
+/**
+ * @brief Log data calling the `data_logging_function()`.
+ *
+ * This function is called from the SYSTICK periodically. It will not log
+ * any data if `data_logging` is set to false (i.e.: data logging is disabled).
+ */
 void log_data(void)
 {
 	if (!data_logging)
