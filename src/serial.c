@@ -36,6 +36,11 @@ void serial_wait_send_available(uint32_t timeout)
 /**
  * @brief Send data through serial.
  *
+ * DMA is configured to read from `data` a number `size` of bytes. It then
+ * writes all those bytes to USART3 (Bluetooth).
+ *
+ * An interruption is generated when the transfer is complete.
+ *
  * @param[in] data Data to send.
  * @param[in] size Size (number of bytes) to send.
  */
@@ -59,6 +64,12 @@ void serial_send(char *data, int size)
 	usart_enable_tx_dma(USART3);
 }
 
+/**
+ * @brief DMA 1 channel 2 interruption routine.
+ *
+ * Executed on serial transfer complete. Clears the interruption flag, and
+ * disables serial transfer DMA until next call to `serial_send()`.
+ **/
 void dma1_channel2_isr(void)
 {
 	if (dma_get_interrupt_flag(DMA1, DMA_CHANNEL2, DMA_TCIF))
