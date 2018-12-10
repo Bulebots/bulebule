@@ -22,6 +22,23 @@ enum { LOG_LEVEL_DEBUG, LOG_LEVEL_INFO, LOG_LEVEL_WARNING, LOG_LEVEL_ERROR };
 static const char *const log_level_strings[] = {"DEBUG", "INFO", "WARNING",
 						"ERROR"};
 
+/**
+ * @brief Log a message with a provided level and format.
+ *
+ * The `format` string is formatted with the passed extra parameters. Some
+ * other parameters are prepended to that string, in CSV-formatted style:
+ *
+ * - Time (in clock ticks)
+ * - Log level
+ * - File and line where the macro was called
+ * - Function from where the macro was called
+ *
+ * Log messages always end with a `\n` character.
+ *
+ * This function waits for `LOG_MESSAGE_TIMEOUT` for the serial interface to
+ * be available before writing the log message. After the timeout occurs, it
+ * will always write the message to the DMA buffer anyways.
+ */
 #define LOG_MESSAGE(level, format, arg...)                                     \
 	do {                                                                   \
 		uint32_t time = get_clock_ticks();                             \
@@ -33,6 +50,22 @@ static const char *const log_level_strings[] = {"DEBUG", "INFO", "WARNING",
 		serial_send(tx_buffer, strlen(tx_buffer));                     \
 	} while (0)
 
+/**
+ * @brief Log some data with a provided format.
+ *
+ * The `format` string is formatted with the passed extra parameters. Some
+ * other parameters are prepended to that string, in CSV-formatted style:
+ *
+ * - Time (in clock ticks)
+ * - Log level, which is always "DATA"
+ * - File and line where the macro was called is omitted
+ * - Function from where the macro was called is omitted
+ *
+ * Data logs always end with a `\n` character.
+ *
+ * This macro checks if the serial interface is not busy sending data. If it is
+ * it will simply do nothing and discard the data log.
+ */
 #define LOG_DATA(format, arg...)                                               \
 	do {                                                                   \
 		uint32_t time = get_clock_ticks();                             \
