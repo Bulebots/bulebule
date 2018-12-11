@@ -176,7 +176,7 @@ int main(void)
 	while (1) {
 		if (button_left_read_consecutive(500))
 			training();
-		execute_commands();
+		execute_command();
 	}
 
 	return 0;

@@ -5,12 +5,6 @@
 static volatile bool received;
 static char receive_buffer[RECEIVE_BUFFER_SIZE];
 
-static bool run_angular_speed_profile_signal;
-static bool run_linear_speed_profile_signal;
-static bool run_static_turn_right_profile_signal;
-static bool run_front_sensors_calibration_signal;
-static char run_movement_sequence_signal[RECEIVE_BUFFER_SIZE];
-
 /**
  * @brief Check if the serial transfer is complete.
  *
@@ -173,15 +167,15 @@ static void process_command(char *string)
 	else if (!strcmp(string, "configuration_variables"))
 		log_configuration_variables();
 	else if (!strcmp(string, "run linear_speed_profile"))
-		run_linear_speed_profile_signal = true;
+		run_linear_speed_profile();
 	else if (!strcmp(string, "run angular_speed_profile"))
-		run_angular_speed_profile_signal = true;
+		run_angular_speed_profile();
 	else if (!strcmp(string, "run static_turn_right_profile"))
-		run_static_turn_right_profile_signal = true;
+		run_static_turn_right_profile();
 	else if (!strcmp(string, "run front_sensors_calibration"))
-		run_front_sensors_calibration_signal = true;
+		run_front_sensors_calibration();
 	else if (starts_with(string, "move "))
-		strcpy(run_movement_sequence_signal, string);
+		run_movement_sequence(string);
 	else if (starts_with(string, "set micrometers_per_count "))
 		set_micrometers_per_count(parse_float(string, 2));
 	else if (starts_with(string, "set wheels_separation "))
@@ -211,7 +205,7 @@ static void process_command(char *string)
 	else if (starts_with(string, "set kp_angular_front "))
 		set_kp_angular_front(parse_float(string, 2));
 	else
-		LOG_WARNING("Unknown command: `%s`!", string);
+		LOG_ERROR("Unknown command: `%s`!", string);
 }
 
 /**
@@ -232,28 +226,12 @@ void usart3_isr(void)
 }
 
 /**
- * @brief Execute commands received.
+ * @brief Execute a command received.
  */
-void execute_commands(void)
+void execute_command(void)
 {
 	if (!received || receive_buffer[0] == '\0')
 		return;
 	process_command(receive_buffer);
-	if (run_linear_speed_profile_signal) {
-		run_linear_speed_profile_signal = false;
-		run_linear_speed_profile();
-	} else if (run_angular_speed_profile_signal) {
-		run_angular_speed_profile_signal = false;
-		run_angular_speed_profile();
-	} else if (run_static_turn_right_profile_signal) {
-		run_static_turn_right_profile_signal = false;
-		run_static_turn_right_profile();
-	} else if (run_front_sensors_calibration_signal) {
-		run_front_sensors_calibration_signal = false;
-		run_front_sensors_calibration();
-	} else if (strlen(run_movement_sequence_signal)) {
-		run_movement_sequence(run_movement_sequence_signal);
-		run_movement_sequence_signal[0] = '\0';
-	}
 	received = false;
 }

@@ -16,6 +16,6 @@
 bool serial_transfer_complete(void);
 void serial_wait_send_available(uint32_t timeout);
 void serial_send(char *data, int size);
-void execute_commands(void);
+void execute_command(void);
 
 #endif /* __SERIAL_H */
