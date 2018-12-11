@@ -13,6 +13,8 @@
 #include <libopencm3/stm32/timer.h>
 #include <libopencm3/stm32/usart.h>
 
+#include "mylibopencm3.h"
+
 #include <mpu.h>
 /** Universal constants */
 #define MICROMETERS_PER_METER 1000000

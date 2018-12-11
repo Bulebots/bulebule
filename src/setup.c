@@ -64,13 +64,17 @@ static void setup_clock(void)
  *
  * Exception priorities:
  *
- * - Systick priority to 1 with SCB.
- * - USART3 with priority 2 with NVIC.
  * - TIM1_UP with priority 0.
+ * - Systick priority to 1 with SCB.
+ * - DMA 1 channel 2 with priority 2 with NVIC.
+ * - DMA 1 channel 3 with priority 2 with NVIC.
+ * - USART3 with priority 2 with NVIC.
  *
  * Interruptions enabled:
  *
  * - TIM1 Update interrupt.
+ * - DMA 1 channel 2 interrupt.
+ * - DMA 1 channel 3 interrupt.
  * - USART3 interrupt.
  *
  * @note The priority levels are assigned on steps of 16 because the processor
@@ -83,10 +87,12 @@ static void setup_exceptions(void)
 	nvic_set_priority(NVIC_TIM1_UP_IRQ, 0);
 	nvic_set_priority(NVIC_SYSTICK_IRQ, PRIORITY_FACTOR * 1);
 	nvic_set_priority(NVIC_DMA1_CHANNEL2_IRQ, PRIORITY_FACTOR * 2);
-	nvic_set_priority(NVIC_USART3_IRQ, PRIORITY_FACTOR * 3);
+	nvic_set_priority(NVIC_DMA1_CHANNEL3_IRQ, PRIORITY_FACTOR * 2);
+	nvic_set_priority(NVIC_USART3_IRQ, PRIORITY_FACTOR * 2);
 
 	nvic_enable_irq(NVIC_TIM1_UP_IRQ);
 	nvic_enable_irq(NVIC_DMA1_CHANNEL2_IRQ);
+	nvic_enable_irq(NVIC_DMA1_CHANNEL3_IRQ);
 	nvic_enable_irq(NVIC_USART3_IRQ);
 }
 
@@ -149,7 +155,7 @@ static void setup_usart(void)
 	usart_set_flow_control(USART3, USART_FLOWCONTROL_NONE);
 	usart_set_mode(USART3, USART_MODE_TX_RX);
 
-	USART_CR1(USART3) |= USART_CR1_RXNEIE;
+	usart_enable_idle_line_interrupt(USART3);
 
 	usart_enable(USART3);
 }
