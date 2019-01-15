@@ -128,6 +128,9 @@ void dma1_channel3_isr(void)
  * before the float in the string.
  *
  * This function assumes that `string` is of size `RECEIVE_BUFFER_SIZE`.
+ *
+ * @param[in] string String to parse the float from.
+ * @param[in] spaces_before Number of spaces expected before the float.
  */
 static float parse_float(char *string, int spaces_before)
 {
@@ -149,6 +152,9 @@ static float parse_float(char *string, int spaces_before)
 
 /**
  * @brief Check if the received buffer starts with the given string.
+ *
+ * @param[in] string String buffer.
+ * @param[in] start_string Prefix to look for at the start of the string buffer.
  */
 static bool starts_with(char *string, char *start_string)
 {
@@ -157,6 +163,8 @@ static bool starts_with(char *string, char *start_string)
 
 /**
  * @brief Process a command received.
+ *
+ * @param[in] string String buffer potentially containing the command.
  */
 static void process_command(char *string)
 {
