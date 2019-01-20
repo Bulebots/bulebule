@@ -9,7 +9,7 @@
 #include "search.h"
 #include "setup.h"
 
-void explore(uint8_t speed);
+void explore(float force);
 #ifdef MMSIM_SIMULATION
 void send_state(void);
 #endif

@@ -36,6 +36,12 @@
 #define MOUSE_HEAD (MOUSE_LENGTH - MOUSE_TAIL)
 #define MOUSE_START_SHIFT (MOUSE_TAIL + WALL_WIDTH / 2.)
 
+/** Mouse physics */
+#define MOUSE_MASS 0.11
+#define MOUSE_MOMENT_OF_INERTIA 0.000125
+#define MOUSE_WHEELS_SEPARATION 0.065
+#define MOUSE_MAX_ANGULAR_VELOCITY 20
+
 /** System clock frequency is set in `setup_clock` */
 #define SYSCLK_FREQUENCY_HZ 72000000
 #define SPEAKER_BASE_FREQUENCY_HZ 1000000

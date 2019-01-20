@@ -36,14 +36,13 @@ void disable_motor_control(void);
 int32_t get_left_pwm(void);
 int32_t get_right_pwm(void);
 float get_target_linear_speed(void);
-float get_target_angular_speed(void);
 float get_ideal_linear_speed(void);
 float get_ideal_angular_speed(void);
 float get_measured_linear_speed(void);
 float get_measured_angular_speed(void);
 void motor_control(void);
 void set_target_linear_speed(float speed);
-void set_target_angular_speed(float speed);
+void set_ideal_angular_speed(float speed);
 void update_ideal_speed(void);
 
 #endif /* __CONTROL_H */

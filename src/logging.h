@@ -6,6 +6,8 @@
 #include <string.h>
 #include <unistd.h>
 
+#include "printf/printf.h"
+
 #include "battery.h"
 #include "clock.h"
 #include "control.h"

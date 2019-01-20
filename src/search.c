@@ -1,5 +1,4 @@
 #include "search.h"
-#include <stdio.h>
 
 static uint8_t distances[MAZE_SIZE * MAZE_SIZE];
 static uint8_t maze_walls[MAZE_SIZE * MAZE_SIZE];

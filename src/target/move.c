@@ -124,7 +124,7 @@ void target_straight(int32_t start, float distance, float speed)
 {
 	int32_t target_distance;
 
-	set_target_angular_speed(0.);
+	set_ideal_angular_speed(0.);
 
 	target_distance = start + (int32_t)(distance * MICROMETERS_PER_METER);
 	if (distance > 0) {
@@ -250,40 +250,19 @@ void stop_middle(void)
 }
 
 /**
- * @brief Perform a turn based on angular speed and defined time spans.
- */
-void parametric_turn(float max_angular_speed, float rise_time,
-		     float elapsed_time)
-{
-	uint32_t starting_time = get_clock_ticks();
-
-	disable_walls_control();
-	set_target_angular_speed(max_angular_speed);
-	while (get_clock_ticks() - starting_time <= rise_time)
-		;
-	set_target_angular_speed(0);
-	while (get_clock_ticks() - starting_time <= elapsed_time)
-		;
-}
-
-/**
  * @brief Turn back (180-degree turn) and correct with front walls if possible.
  *
- * @param[in] speed The speed level at which to turn back.
+ * @param[in] force Maximum force to apply on the tires.
  */
-void turn_back(uint8_t speed)
+void turn_back(float force)
 {
-	enum movement side;
-
-	if (rand() % 2)
-		side = MOVE_LEFT_180;
-	else
-		side = MOVE_RIGHT_180;
+	int direction;
 
 	if (get_front_wall_distance() < CELL_DIMENSION)
 		keep_front_wall_distance(CELL_DIMENSION / 2.);
 	disable_walls_control();
-	speed_turn(side, speed);
+	direction = (int)(rand() % 2) * 2 - 1;
+	inplace_turn(direction * PI, force);
 
 	current_cell_start_micrometers =
 	    get_encoder_average_micrometers() -
@@ -294,16 +273,16 @@ void turn_back(uint8_t speed)
 /**
  * @brief Turn back (180-degree turn) to a starting position.
  *
- * @param[in] speed The speed level at which to turn.
+ * @param[in] force Maximum force to apply on the tires.
  */
-void turn_to_start_position(uint8_t speed)
+void turn_to_start_position(float force)
 {
 	float distance;
 
 	set_linear_acceleration(get_linear_acceleration() / 4.);
 	set_linear_deceleration(get_linear_deceleration() / 4.);
 
-	turn_back(speed);
+	turn_back(force);
 	distance = MOUSE_START_SHIFT - current_cell_shift();
 	target_straight(get_encoder_average_micrometers(), distance, 0.);
 
@@ -356,32 +335,31 @@ void parametric_move_front(float distance, float end_linear_speed)
  * @brief Move left or right into the next cell.
  *
  * @param[in] movement Turn direction (left or right).
- * @param[in] speed The speed level at which to move side.
+ * @param[in] force Maximum force to apply on the tires.
  */
-void move_side(enum movement turn, uint8_t speed)
+void move_side(enum movement turn, float force)
 {
 	enable_walls_control();
 	target_straight(current_cell_start_micrometers,
-			get_move_turn_before(turn, speed),
-			get_move_turn_linear_speed(turn, speed));
+			get_move_turn_before(turn),
+			get_move_turn_linear_speed(turn, force));
 	disable_walls_control();
-	speed_turn(turn, speed);
+	speed_turn(turn, force);
 	enable_walls_control();
 	target_straight(get_encoder_average_micrometers(),
-			get_move_turn_after(turn, speed),
-			get_max_end_linear_speed());
+			get_move_turn_after(turn), get_max_end_linear_speed());
 	entered_next_cell();
 }
 
 /**
  * @brief Move back into the previous cell.
  *
- * @param[in] speed The speed level at which to move back.
+ * @param[in] force Maximum force to apply on the tires.
  */
-void move_back(uint8_t speed)
+void move_back(float force)
 {
 	stop_middle();
-	turn_back(speed);
+	turn_back(force);
 	move_front();
 }
 
@@ -389,18 +367,18 @@ void move_back(uint8_t speed)
  * @brief Move into the next cell according to a movement direction.
  *
  * @param[in] direction Movement direction.
- * @param[in] speed The speed level at which to move to the next cell.
+ * @param[in] force Maximum force to apply on the tires.
  */
-void move(enum step_direction direction, uint8_t speed)
+void move(enum step_direction direction, float force)
 {
 	if (direction == LEFT)
-		move_side(MOVE_LEFT, speed);
+		move_side(MOVE_LEFT, force);
 	else if (direction == RIGHT)
-		move_side(MOVE_RIGHT, speed);
+		move_side(MOVE_RIGHT, force);
 	else if (direction == FRONT)
 		move_front();
 	else if (direction == BACK)
-		move_back(speed);
+		move_back(force);
 	else
 		stop_middle();
 }

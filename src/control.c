@@ -1,7 +1,6 @@
 #include "control.h"
 
 static volatile float target_linear_speed;
-static volatile float target_angular_speed;
 static volatile float ideal_linear_speed;
 static volatile float ideal_angular_speed;
 
@@ -173,7 +172,6 @@ void reset_control_errors(void)
 void reset_control_speed(void)
 {
 	target_linear_speed = 0.;
-	target_angular_speed = 0.;
 	ideal_linear_speed = 0.;
 	ideal_angular_speed = 0.;
 }
@@ -241,14 +239,6 @@ float get_target_linear_speed(void)
 }
 
 /**
- * @brief Return the current target angular speed in radians per second.
- */
-float get_target_angular_speed(void)
-{
-	return target_angular_speed;
-}
-
-/**
  * @brief Return the current ideal linear speed in meters per second.
  */
 float get_ideal_linear_speed(void)
@@ -289,11 +279,11 @@ void set_target_linear_speed(float speed)
 }
 
 /**
- * @brief Set target angular speed in degrees per second.
+ * @brief Set ideal angular speed in radians per second.
  */
-void set_target_angular_speed(float speed)
+void set_ideal_angular_speed(float speed)
 {
-	target_angular_speed = speed;
+	ideal_angular_speed = speed;
 }
 
 /**
@@ -314,17 +304,6 @@ void update_ideal_speed(void)
 		    get_linear_deceleration() / SYSTICK_FREQUENCY_HZ;
 		if (ideal_linear_speed < target_linear_speed)
 			ideal_linear_speed = target_linear_speed;
-	}
-	if (ideal_angular_speed < target_angular_speed) {
-		ideal_angular_speed +=
-		    get_angular_acceleration() / SYSTICK_FREQUENCY_HZ;
-		if (ideal_angular_speed > target_angular_speed)
-			ideal_angular_speed = target_angular_speed;
-	} else if (ideal_angular_speed > target_angular_speed) {
-		ideal_angular_speed -=
-		    get_angular_acceleration() / SYSTICK_FREQUENCY_HZ;
-		if (ideal_angular_speed < target_angular_speed)
-			ideal_angular_speed = target_angular_speed;
 	}
 }
 

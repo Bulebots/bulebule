@@ -5,7 +5,7 @@
 #include "path.h"
 #include "setup.h"
 
-#define NUM_MODES 4
+#define NUM_MODES 2
 
 float get_linear_acceleration(void);
 void set_linear_acceleration(float value);
@@ -17,11 +17,12 @@ float get_max_linear_speed(void);
 void set_max_linear_speed(float value);
 float get_max_end_linear_speed(void);
 void set_max_end_linear_speed(float value);
-void set_speed_mode(uint8_t mode, bool run);
-float get_move_turn_before(enum movement move, uint8_t speed);
-float get_move_turn_after(enum movement move, uint8_t speed);
-float get_move_turn_linear_speed(enum movement move, uint8_t speed);
+void set_speed_mode(float force, bool run);
+float get_move_turn_before(enum movement move);
+float get_move_turn_after(enum movement move);
+float get_move_turn_linear_speed(enum movement turn_type, float force);
 
-void speed_turn(enum movement turn, uint8_t speed);
+void speed_turn(enum movement turn_type, float force);
+void inplace_turn(float radians, float force);
 
 #endif /* __SPEED_H */

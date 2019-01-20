@@ -1,8 +1,6 @@
 #ifndef __DETECTION_H
 #define __DETECTION_H
 
-#include <stdio.h>
-
 #include <libopencm3/cm3/nvic.h>
 #include <libopencm3/stm32/adc.h>
 #include <libopencm3/stm32/gpio.h>

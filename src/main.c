@@ -45,11 +45,11 @@ void sys_tick_handler(void)
  */
 static uint8_t user_configuration(bool run)
 {
-	uint8_t mode;
+	float force;
 
-	mode = speed_mode_configuration();
-	set_speed_mode(mode, run);
-	return mode;
+	force = speed_mode_configuration();
+	set_speed_mode(force, run);
+	return force;
 }
 
 /**
@@ -110,11 +110,13 @@ static void after_moving(void)
  */
 static void exploration_phase(void)
 {
-	uint8_t speed;
+	float force;
 
-	speed = user_configuration(false);
+	force = 0.25;
+	//force = user_configuration(false);
+	set_speed_mode(force, false);
 	before_moving();
-	explore(speed);
+	explore(force);
 	after_moving();
 }
 
@@ -123,12 +125,14 @@ static void exploration_phase(void)
  */
 static void running_phase(void)
 {
-	uint8_t speed;
+	float force;
 
-	speed = user_configuration(true);
+	force = user_configuration(true);
 	before_moving();
-	run(speed);
-	run_back(speed);
+	/*
+	run(force);
+	run_back(force);
+	*/
 	after_moving();
 }
 
@@ -157,9 +161,11 @@ static void competition(void)
 static void training(void)
 {
 	initialize_solver_direction();
-	add_goal(3, 5);
+	add_goal(1, 0);
 	set_target_goal();
+	start_data_logging(log_data_control);
 	exploration_phase();
+	stop_data_logging();
 	set_run_sequence();
 	while (1)
 		running_phase();
@@ -171,7 +177,7 @@ static void training(void)
 int main(void)
 {
 	setup();
-	set_speed_mode(0, false);
+	set_speed_mode(0.25, false);
 	systick_interrupt_enable();
 	while (1) {
 		if (button_left_read_consecutive(500))

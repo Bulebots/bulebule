@@ -120,13 +120,12 @@ void log_linear_speed(void)
 void log_angular_speed(void)
 {
 	float angular_speed = get_encoder_angular_speed();
-	float target_speed = get_target_angular_speed();
 	float ideal_speed = get_ideal_angular_speed();
 	int pwm_left = get_left_pwm();
 	int pwm_right = get_right_pwm();
 
-	LOG_INFO("%f,%f,%f,%d,%d", target_speed, ideal_speed, angular_speed,
-		 pwm_left, pwm_right);
+	LOG_INFO("%f,%f,%d,%d", ideal_speed, angular_speed, pwm_left,
+		 pwm_right);
 }
 
 /**

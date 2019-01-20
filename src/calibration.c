@@ -29,14 +29,13 @@ void run_linear_speed_profile(void)
 	disable_walls_control();
 	enable_motor_control();
 	each(10, log_linear_speed, 1000);
-	set_target_angular_speed(0.);
+	set_ideal_angular_speed(0.);
 	set_target_linear_speed(get_max_linear_speed());
 	start_micrometers = get_encoder_average_micrometers();
 	while (get_encoder_average_micrometers() - start_micrometers < 500000) {
 		log_linear_speed();
 		sleep_ticks(1);
 	}
-	set_target_angular_speed(0.);
 	set_target_linear_speed(0.);
 	each(1, log_linear_speed, 2000);
 	reset_motion();
@@ -54,18 +53,14 @@ void run_linear_speed_profile(void)
  */
 void run_angular_speed_profile(void)
 {
-	float target_angular_speed = 4 * PI;
-
 	calibrate();
 	disable_walls_control();
 	enable_motor_control();
-	each(10, log_angular_speed, 1000);
-	set_target_angular_speed(target_angular_speed);
-	set_target_linear_speed(0.);
-	each(10, log_angular_speed, 1000 * (3 * PI) / target_angular_speed);
-	set_target_angular_speed(0.);
-	set_target_linear_speed(0.);
-	each(10, log_angular_speed, 2000);
+	start_data_logging(log_angular_speed);
+	sleep_seconds(.1);
+	inplace_turn(3 * PI, 0.25);
+	sleep_seconds(.1);
+	stop_data_logging();
 	reset_motion();
 }
 
@@ -77,18 +72,14 @@ void run_angular_speed_profile(void)
  */
 void run_static_turn_right_profile(void)
 {
-	float target_angular_speed = 4 * PI;
-
 	calibrate();
 	disable_walls_control();
 	enable_motor_control();
-	each(10, log_angular_speed, 1000);
-	set_target_angular_speed(target_angular_speed);
-	set_target_linear_speed(0.);
-	each(10, log_angular_speed, 1000 * (PI / 2.) / target_angular_speed);
-	set_target_angular_speed(0);
-	set_target_linear_speed(0.);
-	each(10, log_angular_speed, 200);
+	start_data_logging(log_angular_speed);
+	sleep_seconds(.1);
+	inplace_turn(PI / 2, 0.25);
+	sleep_seconds(.1);
+	stop_data_logging();
 	reset_motion();
 }
 
@@ -149,10 +140,10 @@ void run_movement_sequence(const char *sequence)
 			stop_end();
 			break;
 		case 'l':
-			speed_turn(MOVE_LEFT, speed);
+			speed_turn(MOVE_LEFT, 0.25);
 			break;
 		case 'r':
-			speed_turn(MOVE_RIGHT, speed);
+			speed_turn(MOVE_RIGHT, 0.25);
 			break;
 		case 'b':
 			turn_back(speed);

@@ -8,9 +8,9 @@ static char run_sequence[RUN_SEQUENCE_LEN];
 /**
  * @brief Move from the current position to the defined target.
  *
- * @param[in] speed The speed level at which to go to the target.
+ * @param[in] force Maximum force to apply on the tires.
  */
-static void go_to_target(uint8_t speed)
+static void go_to_target(float force)
 {
 	enum step_direction step;
 	struct walls_around walls;
@@ -29,7 +29,7 @@ static void go_to_target(uint8_t speed)
 #endif
 		step = best_neighbor_step(walls);
 		move_search_position(step);
-		move(step, speed);
+		move(step, force);
 		if (collision_detected())
 			return;
 	} while (search_distance() > 0);
@@ -41,12 +41,12 @@ static void go_to_target(uint8_t speed)
 /**
  * @brief Execute the maze exploration.
  *
- * @param[in] speed The speed level at which to explore.
+ * @param[in] force Maximum force to apply on the tires.
  *
  * After reaching the goal, it will try to explore remaining parts until
  * finding an optimal path.
  */
-void explore(uint8_t speed)
+void explore(float force)
 {
 	uint8_t cell;
 
@@ -54,7 +54,7 @@ void explore(uint8_t speed)
 	set_search_initial_state();
 
 	while (true) {
-		go_to_target(speed);
+		go_to_target(force);
 		if (collision_detected())
 			return;
 		if (search_position() == 0)
@@ -63,7 +63,7 @@ void explore(uint8_t speed)
 		set_target_cell(cell);
 	}
 	stop_middle();
-	turn_to_start_position(speed);
+	turn_to_start_position(force);
 }
 
 /**
@@ -113,10 +113,11 @@ void set_run_sequence(void)
  * The sequence is a raw/sharp path, which will be smoothed before execution.
  *
  * @param[in] sequence Sequence of raw movements to execute.
- * @param[in] speed The speed level at which to execute the sequence.
+ * @param[in] force Maximum force to apply on the tires.
  * @param[in] language Language to use for the raw-to-smooth path translation.
  */
-static void execute_movement_sequence(char *sequence, uint8_t speed,
+/*
+static void execute_movement_sequence(char *sequence, float force,
 				      enum path_language language)
 {
 	int i = 0;
@@ -156,13 +157,13 @@ static void execute_movement_sequence(char *sequence, uint8_t speed,
 		case MOVE_RIGHT_TO_45:
 		case MOVE_LEFT_TO_135:
 		case MOVE_RIGHT_TO_135:
-			distance += get_move_turn_before(movement, speed);
+			distance += get_move_turn_before(movement);
 			side_sensors_control(true);
 			parametric_move_front(
 			    distance,
 			    get_move_turn_linear_speed(movement, speed));
-			speed_turn(movement, speed);
-			distance = get_move_turn_after(movement, speed);
+			speed_turn(movement, force);
+			distance = get_move_turn_after(movement);
 			break;
 		case MOVE_LEFT_FROM_45:
 		case MOVE_RIGHT_FROM_45:
@@ -170,19 +171,19 @@ static void execute_movement_sequence(char *sequence, uint8_t speed,
 		case MOVE_RIGHT_FROM_135:
 		case MOVE_LEFT_DIAGONAL:
 		case MOVE_RIGHT_DIAGONAL:
-			distance += get_move_turn_before(movement, speed);
+			distance += get_move_turn_before(movement);
 			side_sensors_control(false);
 			parametric_move_front(
 			    distance,
 			    get_move_turn_linear_speed(movement, speed));
-			speed_turn(movement, speed);
-			distance = get_move_turn_after(movement, speed);
+			speed_turn(movement, force);
+			distance = get_move_turn_after(movement);
 			break;
 		case MOVE_STOP:
 			distance -= CELL_DIMENSION / 2;
 			side_sensors_control(true);
 			parametric_move_front(distance, 0.);
-			turn_to_start_position(speed);
+			turn_to_start_position(force);
 			speaker_play_success();
 			break;
 		case MOVE_END:
@@ -201,19 +202,21 @@ static void execute_movement_sequence(char *sequence, uint8_t speed,
 /**
  * @brief Run from the start to the goal.
  *
- * @param[in] speed The speed level at which to run.
+ * @param[in] force Maximum force to apply on the tires.
  */
-void run(uint8_t speed)
+/*
+void run(float force)
 {
-	execute_movement_sequence(run_sequence, speed, PATH_DIAGONALS);
+	execute_movement_sequence(run_sequence, force, PATH_DIAGONALS);
 }
 
 /**
  * @brief Run back from the goal to the start.
  *
- * @param[in] speed The speed level at which to run.
+ * @param[in] force Maximum force to apply on the tires.
  */
-void run_back(uint8_t speed)
+/*
+void run_back(float force)
 {
 	int length;
 	char run_back[MAZE_AREA];
@@ -243,7 +246,7 @@ void run_back(uint8_t speed)
 		run_back[length - i - 1] = translation;
 	}
 	run_back[length] = '\0';
-	execute_movement_sequence(run_back, speed, PATH_SAFE);
+	execute_movement_sequence(run_back, force, PATH_SAFE);
 }
 
 /**
