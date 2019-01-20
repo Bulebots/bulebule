@@ -32,3 +32,13 @@ void adc_clear_flag(uint32_t adc_peripheral, uint32_t flag)
 {
 	ADC_SR(adc_peripheral) = ~flag;
 }
+
+/**
+ * @brief Return the sign of a number.
+ *
+ * @param number The number to get the sign from.
+ */
+int sign(float number)
+{
+	return (int)(number > 0) - (int)(number < 0);
+}

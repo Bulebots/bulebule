@@ -169,6 +169,7 @@ void speed_turn(enum movement turn_type, float force)
  */
 void inplace_turn(float radians, float force)
 {
+	int turn_sign;
 	int32_t start;
 	int32_t current;
 	float time;
@@ -180,6 +181,8 @@ void inplace_turn(float radians, float force)
 	float duration;
 	float transition_angle;
 
+	turn_sign = sign(radians);
+	radians = fabsf(radians);
 	angular_acceleration =
 	    force * MOUSE_WHEELS_SEPARATION / MOUSE_MOMENT_OF_INERTIA;
 	max_angular_velocity = sqrt(radians / 2 * angular_acceleration);
@@ -190,6 +193,7 @@ void inplace_turn(float radians, float force)
 	transition_angle = duration * max_angular_velocity / PI;
 	arc = (radians - 2 * transition_angle) / max_angular_velocity;
 	transition = duration / 2;
+	max_angular_velocity = turn_sign * max_angular_velocity;
 
 	disable_walls_control();
 	start = get_clock_ticks();
