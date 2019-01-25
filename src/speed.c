@@ -15,7 +15,7 @@ static volatile float max_linear_speed;
 
 const float max_end_linear_speed_defaults[NUM_MODES] = {.5, .55};
 const float max_linear_speed_defaults[NUM_MODES] = {.5, .55};
-const float max_linear_speed_run_defaults[NUM_MODES] = {1., 1.5};
+const float max_linear_speed_run_defaults[NUM_MODES] = {1.5, 2.};
 
 uint8_t speed_configuration;
 
@@ -32,8 +32,8 @@ uint8_t speed_configuration;
 struct turn_parameters {
 	float before;
 	float after;
-	float transition;
 	float radius;
+	float transition;
 	float arc;
 	int sign;
 };
@@ -52,10 +52,10 @@ void set_speed_mode(float force, bool run)
 
 // clang-format off
 struct turn_parameters turns[] = {
-    [MOVE_LEFT] = {0.02, 0.02, 0.05812, 0.04711, 0., -1},
-    [MOVE_RIGHT] = {0.02, 0.02, 0.05812, 0.04711, 0., 1},
-    [MOVE_LEFT_90] = {-0.05, -0.05, .8, 0., 219, -1},
-    [MOVE_RIGHT_90] = {-0.05, -0.05, .8, 0., 219, 1},
+    [MOVE_LEFT] = {0.017, 0.017, 0.04921, 0.06042, 0.00037, -1},
+    [MOVE_RIGHT] = {0.017, 0.017, 0.04921, 0.06042, 0.00037, 1},
+    [MOVE_LEFT_90] = {-0.05, -0.05, 0.11720, 0.06042, 0.10718, -1},
+    [MOVE_RIGHT_90] = {-0.05, -0.05, 0.11720, 0.06042, 0.10718, 1},
     [MOVE_LEFT_180] = {-0.04, -0.04, .7, 0., 400, -1},
     [MOVE_RIGHT_180] = {-0.04, -0.04, .7, 0., 400, 1},
     [MOVE_LEFT_TO_45] = {-0.06846, 0.05688, 0., .71, 188, -1},

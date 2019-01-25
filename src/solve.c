@@ -116,7 +116,6 @@ void set_run_sequence(void)
  * @param[in] force Maximum force to apply on the tires.
  * @param[in] language Language to use for the raw-to-smooth path translation.
  */
-/*
 static void execute_movement_sequence(char *sequence, float force,
 				      enum path_language language)
 {
@@ -161,7 +160,7 @@ static void execute_movement_sequence(char *sequence, float force,
 			side_sensors_control(true);
 			parametric_move_front(
 			    distance,
-			    get_move_turn_linear_speed(movement, speed));
+			    get_move_turn_linear_speed(movement, force));
 			speed_turn(movement, force);
 			distance = get_move_turn_after(movement);
 			break;
@@ -175,7 +174,7 @@ static void execute_movement_sequence(char *sequence, float force,
 			side_sensors_control(false);
 			parametric_move_front(
 			    distance,
-			    get_move_turn_linear_speed(movement, speed));
+			    get_move_turn_linear_speed(movement, force));
 			speed_turn(movement, force);
 			distance = get_move_turn_after(movement);
 			break;
@@ -204,7 +203,6 @@ static void execute_movement_sequence(char *sequence, float force,
  *
  * @param[in] force Maximum force to apply on the tires.
  */
-/*
 void run(float force)
 {
 	execute_movement_sequence(run_sequence, force, PATH_DIAGONALS);
@@ -215,7 +213,6 @@ void run(float force)
  *
  * @param[in] force Maximum force to apply on the tires.
  */
-/*
 void run_back(float force)
 {
 	int length;

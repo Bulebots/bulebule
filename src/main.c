@@ -43,11 +43,12 @@ void sys_tick_handler(void)
  *
  * @return The selected speed mode.
  */
-static uint8_t user_configuration(bool run)
+static float user_configuration(bool run)
 {
 	float force;
 
-	force = speed_mode_configuration();
+	//force = speed_mode_configuration();
+	force = 0.25;
 	set_speed_mode(force, run);
 	return force;
 }
@@ -112,9 +113,7 @@ static void exploration_phase(void)
 {
 	float force;
 
-	force = 0.25;
-	//force = user_configuration(false);
-	set_speed_mode(force, false);
+	force = user_configuration(false);
 	before_moving();
 	explore(force);
 	after_moving();
@@ -129,10 +128,8 @@ static void running_phase(void)
 
 	force = user_configuration(true);
 	before_moving();
-	/*
 	run(force);
 	run_back(force);
-	*/
 	after_moving();
 }
 
