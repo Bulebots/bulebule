@@ -156,13 +156,17 @@ static void competition(void)
  */
 static void training(void)
 {
-	initialize_solver_direction();
-	add_goal(1, 0);
-	set_target_goal();
-	start_data_logging(log_data_control);
-	exploration_phase();
-	stop_data_logging();
-	set_run_sequence();
+	if (!reuse_maze()) {
+		initialize_solver_direction();
+		add_goal(1, 0);
+		set_target_goal();
+		start_data_logging(log_data_control);
+		exploration_phase();
+		stop_data_logging();
+		set_run_sequence();
+		save_maze();
+		led_bluepill_on();
+	}
 	while (1)
 		running_phase();
 }
