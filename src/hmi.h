@@ -32,6 +32,6 @@ bool button_right_read_consecutive(uint32_t count);
 void wait_front_sensor_close_signal(float close_distance);
 void initialize_solver_direction(void);
 bool reuse_maze(void);
-uint8_t speed_mode_configuration(void);
+float speed_configuration(void);
 
 #endif /* __HMI_H */

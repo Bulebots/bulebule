@@ -17,8 +17,6 @@ const float max_end_linear_speed_defaults[NUM_MODES] = {.5, .55};
 const float max_linear_speed_defaults[NUM_MODES] = {.5, .55};
 const float max_linear_speed_run_defaults[NUM_MODES] = {1.5, 2.};
 
-uint8_t speed_configuration;
-
 /**
  * Parameters that define a turn.
  *

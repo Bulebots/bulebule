@@ -255,26 +255,25 @@ void initialize_solver_direction(void)
 }
 
 /**
- * @brief Configure the default speed mode with buttons and leds.
+ * @brief Configure the default speed force with buttons and leds.
  */
-uint8_t speed_mode_configuration(void)
+float speed_configuration(void)
 {
-	uint8_t mode = 0;
+	uint8_t force = 0;
 
 	while (1) {
 		if (button_right_read_consecutive(500)) {
-			if (mode == NUM_MODES - 1)
-				mode = 0;
+			if (force == 10)
+				force = 0;
 			else
-				mode++;
-
-			repeat_blink(mode + 1, 300);
+				force += 1;
+			repeat_blink(force, 300);
 		}
 		if (button_left_read_consecutive(1000)) {
 			led_left_on();
 			led_right_on();
 			sleep_ticks(2000);
-			return mode;
+			return force * 0.05 + 0.2;
 		}
 	}
 }

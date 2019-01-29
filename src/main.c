@@ -47,8 +47,7 @@ static float user_configuration(bool run)
 {
 	float force;
 
-	//force = speed_mode_configuration();
-	force = 0.25;
+	force = speed_configuration();
 	set_speed_mode(force, run);
 	return force;
 }
