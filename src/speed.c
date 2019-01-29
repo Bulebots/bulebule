@@ -195,6 +195,7 @@ void inplace_turn(float radians, float force)
 	transition = duration / 2;
 	max_angular_velocity = turn_sign * max_angular_velocity;
 
+	set_target_linear_speed(get_ideal_linear_speed());
 	disable_walls_control();
 	start = get_clock_ticks();
 	while (true) {
