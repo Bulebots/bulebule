@@ -27,7 +27,8 @@ script:
   - ./scripts/checkformat_clang.sh
   - ./scripts/checkformat_checkpatch.sh
   - cd src/ && make
-  - cd ../ && pytest -sv --pep8 --flakes
+  - cd ../ && pytest -sv
+  - flake8
   - doc8 docs/source/
   - doc8 README.rst
   - cd docs/ && make SPHINXOPTS=-W html

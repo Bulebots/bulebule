@@ -10,7 +10,7 @@ pybluez
 pyqt5
 pyqtgraph
 pyserial
-pytest
-pytest-flakes
-pytest-pep8
 pyzmq
+pytest
+flake8
+flake8-quotes

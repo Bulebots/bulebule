@@ -37,6 +37,7 @@ def process_received(received, buf):
     prefilt = publish(log)
     return(prefilt, buf)
 
+
 ser = serial.Serial('/dev/ttyUSB0', 921600)
 last_time = datetime.datetime.utcnow().timestamp()
 context = zmq.Context()
