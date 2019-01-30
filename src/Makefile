@@ -1,5 +1,6 @@
 OBJS = $(filter-out main.o,$(patsubst %.c,%.o,$(wildcard *.c)))
 OBJS += $(patsubst target/%.c,target/%.o,$(wildcard target/*.c))
+OBJS += $(patsubst printf/%.c,printf/%.o,$(wildcard printf/*.c))
 
 BINARY = main
 

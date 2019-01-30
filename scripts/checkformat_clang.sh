@@ -1,7 +1,8 @@
 #!/bin/bash
 output=$(mktemp)
 errors=$(mktemp)
-find src/ -type f -regex ".*\.\(c\|h\)$" | while read fname
+find src/ -type f -regex ".*\.\(c\|h\)$" \
+	-not -path "src/printf/*" | while read fname
 do
 	clang-format "$fname" > "$output"
 	git diff --color "$fname" "$output" >> "$errors"
