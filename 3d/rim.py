@@ -23,9 +23,9 @@ MINIHOLE_D = 2.5
 
 # Rim body
 rim = cadquery.Workplane('XY')\
-    .circle(radius=REEL_D0/2.).extrude(distance=REEL_H0)\
+    .circle(radius=REEL_D0 / 2.).extrude(distance=REEL_H0)\
     .faces('>Z').workplane()\
-    .circle(radius=REEL_D1/2.).extrude(distance=REEL_H1)\
+    .circle(radius=REEL_D1 / 2.).extrude(distance=REEL_H1)\
     .faces('>Z').workplane()\
     .hole(diameter=BEARING_D)
 

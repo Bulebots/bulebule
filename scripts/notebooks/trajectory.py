@@ -64,7 +64,7 @@ class SlalomTurnProfile(TurnProfile):
 
     def describe(self):
         step = self.profile['linear_velocity'].iloc[0] * \
-                self.profile['period'].iloc[0]
+            self.profile['period'].iloc[0]
         xy = self.profile[['x_shift', 'y_shift']]
         before = norm(xy.iloc[0].values - self.entry.reference)
         before *= sign(norm(xy.iloc[1].values - self.entry.reference) - before)
@@ -169,9 +169,9 @@ class Simulator:
 
     def slalom(self, entry, exit, radius, force=0.25, shift=None):
         x, y, angle = entry
-        entry = Line(x=x*self.maze.cell, y=y*self.maze.cell, angle=angle)
+        entry = Line(x=x * self.maze.cell, y=y * self.maze.cell, angle=angle)
         x, y, angle = exit
-        exit = Line(x=x*self.maze.cell, y=y*self.maze.cell, angle=angle)
+        exit = Line(x=x * self.maze.cell, y=y * self.maze.cell, angle=angle)
         angle = exit.angle - entry.angle
         linear_velocity = sqrt(2 * force * radius / self.robot.mass)
         max_angular_velocity = linear_velocity / radius

@@ -7,11 +7,11 @@ from trajectory import lines_intersection
 
 
 @pytest.mark.parametrize('l0,l1,intersection', [
-    (Line(x=0., y=-0.09, angle=0.), Line(x=0.09, y=0., angle=pi/2),
+    (Line(x=0., y=-0.09, angle=0.), Line(x=0.09, y=0., angle=pi / 2),
         (0.09, -0.09)),
-    (Line(x=0., y=-0.09, angle=0.), Line(x=0.18, y=0.09, angle=pi/4),
+    (Line(x=0., y=-0.09, angle=0.), Line(x=0.18, y=0.09, angle=pi / 4),
         (0., -0.09)),
-    (Line(x=0., y=-0.09, angle=0.), Line(x=0., y=0.09, angle=3*pi/4),
+    (Line(x=0., y=-0.09, angle=0.), Line(x=0., y=0.09, angle=3 * pi / 4),
         (0.18, -0.09)),
 ], ids=[
     '90-degree turn',
