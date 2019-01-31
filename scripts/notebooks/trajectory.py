@@ -24,6 +24,7 @@ class Maze:
 class RobotPhysics:
     mass: float
     moment_of_inertia: float
+    width: float
     wheels_separation: float
     max_angular_velocity: float
 
@@ -65,7 +66,7 @@ class SlalomTurnProfile(TurnProfile):
     def describe(self):
         step = self.profile['linear_velocity'].iloc[0] * \
             self.profile['period'].iloc[0]
-        xy = self.profile[['x_shift', 'y_shift']]
+        xy = self.profile[['x', 'y']]
         before = norm(xy.iloc[0].values - self.entry.reference)
         before *= sign(norm(xy.iloc[1].values - self.entry.reference) - before)
         after = norm(xy.iloc[-1].values - self.exit.reference)
@@ -73,6 +74,7 @@ class SlalomTurnProfile(TurnProfile):
         radius = self.profile['radius'].iloc[0]
         transition = (~self.profile['arc']).sum() * step / 2
         arc = self.profile['arc'].sum() * step
+        print('Distance to post: %.3f' % self.profile['margin'].min())
         print('Turn completed in %.3f seconds' % self.profile.index[-1])
         print('Finished at (%.5f, %.5f)' %
               tuple(self.profile[['x', 'y']].iloc[-1].values))
@@ -84,7 +86,11 @@ class SlalomTurnProfile(TurnProfile):
             1, figsize=(8, 8), subplot_kw={'aspect': 'equal'})
         post = self.maze.post
         axes.add_patch(Rectangle((-post / 2, -post / 2), post, post))
-        axes.plot(self.profile['x_shift'], self.profile['y_shift'], '.-')
+        axes.plot(self.profile['x'], self.profile['y'], '.-')
+        axes.plot(self.profile['left_side_x'],
+                  self.profile['left_side_y'], 'r-')
+        axes.plot(self.profile['right_side_x'],
+                  self.profile['right_side_y'], 'r-')
         pyplot.show()
 
 
@@ -135,6 +141,7 @@ def complete_profile(profile, angle, radius, linear_velocity, robot,
                     profile['period']).cumsum()
     profile['y'] = (profile['linear_velocity'] * sin(profile['angle']) *
                     profile['period']).cumsum()
+
     profile['centrifugal_force'] = robot.mass * profile['linear_velocity'] * \
         profile['angular_velocity'] / 2
     angular_acceleration = profile['angular_velocity'].diff() / \
@@ -144,8 +151,38 @@ def complete_profile(profile, angle, radius, linear_velocity, robot,
          robot.wheels_separation).abs()
     profile['total_force'] = sqrt(profile['centrifugal_force'] ** 2 +
                                   profile['angular_acceleration_force'] ** 2)
+
     profile['time'] = profile['period'].cumsum()
     profile = profile.set_index('time')
+    return profile
+
+
+def complete_slalom_profile(profile, entry, exit, robot, maze, shift=None):
+    """
+    Complete a slalom profile.
+
+    - Calculate and apply shift according to entry/exit points
+    - Calculate trajectory of the robot's outline (with the robot width)
+    - Calculate distance from the outline to the post (margin)
+    """
+    if shift is None:
+        shift = turn_shift(entry, exit, profile)
+    else:
+        shift += array(entry.reference)
+    profile['x'] += shift[0]
+    profile['y'] += shift[1]
+
+    left_angle = profile['angle'].values + pi / 2
+    cos_width = cos(left_angle) * robot.width / 2
+    sin_width = sin(left_angle) * robot.width / 2
+    profile['left_side_x'] = profile['x'] + cos_width
+    profile['left_side_y'] = profile['y'] + sin_width
+    profile['right_side_x'] = profile['x'] - cos_width
+    profile['right_side_y'] = profile['y'] - sin_width
+
+    profile['margin'] = \
+        norm(profile[['left_side_x', 'left_side_y']].values, axis=1) - \
+        sqrt(maze.post ** 2 / 2)
     return profile
 
 
@@ -189,10 +226,6 @@ class Simulator:
             profile, entry.angle, radius, linear_velocity,
             self.robot, self.time_period
         )
-        if shift is None:
-            shift = turn_shift(entry, exit, profile)
-        else:
-            shift += array(entry.reference)
-        profile['x_shift'] = profile['x'] + shift[0]
-        profile['y_shift'] = profile['y'] + shift[1]
+        profile = complete_slalom_profile(
+            profile, entry, exit, self.robot, self.maze, shift=shift)
         return SlalomTurnProfile(profile, entry, exit, self.maze)
