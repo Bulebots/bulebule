@@ -76,6 +76,8 @@ class SlalomTurnProfile(TurnProfile):
         arc = self.profile['arc'].sum() * step
         print('Distance to post: %.3f' % self.profile['margin'].min())
         print('Turn completed in %.3f seconds' % self.profile.index[-1])
+        print('Linear velocity: %.3f' %
+              self.profile['linear_velocity'].iloc[0])
         print('Finished at (%.5f, %.5f)' %
               tuple(self.profile[['x', 'y']].iloc[-1].values))
         print('Parameters: {%.5f, %.5f, %.5f, %.5f, %.5f, xxx}' %
