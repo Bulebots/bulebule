@@ -40,7 +40,6 @@ void set_speed_mode(float force, bool run)
 {
 	linear_acceleration = 2 * force / MOUSE_MASS;
 	linear_deceleration = 2 * force / MOUSE_MASS;
-	// TODO: space to decelerate + search turn linear speed -> max_run_speed
 	if (run)
 		max_linear_speed = max_linear_speed_run_defaults[0];
 	else
