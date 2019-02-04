@@ -6,6 +6,8 @@
 #include <string.h>
 #include <unistd.h>
 
+#include <libopencm3/cm3/sync.h>
+
 #include "printf/printf.h"
 
 #include "battery.h"

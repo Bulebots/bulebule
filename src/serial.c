@@ -2,6 +2,7 @@
 
 #define RECEIVE_BUFFER_SIZE 256
 
+static mutex_t _send_lock;
 static volatile bool received;
 static char receive_buffer[RECEIVE_BUFFER_SIZE];
 
@@ -12,7 +13,7 @@ static char receive_buffer[RECEIVE_BUFFER_SIZE];
  */
 bool serial_transfer_complete(void)
 {
-	return (bool)usart_get_flag(USART3, USART_SR_TC);
+	return (bool)mutex_trylock(&_send_lock);
 }
 
 /**
@@ -98,6 +99,7 @@ void dma1_channel2_isr(void)
 	dma_disable_transfer_complete_interrupt(DMA1, DMA_CHANNEL2);
 	usart_disable_tx_dma(USART3);
 	dma_disable_channel(DMA1, DMA_CHANNEL2);
+	mutex_unlock(&_send_lock);
 }
 
 /**
