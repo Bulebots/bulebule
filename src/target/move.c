@@ -302,7 +302,7 @@ void move_front(void)
 {
 	enable_walls_control();
 	target_straight(current_cell_start_micrometers, CELL_DIMENSION,
-			get_max_end_linear_speed());
+			get_max_linear_speed());
 	entered_next_cell();
 }
 
@@ -315,7 +315,7 @@ void move_front_many(int cells)
 {
 	side_sensors_control(true);
 	target_straight(current_cell_start_micrometers, CELL_DIMENSION * cells,
-			get_max_end_linear_speed());
+			get_max_linear_speed());
 	entered_next_cell();
 }
 
@@ -347,7 +347,7 @@ void move_side(enum movement turn, float force)
 	speed_turn(turn, force);
 	enable_walls_control();
 	target_straight(get_encoder_average_micrometers(),
-			get_move_turn_after(turn), get_max_end_linear_speed());
+			get_move_turn_after(turn), get_max_linear_speed());
 	entered_next_cell();
 }
 

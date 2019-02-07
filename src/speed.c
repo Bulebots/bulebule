@@ -10,12 +10,7 @@
 static volatile float linear_acceleration;
 static volatile float linear_deceleration;
 static volatile float angular_acceleration;
-static volatile float max_end_linear_speed;
 static volatile float max_linear_speed;
-
-const float max_end_linear_speed_defaults[NUM_MODES] = {.5, .55};
-const float max_linear_speed_defaults[NUM_MODES] = {.5, .55};
-const float max_linear_speed_run_defaults[NUM_MODES] = {1.5, 2.};
 
 /**
  * Parameters that define a turn.
@@ -36,15 +31,34 @@ struct turn_parameters {
 	int sign;
 };
 
+/**
+ * @brief Calculate the maximum search linear speed.
+ *
+ * This speed is calculated so that the search speed in long straight lines
+ * is always constant.
+ *
+ * @param[in] force Maximum force to apply while searching.
+ */
+static float _calculate_search_linear_speed(float force)
+{
+	float turn_velocity;
+	float break_margin;
+
+	turn_velocity = get_move_turn_linear_speed(MOVE_LEFT, force);
+	break_margin = get_move_turn_before(MOVE_LEFT);
+	break_margin -= turn_velocity * SEARCH_REACTION_TIME;
+	return sqrt(turn_velocity * turn_velocity +
+		    2 * get_linear_deceleration() * break_margin);
+}
+
 void set_speed_mode(float force, bool run)
 {
 	linear_acceleration = 2 * force / MOUSE_MASS;
 	linear_deceleration = 2 * force / MOUSE_MASS;
 	if (run)
-		max_linear_speed = max_linear_speed_run_defaults[0];
+		max_linear_speed = 2.5;
 	else
-		max_linear_speed = max_linear_speed_defaults[0];
-	max_end_linear_speed = max_end_linear_speed_defaults[0];
+		max_linear_speed = _calculate_search_linear_speed(force);
 }
 
 // clang-format off
@@ -106,16 +120,6 @@ float get_max_linear_speed(void)
 void set_max_linear_speed(float value)
 {
 	max_linear_speed = value;
-}
-
-float get_max_end_linear_speed(void)
-{
-	return max_end_linear_speed;
-}
-
-void set_max_end_linear_speed(float value)
-{
-	max_end_linear_speed = value;
 }
 
 /**

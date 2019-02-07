@@ -6,6 +6,9 @@
 #define WHEELS_SEPARATION 0.0785
 #define SHIFT_AFTER_180_DEG_TURN 0.010
 
+/** Time it takes for the robot to decide where to go next while searching */
+#define SEARCH_REACTION_TIME 0.01
+
 /** Calibration constants for sensors */
 #define SENSOR_SIDE_LEFT_A 2.806
 #define SENSOR_SIDE_LEFT_B 0.287
