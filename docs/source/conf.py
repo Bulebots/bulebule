@@ -32,7 +32,8 @@ extensions = [
     'sphinx.ext.todo',
     'sphinx.ext.mathjax',
     'sphinx.ext.coverage',
-    'sphinx.ext.ifconfig'
+    'sphinx.ext.ifconfig',
+    'sphinxembeddedvideos.peertube',
 ]
 
 autodoc_default_options = {
@@ -62,7 +63,7 @@ copyright = 'The Bulebule contributors.'
 # built documents.
 #
 # The full version, including alpha/beta/rc tags.
-release = '0.0.1'
+release = '1.0.0'
 # The short X.Y version.
 version = release.split('-')[0]
 
@@ -108,7 +109,24 @@ pygments_style = 'sphinx'
 
 # The theme to use for HTML and HTML Help pages.  See the documentation for
 # a list of builtin themes.
-html_theme = 'sphinx_rtd_theme'
+html_theme = 'alabaster'
+
+# Theme options are theme-specific and customize the look and feel of a theme
+# further.  For a list of options available for each theme, see the
+# documentation.
+html_theme_options = {
+    'logo': 'logo.svg',
+    'logo_name': 'true',
+    'logo_text_align': 'center',
+    'description': 'Bulebule micromouse',
+    'description_font_style': 'text-align: center',
+    'github_banner': 'true',
+    'github_user': 'Bulebots',
+    'github_repo': 'bulebule',
+    'github_type': 'star',
+    'github_count': 'true',
+    'show_related': 'true',
+}
 
 # Theme options are theme-specific and customize the look and feel of a theme
 # further.  For a list of options available for each theme, see the
@@ -124,10 +142,6 @@ html_theme = 'sphinx_rtd_theme'
 
 # A shorter title for the navigation bar.  Default is the same as html_title.
 # html_short_title = None
-
-# The name of an image file (relative to this directory) to place at the top
-# of the sidebar.
-html_logo = 'logo/logo.svg'
 
 # The name of an image file (within the static path) to use as favicon of the
 # docs.  This file should be a Windows icon file (.ico) being 16x16 or 32x32

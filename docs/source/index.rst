@@ -10,6 +10,9 @@ What is Bulebule?
 
 Bulebule is a maze-solving robot.
 
+.. peertube:: da2e6b0c-d2ed-4799-8bca-bf24ff2abe45
+   :width: 100%
+
 
 How can I build it?
 -------------------
