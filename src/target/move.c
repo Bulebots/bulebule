@@ -256,13 +256,13 @@ void stop_middle(void)
  */
 void turn_back(float force)
 {
-	int direction;
+	int direction_sign;
 
 	if (get_front_wall_distance() < CELL_DIMENSION)
 		keep_front_wall_distance(CELL_DIMENSION / 2.);
 	disable_walls_control();
-	direction = (int)(rand() % 2) * 2 - 1;
-	inplace_turn(direction * PI, force);
+	direction_sign = (int)(rand() % 2) * 2 - 1;
+	inplace_turn(direction_sign * PI, force);
 
 	current_cell_start_micrometers =
 	    get_encoder_average_micrometers() -
