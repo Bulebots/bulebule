@@ -287,12 +287,12 @@ void set_ideal_angular_speed(float speed)
 }
 
 /**
- * @brief Update ideal speed according to the defined speed profile.
+ * @brief Update ideal linear speed according to the defined speed profile.
  *
  * Current ideal speed is increased or decreased according to the target speed
  * and the defined maximum acceleration and deceleration.
  */
-void update_ideal_speed(void)
+void update_ideal_linear_speed(void)
 {
 	if (ideal_linear_speed < target_linear_speed) {
 		ideal_linear_speed +=
