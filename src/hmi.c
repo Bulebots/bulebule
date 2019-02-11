@@ -255,9 +255,16 @@ void initialize_solver_direction(void)
 }
 
 /**
- * @brief Configure the default speed force with buttons and leds.
+ * @brief Select a force level for exploration or run phases.
+ *
+ * It starts at a minimum defined force and increases that force by steps.
+ *
+ * @param[in] minimum_force Minimum force.
+ * @param[in] force_step Force increase on each step.
+ *
+ * @return The selected force.
  */
-float speed_configuration(void)
+float hmi_configure_force(float minimum_force, float force_step)
 {
 	uint8_t force = 0;
 
@@ -273,7 +280,7 @@ float speed_configuration(void)
 			led_left_on();
 			led_right_on();
 			sleep_ticks(2000);
-			return force * 0.05 + 0.2;
+			return force * force_step + minimum_force;
 		}
 	}
 }

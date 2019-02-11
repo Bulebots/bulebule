@@ -45,7 +45,7 @@ static float user_configuration(bool run)
 {
 	float force;
 
-	force = speed_configuration();
+	force = hmi_configure_force(0.2, 0.05);
 	set_linear_speed_variables(force, run);
 	return force;
 }
