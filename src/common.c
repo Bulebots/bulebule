@@ -37,6 +37,8 @@ void adc_clear_flag(uint32_t adc_peripheral, uint32_t flag)
  * @brief Return the sign of a number.
  *
  * @param number The number to get the sign from.
+ *
+ * @return The sign of the number.
  */
 int sign(float number)
 {

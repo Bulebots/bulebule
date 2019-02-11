@@ -17,10 +17,10 @@ static volatile float max_linear_speed;
  *
  * - Meters to travel in straight line before turning
  * - Meters to travel in straight line after turning
- * - Linear speed, in meters per second, at which to turn
- * - Duration, in milliseconds, of the positive angular acceleration phase
- * - Duration, in milliseconds, of the whole turn
- * - Maximum angular speed at which to turn, in radians per second
+ * - Curve minimum radius
+ * - Duration, in meters, of the angular acceleration phase
+ * - Duration, in meters, of the constant angular velocity phase
+ * - Sign of the turn (left or right)
  */
 struct turn_parameters {
 	float before;
@@ -38,6 +38,8 @@ struct turn_parameters {
  * is always constant.
  *
  * @param[in] force Maximum force to apply while searching.
+ *
+ * @return The calculated search linear speed.
  */
 static float _calculate_search_linear_speed(float force)
 {
@@ -123,7 +125,7 @@ void set_max_linear_speed(float value)
 }
 
 /**
- * @brief Speed turn at a defined speed level.
+ * @brief Execute a speed turn.
  *
  * @param[in] turn_type Turn type.
  * @param[in] force Maximum force to apply while turning.
@@ -163,7 +165,7 @@ void speed_turn(enum movement turn_type, float force)
 }
 
 /**
- * @brief In-place turn at a defined speed level.
+ * @brief Execute an in-place turn.
  *
  * @param[in] radians Radians to turn (positive means left).
  * @param[in] force Maximum force to apply while turning.
@@ -247,7 +249,7 @@ float get_move_turn_after(enum movement turn_type)
  * @param[in] turn_type Turn type.
  * @param[in] force Maximum force to apply while turning.
  *
- * @return The added distance.
+ * @return The calculated speed.
  */
 float get_move_turn_linear_speed(enum movement turn_type, float force)
 {

@@ -35,13 +35,11 @@ void sys_tick_handler(void)
 /**
  * @brief Let the user configure the mouse before exploring or running.
  *
- * The user selects the speed mode with the buttons. Then, depending on the
- * phase (exploration or run), speed configurations will be selected according
- * to the speed mode.
+ * The user selects the force to apply to the tires while exploring or running.
  *
  * @param[in] run Whether the user is configuring for the run phase or not.
  *
- * @return The selected speed mode.
+ * @return The selected force.
  */
 static float user_configuration(bool run)
 {
