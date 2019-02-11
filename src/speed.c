@@ -53,7 +53,13 @@ static float _calculate_search_linear_speed(float force)
 		    2 * get_linear_deceleration() * break_margin);
 }
 
-void set_speed_mode(float force, bool run)
+/**
+ * @brief Set linear acceleration, deceleration and maximum linear speed.
+ *
+ * @param[in] force Maximum force to apply on the tires.
+ * @param[in] run Whether to set speed variables for the run phase or not.
+ */
+void set_linear_speed_variables(float force, bool run)
 {
 	linear_acceleration = 2 * force / MOUSE_MASS;
 	linear_deceleration = 2 * force / MOUSE_MASS;

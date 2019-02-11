@@ -15,7 +15,7 @@ float get_angular_acceleration(void);
 void set_angular_acceleration(float value);
 float get_max_linear_speed(void);
 void set_max_linear_speed(float value);
-void set_speed_mode(float force, bool run);
+void set_linear_speed_variables(float force, bool run);
 float get_move_turn_before(enum movement move);
 float get_move_turn_after(enum movement move);
 float get_move_turn_linear_speed(enum movement turn_type, float force);

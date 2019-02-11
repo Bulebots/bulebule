@@ -46,7 +46,7 @@ static float user_configuration(bool run)
 	float force;
 
 	force = speed_configuration();
-	set_speed_mode(force, run);
+	set_linear_speed_variables(force, run);
 	return force;
 }
 
@@ -175,7 +175,7 @@ static void training(void)
 int main(void)
 {
 	setup();
-	set_speed_mode(0.25, false);
+	set_linear_speed_variables(0.25, false);
 	systick_interrupt_enable();
 	while (1) {
 		if (button_left_read_consecutive(500))
