@@ -50,7 +50,7 @@ static const char *const log_level_strings[] = {"DEBUG", "INFO", "WARNING",
 		sprintf(tx_buffer, "%" PRIu32 ",%s,%s:%d,%s," format "\n",     \
 			time, log_level_strings[level], __FILE__, __LINE__,    \
 			__func__, ##arg);                                      \
-		serial_wait_send_available(LOG_MESSAGE_TIMEOUT);               \
+		wait_until(serial_acquire_transfer_lock, LOG_MESSAGE_TIMEOUT); \
 		serial_send(tx_buffer, strlen(tx_buffer));                     \
 	} while (0)
 
@@ -74,7 +74,7 @@ static const char *const log_level_strings[] = {"DEBUG", "INFO", "WARNING",
 	do {                                                                   \
 		uint32_t time = get_clock_ticks();                             \
 		static char tx_buffer[100];                                    \
-		if (!serial_transfer_complete())                               \
+		if (!serial_acquire_transfer_lock())                           \
 			break;                                                 \
 		sprintf(tx_buffer, "%" PRIu32 ",DATA,,," format "\n", time,    \
 			##arg);                                                \

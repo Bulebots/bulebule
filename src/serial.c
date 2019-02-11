@@ -7,23 +7,13 @@ static volatile bool received;
 static char receive_buffer[RECEIVE_BUFFER_SIZE];
 
 /**
- * @brief Check if the serial transfer is complete.
+ * @brief Try to acquire the serial transfer lock.
  *
- * @return Whether the transfer has been completed.
+ * @return Whether the lock was acquired or not.
  */
-bool serial_transfer_complete(void)
+bool serial_acquire_transfer_lock(void)
 {
 	return (bool)mutex_trylock(&_send_lock);
-}
-
-/**
- * @brief Wait until able to send through serial, or timeout.
- *
- * @param[in] timeout Timeout duration, in ticks.
- */
-void serial_wait_send_available(uint32_t timeout)
-{
-	wait_until(serial_transfer_complete, timeout);
 }
 
 /**
@@ -90,6 +80,8 @@ static void serial_receive(void)
  *
  * Executed on serial transfer complete. Clears the interruption flag, and
  * disables serial transfer DMA until next call to `serial_send()`.
+ *
+ * It will also release the serial transfer lock.
  */
 void dma1_channel2_isr(void)
 {

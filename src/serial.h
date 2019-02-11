@@ -13,8 +13,7 @@
 #include "move.h"
 #include "speed.h"
 
-bool serial_transfer_complete(void);
-void serial_wait_send_available(uint32_t timeout);
+bool serial_acquire_transfer_lock(void);
 void serial_send(char *data, int size);
 void execute_command(void);
 
