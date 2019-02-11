@@ -104,7 +104,7 @@ void run_static_turn_right_profile(void)
 void run_movement_sequence(const char *sequence)
 {
 	char movement;
-	uint8_t speed = 0;
+	uint8_t force = 0.25;
 
 	calibrate();
 	reset_motion();
@@ -122,13 +122,13 @@ void run_movement_sequence(const char *sequence)
 			move_front();
 			break;
 		case 'L':
-			move_side(LEFT, speed);
+			move_side(LEFT, force);
 			break;
 		case 'R':
-			move_side(RIGHT, speed);
+			move_side(RIGHT, force);
 			break;
 		case 'B':
-			move_back(speed);
+			move_back(force);
 			break;
 		case 'M':
 			stop_middle();
@@ -140,13 +140,13 @@ void run_movement_sequence(const char *sequence)
 			stop_end();
 			break;
 		case 'l':
-			speed_turn(MOVE_LEFT, 0.25);
+			speed_turn(MOVE_LEFT, force);
 			break;
 		case 'r':
-			speed_turn(MOVE_RIGHT, 0.25);
+			speed_turn(MOVE_RIGHT, force);
 			break;
 		case 'b':
-			turn_back(speed);
+			turn_back(force);
 			break;
 		case 's':
 			set_target_linear_speed(0.);
