@@ -20,7 +20,7 @@ How can I build it?
 .. toctree::
    :maxdepth: 2
 
-   locomotion.rst
+   building.rst
    brain.rst
    configuration.rst
    utils.rst

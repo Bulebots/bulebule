@@ -5,12 +5,6 @@ Brain
 *****
 
 
-.. index:: board
-
-Board
-=====
-
-
 .. index:: microcontroller
 
 Microcontroller

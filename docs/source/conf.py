@@ -126,6 +126,7 @@ html_theme_options = {
     'github_type': 'star',
     'github_count': 'true',
     'show_related': 'true',
+    'note_bg': '#e4f2fb',
 }
 
 # Theme options are theme-specific and customize the look and feel of a theme
