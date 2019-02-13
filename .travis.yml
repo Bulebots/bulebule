@@ -17,6 +17,7 @@ addons:
 
 install:
   - pip install -r requirements.txt
+  - pip install tox
 
 before_script:
   - clang-format() { clang-format-6.0 $@; }
@@ -29,9 +30,7 @@ script:
   - cd src/ && make
   - cd ../ && pytest -sv
   - flake8
-  - doc8 docs/source/
-  - doc8 README.rst
-  - cd docs/ && make SPHINXOPTS=-W html
+  - tox -e docs
 
 notifications:
   email: false

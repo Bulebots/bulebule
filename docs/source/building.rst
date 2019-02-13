@@ -296,7 +296,7 @@ References
 .. _`CadQuery`:
    https://github.com/CadQuery/cadquery
 .. _`Faulhaber 1524B009SR`:
-   https://fmcc.faulhaber.com/resources/img/EN_1524_SR_DFF.PDF
+   https://www.faulhaber.com/fileadmin/Import/Media/EN_1524_SR_DFF.pdf
 .. _`IE2-512 quadrature encoders`:
    https://bulebots.readthedocs.io/en/latest/ie2-1024_encoder_family.html
 .. _`MR63ZZ`:

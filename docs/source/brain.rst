@@ -57,8 +57,8 @@ Workspace
 =========
 
 We will be using the `libopencm3`_ firmware library. Our workspace is based on
-the `reuse instructions
-<https://github.com/libopencm3/libopencm3-examples#reuse>`_ from that project.
+the `simple template
+<https://github.com/libopencm3/libopencm3-template>`_ from that project.
 
 #. Clone the project including submodules to get libopencm3:
 

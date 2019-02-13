@@ -188,10 +188,10 @@ References
 .. target-notes::
 
 .. _`HC-05 serial bluetooth`:
-  https://athena-robots.readthedocs.io/en/latest/hc05_bluetooth.html
+   https://athena-robots.readthedocs.io/en/latest/hc05_bluetooth.html
 .. _`IE2-512 encoder`:
-  https://fmcc.faulhaber.com/resources/img/EN_IE2-1024_DFF.PDF
+   https://www.faulhaber.com/fileadmin/Import/Media/EN_IE2-1024_DFF.pdf
 .. _`STM32F10xxx Reference Manual`:
-  http://www.st.com/resource/en/reference_manual/cd00171190.pdf
+   http://www.st.com/resource/en/reference_manual/cd00171190.pdf
 .. _`STM32F10xxx/20xxx/21xxx/L1xxxx Cortex®-M3 programming manual`:
-  http://www.st.com/content/ccc/resource/technical/document/programming_manual/5b/ca/8d/83/56/7f/40/08/CD00228163.pdf/files/CD00228163.pdf/jcr:content/translations/en.CD00228163.pdf
+   http://www.st.com/resource/en/programming_manual/cd00228163.pdf
