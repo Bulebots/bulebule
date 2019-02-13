@@ -23,10 +23,12 @@ really expensive.
    Bulebule micromouse.
 
 If you build your own Bulebule, even if it is an exact copy, share your work!
-It will help others even if only by encouraging them to build their own. 😊
+It will help others even if only by encouraging them to build their own.
+|:blush:|
 
 If you make modifications and end up with a new version, perhaps with cheaper
-motors, different sensors or whatever you come up with, share your work too! 😍
+motors, different sensors or whatever you come up with, share your work too!
+|:heart_eyes:|
 
 
 .. index:: board
@@ -59,7 +61,8 @@ Soldering
 .. note:: You may want to read the full soldering instructions before starting
    to solder your first component.
 
-The board, which is the base of the robot, is a simple 2-layer PCB. Most of its components are through-hole, which means they should be easy to solder.
+The board, which is the base of the robot, is a simple 2-layer PCB. Most of its
+components are through-hole, which means they should be easy to solder.
 
 .. figure:: figures/bare-pcb.jpg
    :width: 100%
@@ -278,7 +281,7 @@ Finally, attach the mount to the PCB with some M2 screws.
 
    Attach the mounts to the PCB with some M2 screws and you are done!
 
-Congratulations! Now you should be ready to try your micromouse! 🎉
+Congratulations! Now you should be ready to try your micromouse! |:tada:|
 
 
 References
