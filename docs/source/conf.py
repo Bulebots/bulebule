@@ -34,7 +34,10 @@ extensions = [
     'sphinx.ext.coverage',
     'sphinx.ext.ifconfig',
     'sphinxembeddedvideos.peertube',
+    'sphinxemoji.sphinxemoji',
 ]
+
+sphinxemoji_style = 'twemoji'
 
 autodoc_default_options = {
     'members': None,
@@ -152,7 +155,7 @@ html_theme_options = {
 # Add any paths that contain custom static files (such as style sheets) here,
 # relative to this directory. They are copied after the builtin static files,
 # so a file named "default.css" will overwrite the builtin "default.css".
-html_static_path = ['logo', 'figures', 'static']
+html_static_path = ['logo', 'figures']
 
 # Add any extra paths that contain custom files (such as robots.txt or
 # .htaccess) here, relative to this directory. These files are copied
@@ -278,15 +281,3 @@ texinfo_documents = [
 
 # If true, do not generate a @detailmenu in the "Top" node's menu.
 # texinfo_no_detailmenu = False
-
-rst_epilog = """
-.. |:tada:|  unicode:: U+1F389
-.. |:blush:|  unicode:: U+1F60A
-.. |:heart_eyes:|  unicode:: U+1F60D
-"""
-
-
-def setup(app):
-    app.add_javascript('//twemoji.maxcdn.com/2/twemoji.min.js?11.3')
-    app.add_javascript('emoji.js')
-    app.add_stylesheet('emoji.css')
