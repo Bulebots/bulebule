@@ -21,7 +21,7 @@ much faster to develop and enjoyable thanks to:
   Who shares `details about his micromice <http://www.greenye.net/>`__ and
   posts many useful resources in `micromouseusa.com
   <http://micromouseusa.com>`_.
-**Peter Harris**
+**Peter Harrison**
   Who posts many useful and detailed resources in `micromouseonline.com
   <http://micromouseonline.com>`_.
 **Kato-san**
