@@ -6,7 +6,7 @@
 Bulebule
 ========
 
-A maze-solving robot.
+A micromouse maze-solving robot.
 
 Please read the `Bulebule documentation`_ for a bit more detailed introduction.
 
@@ -17,19 +17,14 @@ Acknowledgments
 We truly feel in debt with some people who helped us a lot. This project was
 much faster to develop and enjoyable thanks to:
 
-**Green Ye**
-  Who shares `details about his micromice <http://www.greenye.net/>`__ and
-  posts many useful resources in `micromouseusa.com
-  <http://micromouseusa.com>`_.
 **Peter Harrison**
   Who posts many useful and detailed resources in `micromouseonline.com
-  <http://micromouseonline.com>`_.
-**Kato-san**
-  Who shares `details about his micromice <http://seesaawiki.jp/w/robolabo/>`__
-  and posts some `useful resources <http://blog.livedoor.jp/robolabo/>`_.
-**Ng Beng Kiat**
-  Who shares `details about his micromice
-  <https://sites.google.com/site/ngbengkiat/>`__.
+  <http://micromouseonline.com>`_, `GitHub
+  <https://github.com/micromouseonline>`_, and who is always willing to help.
+**Green Ye** Who shares `details about his micromice
+  <http://www.greenye.net/>`__ and posts many useful resources in
+  `micromouseusa.com <http://micromouseusa.com>`_. His Futura Project videos
+  are a great starting point!
 
 
 .. _`Bulebule documentation`:
