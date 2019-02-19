@@ -6,7 +6,6 @@ from math import sin
 from math import radians
 
 import cadquery
-from Helpers import show
 
 
 REEL_D0 = 19.
@@ -36,5 +35,3 @@ miniholes = [(minihole_position * sin(radians(i * 360. / MINIHOLES)),
              for i in range(MINIHOLES)]
 rim = rim.faces('>Z').workplane()\
     .pushPoints(miniholes).hole(diameter=MINIHOLE_D)
-
-show(rim)

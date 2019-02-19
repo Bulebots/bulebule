@@ -35,6 +35,7 @@ extensions = [
     'sphinx.ext.ifconfig',
     'sphinxembeddedvideos.peertube',
     'sphinxemoji.sphinxemoji',
+    'sphinxcadquery.sphinxcadquery',
 ]
 
 sphinxemoji_style = 'twemoji'

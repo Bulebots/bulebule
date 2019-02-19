@@ -7,7 +7,6 @@ from math import sin
 from math import radians
 
 import cadquery
-from Helpers import show
 
 
 def circle_points(number, circle, shift=0):
@@ -71,6 +70,3 @@ mount = mount.faces('<Z').workplane()\
 
 # Fillet
 mount = mount.edges('|Z').fillet(MOUNT_FILLET)
-
-# Render the solid
-show(mount)

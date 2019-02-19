@@ -1,0 +1,19 @@
+name: bulebule
+channels:
+  - conda-forge
+  - dlr-sc
+  - oce
+  - pythonocc
+  - tpaviot
+dependencies:
+  - python=3.6
+  - pythonocc-core=0.18.2
+  - pip:
+    - "--editable=git+https://github.com/CadQuery/cadquery.git@master#egg=cadquery"
+    # Documentation
+    - sphinx
+    - sphinxcadquery
+    - sphinxembeddedvideos
+    - sphinxemoji
+    # Development
+    - pdbpp

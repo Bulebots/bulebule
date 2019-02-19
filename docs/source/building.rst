@@ -215,6 +215,9 @@ Rim
 
 The rim has been designed with `CadQuery`_. See the `Bulebule 3D designs`_.
 
+.. cadquery:: ../../3d/rim.py
+   :select: rim
+
 
 .. index:: mounting
 
@@ -223,6 +226,9 @@ Mounting
 
 The mounting has been designed with `CadQuery`_. See the `Bulebule 3D
 designs`_.
+
+.. cadquery:: ../../3d/mount.py
+   :select: mount
 
 
 .. index:: assembly
