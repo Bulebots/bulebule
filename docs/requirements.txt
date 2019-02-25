@@ -1,4 +1,0 @@
-doc8
-sphinx
-sphinxembeddedvideos
-sphinxemoji
