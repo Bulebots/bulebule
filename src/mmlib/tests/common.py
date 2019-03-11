@@ -29,7 +29,7 @@ def yield_cffi(name):
     Yield a C Foreign Function Interface to test with Python.
     """
     with TemporaryDirectory() as tmpdir:
-        name = Path('./src/path').resolve()
+        name = Path(name).resolve()
         builder = FFI()
         builder.cdef(clean_header(name.with_suffix('.h')))
         builder.set_source(

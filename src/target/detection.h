@@ -6,9 +6,10 @@
 #include <libopencm3/stm32/gpio.h>
 #include <libopencm3/stm32/timer.h>
 
+#include "mmlib/search.h"
+
 #include "clock.h"
 #include "config.h"
-#include "search.h"
 #include "setup.h"
 
 /* Sensors IDs*/

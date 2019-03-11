@@ -3,12 +3,13 @@
 
 #include <math.h>
 
+#include "mmlib/path.h"
+#include "mmlib/search.h"
+
 #include "clock.h"
 #include "control.h"
 #include "hmi.h"
 #include "motor.h"
-#include "path.h"
-#include "search.h"
 #include "setup.h"
 #include "speed.h"
 

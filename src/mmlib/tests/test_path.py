@@ -12,7 +12,7 @@ def interface():
     """
     Compile the `path.c` module and return the FFI and the smoother functions.
     """
-    yield from yield_cffi('./src/path')
+    yield from yield_cffi('./src/mmlib/path')
 
 
 def smooth_path(interface, sharp, language):

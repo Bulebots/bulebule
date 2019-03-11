@@ -1,8 +1,9 @@
 #ifndef __SPEED_H
 #define __SPEED_H
 
+#include "mmlib/path.h"
+
 #include "move.h"
-#include "path.h"
 #include "setup.h"
 
 #define NUM_MODES 2
