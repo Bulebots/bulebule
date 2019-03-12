@@ -13,7 +13,7 @@
 #include <libopencm3/stm32/timer.h>
 #include <libopencm3/stm32/usart.h>
 
-#include "mylibopencm3.h"
+#include "mmlib/mylibopencm3.h"
 
 #include <mpu.h>
 /** Universal constants */
