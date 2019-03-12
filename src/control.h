@@ -1,8 +1,9 @@
 #ifndef __CONTROL_H
 #define __CONTROL_H
 
+#include "mmlib/encoder.h"
+
 #include "detection.h"
-#include "encoder.h"
 #include "hmi.h"
 #include "motor.h"
 #include "setup.h"

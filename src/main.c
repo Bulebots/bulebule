@@ -1,9 +1,10 @@
+#include "mmlib/encoder.h"
+
 #include "calibration.h"
 #include "clock.h"
 #include "control.h"
 #include "detection.h"
 #include "eeprom.h"
-#include "encoder.h"
 #include "hmi.h"
 #include "logging.h"
 #include "motor.h"
