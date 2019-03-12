@@ -1,8 +1,8 @@
+#include "mmlib/clock.h"
+#include "mmlib/control.h"
 #include "mmlib/encoder.h"
 
 #include "calibration.h"
-#include "clock.h"
-#include "control.h"
 #include "detection.h"
 #include "eeprom.h"
 #include "hmi.h"

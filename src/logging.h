@@ -9,11 +9,11 @@
 #include <libopencm3/cm3/sync.h>
 
 #include "printf/printf.h"
+#include "mmlib/clock.h"
+#include "mmlib/control.h"
 #include "mmlib/encoder.h"
 
 #include "battery.h"
-#include "clock.h"
-#include "control.h"
 #include "detection.h"
 #include "move.h"
 #include "mpu.h"

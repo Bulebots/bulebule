@@ -3,8 +3,9 @@
 
 #include <inttypes.h>
 
-#include "clock.h"
-#include "control.h"
+#include "mmlib/clock.h"
+#include "mmlib/control.h"
+
 #include "detection.h"
 #include "logging.h"
 #include "move.h"

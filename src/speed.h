@@ -1,6 +1,7 @@
 #ifndef __SPEED_H
 #define __SPEED_H
 
+#include "mmlib/common.h"
 #include "mmlib/path.h"
 
 #include "move.h"

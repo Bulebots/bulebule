@@ -5,7 +5,6 @@
 #include <libopencm3/stm32/adc.h>
 #include <libopencm3/stm32/gpio.h>
 
-#include "common.h"
 #include "hmi.h"
 #include "setup.h"
 

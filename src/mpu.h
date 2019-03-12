@@ -3,7 +3,8 @@
 
 #include <stdint.h>
 
-#include "clock.h"
+#include "mmlib/clock.h"
+
 #include "setup.h"
 
 uint8_t mpu_who_am_i(void);

@@ -3,7 +3,8 @@
 
 #include <libopencm3/stm32/gpio.h>
 
-#include "clock.h"
+#include "mmlib/clock.h"
+
 #include "detection.h"
 #include "solve.h"
 #include "speaker.h"

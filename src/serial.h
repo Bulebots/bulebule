@@ -6,10 +6,10 @@
 
 #include <libopencm3/stm32/usart.h>
 
+#include "mmlib/control.h"
 #include "mmlib/encoder.h"
 
 #include "calibration.h"
-#include "control.h"
 #include "logging.h"
 #include "move.h"
 #include "speed.h"
