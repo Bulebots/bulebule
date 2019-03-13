@@ -14,7 +14,6 @@
 #include "serial.h"
 #include "setup.h"
 #include "solve.h"
-#include "speaker.h"
 #include "speed.h"
 
 static void competition(void);
