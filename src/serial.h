@@ -6,12 +6,12 @@
 
 #include <libopencm3/stm32/usart.h>
 
+#include "mmlib/calibration.h"
 #include "mmlib/control.h"
 #include "mmlib/encoder.h"
 #include "mmlib/logging.h"
 #include "mmlib/speed.h"
 
-#include "calibration.h"
 #include "move.h"
 
 bool serial_acquire_transfer_lock(void);

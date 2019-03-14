@@ -1,3 +1,4 @@
+#include "mmlib/calibration.h"
 #include "mmlib/clock.h"
 #include "mmlib/control.h"
 #include "mmlib/encoder.h"
@@ -5,7 +6,6 @@
 #include "mmlib/solve.h"
 #include "mmlib/speed.h"
 
-#include "calibration.h"
 #include "detection.h"
 #include "eeprom.h"
 #include "hmi.h"
