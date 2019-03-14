@@ -1,11 +1,11 @@
 #ifndef __SOLVE_H
 #define __SOLVE_H
 
+#include "mmlib/logging.h"
 #include "mmlib/path.h"
 
 #include "detection.h"
 #include "eeprom.h"
-#include "logging.h"
 #include "move.h"
 #include "search.h"
 #include "setup.h"
