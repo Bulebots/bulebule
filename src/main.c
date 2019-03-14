@@ -9,7 +9,6 @@
 #include "logging.h"
 #include "motor.h"
 #include "move.h"
-#include "mpu.h"
 #include "search.h"
 #include "serial.h"
 #include "setup.h"

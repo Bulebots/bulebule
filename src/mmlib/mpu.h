@@ -5,10 +5,10 @@
 
 #include "mmlib/clock.h"
 
+#include "platform.h"
 #include "setup.h"
 
 uint8_t mpu_who_am_i(void);
-
 void setup_mpu(void);
 void gyro_z_calibration(void);
 void update_gyro_readings(void);

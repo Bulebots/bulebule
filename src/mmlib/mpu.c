@@ -6,7 +6,6 @@
 #define MPU_COMPLEMENT_2_FACTOR 2
 #define MPU_CAL_SAMPLE_US 1000
 
-#define MPU_READ 0x80
 #define MPU_SMPLRT_DIV 25
 #define MPU_CONFIG 26
 #define MPU_GYRO_CONFIG 27
@@ -28,40 +27,6 @@
 
 static volatile float deg_integ;
 static volatile int16_t gyro_z_raw;
-/**
- * @brief Read a MPU register.
- *
- * @param[in] address Register address.
- */
-static uint8_t mpu_read_register(uint8_t address)
-{
-	uint8_t reading;
-
-	gpio_clear(GPIOB, GPIO12);
-	spi_send(SPI2, (MPU_READ | address));
-	spi_read(SPI2);
-	spi_send(SPI2, 0x00);
-	reading = spi_read(SPI2);
-	gpio_set(GPIOB, GPIO12);
-
-	return reading;
-}
-
-/**
- * @brief Write a MPU register with a given value.
- *
- * @param[in] address Register address.
- * @param[in] address Register value.
- */
-static void mpu_write_register(uint8_t address, uint8_t value)
-{
-	gpio_clear(GPIOB, GPIO12);
-	spi_send(SPI2, address);
-	spi_read(SPI2);
-	spi_send(SPI2, value);
-	spi_read(SPI2);
-	gpio_set(GPIOB, GPIO12);
-}
 
 /**
  * @brief Read the WHOAMI register value.

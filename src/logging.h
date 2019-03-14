@@ -12,11 +12,11 @@
 #include "mmlib/clock.h"
 #include "mmlib/control.h"
 #include "mmlib/encoder.h"
+#include "mmlib/mpu.h"
 
 #include "battery.h"
 #include "detection.h"
 #include "move.h"
-#include "mpu.h"
 #include "serial.h"
 #include "speed.h"
 

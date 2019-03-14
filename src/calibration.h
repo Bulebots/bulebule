@@ -5,11 +5,11 @@
 
 #include "mmlib/clock.h"
 #include "mmlib/control.h"
+#include "mmlib/mpu.h"
 
 #include "detection.h"
 #include "logging.h"
 #include "move.h"
-#include "mpu.h"
 #include "setup.h"
 #include "speed.h"
 
