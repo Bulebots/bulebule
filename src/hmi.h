@@ -4,11 +4,11 @@
 #include <libopencm3/stm32/gpio.h>
 
 #include "mmlib/clock.h"
+#include "mmlib/solve.h"
 #include "mmlib/speaker.h"
 #include "mmlib/speed.h"
 
 #include "detection.h"
-#include "solve.h"
 
 void led_left_toggle(void);
 void led_right_toggle(void);
