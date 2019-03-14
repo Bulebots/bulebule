@@ -7,11 +7,11 @@
 #include "mmlib/control.h"
 #include "mmlib/path.h"
 #include "mmlib/search.h"
+#include "mmlib/speed.h"
 
 #include "hmi.h"
 #include "motor.h"
 #include "setup.h"
-#include "speed.h"
 
 float current_cell_shift(void);
 void set_starting_position(void);

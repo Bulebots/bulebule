@@ -13,12 +13,12 @@
 #include "mmlib/control.h"
 #include "mmlib/encoder.h"
 #include "mmlib/mpu.h"
+#include "mmlib/speed.h"
 
 #include "battery.h"
 #include "detection.h"
 #include "move.h"
 #include "serial.h"
-#include "speed.h"
 
 #define LOG_MESSAGE_TIMEOUT 10
 

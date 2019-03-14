@@ -5,10 +5,10 @@
 
 #include "mmlib/clock.h"
 #include "mmlib/speaker.h"
+#include "mmlib/speed.h"
 
 #include "detection.h"
 #include "solve.h"
-#include "speed.h"
 
 void led_left_toggle(void);
 void led_right_toggle(void);

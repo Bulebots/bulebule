@@ -6,12 +6,12 @@
 #include "mmlib/clock.h"
 #include "mmlib/control.h"
 #include "mmlib/mpu.h"
+#include "mmlib/speed.h"
 
 #include "detection.h"
 #include "logging.h"
 #include "move.h"
 #include "setup.h"
-#include "speed.h"
 
 void calibrate(void);
 void run_linear_speed_profile(void);

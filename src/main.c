@@ -1,6 +1,7 @@
 #include "mmlib/clock.h"
 #include "mmlib/control.h"
 #include "mmlib/encoder.h"
+#include "mmlib/speed.h"
 
 #include "calibration.h"
 #include "detection.h"
@@ -13,7 +14,6 @@
 #include "serial.h"
 #include "setup.h"
 #include "solve.h"
-#include "speed.h"
 
 static void competition(void);
 
