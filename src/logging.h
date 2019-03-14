@@ -8,12 +8,12 @@
 
 #include <libopencm3/cm3/sync.h>
 
-#include "printf/printf.h"
 #include "mmlib/clock.h"
 #include "mmlib/control.h"
 #include "mmlib/encoder.h"
 #include "mmlib/mpu.h"
 #include "mmlib/speed.h"
+#include "printf/printf.h"
 
 #include "battery.h"
 #include "detection.h"
