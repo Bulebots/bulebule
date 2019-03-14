@@ -15,9 +15,9 @@
 #include "mmlib/speed.h"
 #include "printf/printf.h"
 
-#include "battery.h"
 #include "detection.h"
 #include "move.h"
+#include "platform.h"
 #include "serial.h"
 
 #define LOG_MESSAGE_TIMEOUT 10
