@@ -7,8 +7,6 @@
 #include "move.h"
 #include "setup.h"
 
-#define NUM_MODES 2
-
 float get_linear_acceleration(void);
 void set_linear_acceleration(float value);
 float get_linear_deceleration(void);
