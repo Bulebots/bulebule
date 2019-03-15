@@ -6,8 +6,6 @@
 #include <string.h>
 #include <unistd.h>
 
-#include <libopencm3/cm3/sync.h>
-
 #include "mmlib/clock.h"
 #include "mmlib/control.h"
 #include "mmlib/encoder.h"
