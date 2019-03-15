@@ -10,9 +10,8 @@
 #include "mmlib/control.h"
 #include "mmlib/encoder.h"
 #include "mmlib/logging.h"
+#include "mmlib/move.h"
 #include "mmlib/speed.h"
-
-#include "move.h"
 
 bool serial_acquire_transfer_lock(void);
 void serial_send(char *data, int size);

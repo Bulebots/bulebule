@@ -3,6 +3,7 @@
 #include "mmlib/control.h"
 #include "mmlib/encoder.h"
 #include "mmlib/logging.h"
+#include "mmlib/move.h"
 #include "mmlib/solve.h"
 #include "mmlib/speed.h"
 
@@ -10,7 +11,6 @@
 #include "eeprom.h"
 #include "hmi.h"
 #include "motor.h"
-#include "move.h"
 #include "search.h"
 #include "serial.h"
 #include "setup.h"
