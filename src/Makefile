@@ -1,5 +1,4 @@
 OBJS = $(filter-out main.o,$(patsubst %.c,%.o,$(wildcard *.c)))
-OBJS += $(patsubst target/%.c,target/%.o,$(wildcard target/*.c))
 OBJS += $(patsubst printf/%.c,printf/%.o,$(wildcard printf/*.c))
 OBJS += $(patsubst mmlib/%.c,mmlib/%.o,$(wildcard mmlib/*.c))
 
@@ -8,8 +7,8 @@ BINARY = main
 OPENCM3_DIR	= ../.opencm3/libopencm3
 LDSCRIPT	= stm32f103x8.ld
 LDLIBS		+= -lm
-LDFLAGS		+= -L./target -L./
-DEFS		+= -I./target -I./
+LDFLAGS		+= -L./
+DEFS		+= -I./
 
 # Target configuration
 LIBNAME		= opencm3_stm32f1
