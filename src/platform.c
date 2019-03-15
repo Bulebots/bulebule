@@ -3,6 +3,16 @@
 #define MPU_READ 0x80
 
 /**
+ * @brief Read the microcontroller clock cycle counter.
+ *
+ * This counter increases by one at `SYSCLK_FREQUENCY_HZ`.
+ */
+uint32_t read_cycle_counter(void)
+{
+	return dwt_read_cycle_counter();
+}
+
+/**
  * @brief Read left motor encoder counter.
  */
 uint16_t read_encoder_left(void)

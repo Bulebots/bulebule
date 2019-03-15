@@ -27,16 +27,6 @@ void clock_tick(void)
 }
 
 /**
- * @brief Read the microcontroller clock cycle counter.
- *
- * This counter increases by one at `SYSCLK_FREQUENCY_HZ`.
- */
-uint32_t read_cycle_counter(void)
-{
-	return dwt_read_cycle_counter();
-}
-
-/**
  * @brief Sleep (i.e.: do nothing) for a number of ticks.
  *
  * @param[in] ticks Sleep period, in ticks.
@@ -87,11 +77,11 @@ float stopwatch_stop(void)
  */
 void sleep_us(uint32_t us)
 {
-	uint32_t initial_cycles = dwt_read_cycle_counter();
+	uint32_t initial_cycles = read_cycle_counter();
 	uint32_t sleep_cycles = (uint32_t)(
 	    SYSCLK_FREQUENCY_HZ * ((float)us / (float)MICROSECONDS_PER_SECOND));
 
-	while (dwt_read_cycle_counter() - initial_cycles <= sleep_cycles)
+	while (read_cycle_counter() - initial_cycles <= sleep_cycles)
 		;
 }
 
@@ -106,7 +96,7 @@ void sleep_us_after(uint32_t cycle_counter, uint32_t us)
 	uint32_t sleep_cycles = (uint32_t)(
 	    SYSCLK_FREQUENCY_HZ * ((float)us / (float)MICROSECONDS_PER_SECOND));
 
-	while (dwt_read_cycle_counter() - cycle_counter <= sleep_cycles)
+	while (read_cycle_counter() - cycle_counter <= sleep_cycles)
 		;
 }
 

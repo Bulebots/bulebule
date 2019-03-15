@@ -3,6 +3,7 @@
 
 #include <stdint.h>
 
+#include <libopencm3/cm3/dwt.h>
 #include <libopencm3/stm32/adc.h>
 #include <libopencm3/stm32/timer.h>
 
@@ -11,6 +12,7 @@
 #include "platform.h"
 #include "setup.h"
 
+uint32_t read_cycle_counter(void);
 uint16_t read_encoder_left(void);
 uint16_t read_encoder_right(void);
 float get_battery_voltage(void);
