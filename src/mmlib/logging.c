@@ -16,7 +16,6 @@ void start_data_logging(void (*log_function)(void))
 	LOG_INFO("Data logging on");
 	data_logging_function = log_function;
 	sleep_ticks(2);
-	led_right_on();
 	data_logging = true;
 }
 
@@ -29,7 +28,6 @@ void start_data_logging(void (*log_function)(void))
 void stop_data_logging(void)
 {
 	data_logging = false;
-	led_right_off();
 	sleep_ticks(2);
 	LOG_INFO("Data logging off");
 }
