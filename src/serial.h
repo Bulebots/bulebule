@@ -8,6 +8,7 @@
 #include <libopencm3/stm32/usart.h>
 
 #include "mmlib/calibration.h"
+#include "mmlib/common.h"
 #include "mmlib/control.h"
 #include "mmlib/encoder.h"
 #include "mmlib/logging.h"
