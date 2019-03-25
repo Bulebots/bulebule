@@ -3,11 +3,11 @@
 
 #include "mmlib/logging.h"
 #include "mmlib/path.h"
+#include "mmlib/search.h"
 
 #include "detection.h"
 #include "eeprom.h"
 #include "move.h"
-#include "search.h"
 #include "setup.h"
 
 void explore(float force);
