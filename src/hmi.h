@@ -3,6 +3,7 @@
 
 #include <libopencm3/stm32/gpio.h>
 
+#include "leds.h"
 #include "mmlib/clock.h"
 #include "mmlib/solve.h"
 #include "mmlib/speaker.h"
@@ -10,15 +11,6 @@
 
 #include "detection.h"
 
-void led_left_toggle(void);
-void led_right_toggle(void);
-void led_bluepill_toggle(void);
-void led_left_on(void);
-void led_right_on(void);
-void led_bluepill_on(void);
-void led_left_off(void);
-void led_right_off(void);
-void led_bluepill_off(void);
 void repeat_blink(uint8_t count, uint16_t time);
 void blink_collision(void);
 void speaker_warn_low_battery(void);
