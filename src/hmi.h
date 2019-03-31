@@ -1,16 +1,14 @@
 #ifndef __HMI_H
 #define __HMI_H
 
-#include <libopencm3/stm32/gpio.h>
-
-#include "buttons.h"
-#include "leds.h"
 #include "mmlib/clock.h"
 #include "mmlib/solve.h"
 #include "mmlib/speaker.h"
 #include "mmlib/speed.h"
 
+#include "buttons.h"
 #include "detection.h"
+#include "leds.h"
 
 void repeat_blink(uint8_t count, uint16_t time);
 void blink_collision(void);
