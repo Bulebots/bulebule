@@ -2,6 +2,7 @@
 #include "mmlib/clock.h"
 #include "mmlib/control.h"
 #include "mmlib/encoder.h"
+#include "mmlib/hmi.h"
 #include "mmlib/logging.h"
 #include "mmlib/move.h"
 #include "mmlib/search.h"
@@ -10,7 +11,6 @@
 
 #include "detection.h"
 #include "eeprom.h"
-#include "hmi.h"
 #include "motor.h"
 #include "serial.h"
 #include "setup.h"
