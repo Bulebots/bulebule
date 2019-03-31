@@ -3,6 +3,7 @@
 
 #include <libopencm3/stm32/gpio.h>
 
+#include "buttons.h"
 #include "leds.h"
 #include "mmlib/clock.h"
 #include "mmlib/solve.h"
@@ -18,8 +19,6 @@ void speaker_play_error(void);
 void speaker_play_success(void);
 void speaker_play_button(void);
 void speaker_play_competition(void);
-bool button_left_read(void);
-bool button_right_read(void);
 bool button_left_read_consecutive(uint32_t count);
 bool button_right_read_consecutive(uint32_t count);
 void wait_front_sensor_close_signal(float close_distance);

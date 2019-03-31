@@ -39,6 +39,42 @@ void blink_collision(void)
 }
 
 /**
+ * @brief Read left button, requiring consecutive positive reads.
+ *
+ * Readings are performed each system clock tick.
+ *
+ * @param[in] count Required number of positive reads.
+ */
+bool button_left_read_consecutive(uint32_t count)
+{
+	uint32_t initial_ticks = get_clock_ticks();
+
+	while (get_clock_ticks() - initial_ticks < count) {
+		if (!button_left_read())
+			return false;
+	}
+	return true;
+}
+
+/**
+ * @brief Read right button, requiring consecutive positive reads.
+ *
+ * Readings are performed each system clock tick.
+ *
+ * @param[in] count Required number of positive reads.
+ */
+bool button_right_read_consecutive(uint32_t count)
+{
+	uint32_t initial_ticks = get_clock_ticks();
+
+	while (get_clock_ticks() - initial_ticks < count) {
+		if (!button_right_read())
+			return false;
+	}
+	return true;
+}
+
+/**
  * @brief Warn low battery using speaker sounds.
  */
 void speaker_warn_low_battery(void)
@@ -94,58 +130,6 @@ void speaker_play_competition(void)
 	speaker_play('G', 7, 0, 0.15);
 	speaker_play('F', 7, 0, 0.15);
 	speaker_play('G', 7, 0, 0.45);
-}
-
-/**
- * @brief Function to read button left.
- */
-bool button_left_read(void)
-{
-	return (bool)(gpio_get(GPIOA, GPIO11));
-}
-
-/**
- * @brief Function to read button right.
- */
-bool button_right_read(void)
-{
-	return (bool)(gpio_get(GPIOA, GPIO12));
-}
-
-/**
- * @brief Read left button, requiring consecutive positive reads.
- *
- * Readings are performed each system clock tick.
- *
- * @param[in] count Required number of positive reads.
- */
-bool button_left_read_consecutive(uint32_t count)
-{
-	uint32_t initial_ticks = get_clock_ticks();
-
-	while (get_clock_ticks() - initial_ticks < count) {
-		if (!gpio_get(GPIOA, GPIO11))
-			return false;
-	}
-	return true;
-}
-
-/**
- * @brief Read right button, requiring consecutive positive reads.
- *
- * Readings are performed each system clock tick.
- *
- * @param[in] count Required number of positive reads.
- */
-bool button_right_read_consecutive(uint32_t count)
-{
-	uint32_t initial_ticks = get_clock_ticks();
-
-	while (get_clock_ticks() - initial_ticks < count) {
-		if (!gpio_get(GPIOA, GPIO12))
-			return false;
-	}
-	return true;
 }
 
 /**
