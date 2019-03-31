@@ -5,8 +5,6 @@
 #include <libopencm3/stm32/adc.h>
 #include <libopencm3/stm32/timer.h>
 
-#include "mmlib/mpu.h"
-
 #include "setup.h"
 
 uint32_t read_cycle_counter(void);
