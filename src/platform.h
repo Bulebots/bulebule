@@ -9,7 +9,6 @@
 
 #include "mmlib/mpu.h"
 
-#include "platform.h"
 #include "setup.h"
 
 uint32_t read_cycle_counter(void);
