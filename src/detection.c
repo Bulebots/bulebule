@@ -263,7 +263,7 @@ void tim1_up_isr(void)
 /**
  * @brief Get sensors values with emitter on and off.
  */
-void get_sensors_raw(uint16_t *off, uint16_t *on)
+void get_sensors_raw(uint16_t *on, uint16_t *off)
 {
 	uint8_t i = 0;
 

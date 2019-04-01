@@ -19,7 +19,6 @@
 #define SENSOR_FRONT_RIGHT_ID 3
 #define NUM_SENSOR 4
 
-void get_sensors_raw(uint16_t *off, uint16_t *on);
 void update_distance_readings(void);
 float get_side_left_distance(void);
 float get_side_right_distance(void);
@@ -33,5 +32,6 @@ bool right_wall_detection(void);
 bool left_wall_detection(void);
 struct walls_around read_walls(void);
 void side_sensors_calibration(void);
+void get_sensors_raw(uint16_t *on, uint16_t *off);
 
 #endif /* __DETECTION_H */
