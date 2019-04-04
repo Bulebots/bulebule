@@ -8,8 +8,8 @@
 #include "mmlib/search.h"
 #include "mmlib/solve.h"
 #include "mmlib/speed.h"
+#include "mmlib/walls.h"
 
-#include "detection.h"
 #include "eeprom.h"
 #include "motor.h"
 #include "serial.h"
@@ -22,9 +22,12 @@ static void competition(void);
  */
 void sys_tick_handler(void)
 {
+	uint16_t sensors_on[NUM_SENSOR], sensors_off[NUM_SENSOR];
+
 	clock_tick();
 	update_ideal_linear_speed();
-	update_distance_readings();
+	get_sensors_raw(sensors_on, sensors_off);
+	update_distance_readings(sensors_on, sensors_off);
 	update_gyro_readings();
 	update_encoder_readings();
 	motor_control();
