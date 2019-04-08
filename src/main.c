@@ -1,5 +1,6 @@
 #include "mmlib/calibration.h"
 #include "mmlib/clock.h"
+#include "mmlib/command.h"
 #include "mmlib/control.h"
 #include "mmlib/encoder.h"
 #include "mmlib/hmi.h"
@@ -12,7 +13,6 @@
 
 #include "eeprom.h"
 #include "motor.h"
-#include "serial.h"
 #include "setup.h"
 
 static void competition(void);
@@ -22,12 +22,9 @@ static void competition(void);
  */
 void sys_tick_handler(void)
 {
-	uint16_t sensors_on[NUM_SENSOR], sensors_off[NUM_SENSOR];
-
 	clock_tick();
 	update_ideal_linear_speed();
-	get_sensors_raw(sensors_on, sensors_off);
-	update_distance_readings(sensors_on, sensors_off);
+	update_distance_readings();
 	update_gyro_readings();
 	update_encoder_readings();
 	motor_control();
