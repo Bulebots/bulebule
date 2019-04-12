@@ -50,6 +50,14 @@ mechanical goods.
    :width: 30%
    :align: center
 
+Thanks to `formx.es <http://formx.es/>`_ for providing us with materials
+to experiment and create our own tires.
+
+.. figure:: figures/sponsors/formx.svg
+   :target: http://formx.es/
+   :width: 30%
+   :align: center
+
 
 Indices and tables
 ==================
