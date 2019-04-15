@@ -19,4 +19,37 @@
 #define SENSOR_FRONT_RIGHT_A 2.713
 #define SENSOR_FRONT_RIGHT_B 0.258
 
+/*Control constants*/
+#define KP_LINEAR 800.
+#define KD_LINEAR 1600.
+#define KP_ANGULAR 5.
+#define KD_ANGULAR 100.
+#define KP_ANGULAR_FRONT 50.
+#define KI_ANGULAR_FRONT 200.
+#define KP_ANGULAR_SIDE 200.
+#define KI_ANGULAR_SIDE 400.
+
+struct control_constants {
+	float kp_linear;
+	float kd_linear;
+	float kp_angular;
+	float kd_angular;
+	float kp_angular_front;
+	float ki_angular_front;
+	float kp_angular_side;
+	float ki_angular_side;
+};
+
+/*Speed constants*/
+#define LINEAR_SPEED_LIMIT 2.5
+
+float get_micrometers_per_count(void);
+void set_micrometers_per_count(float value);
+float get_wheels_separation(void);
+void set_wheels_separation(float value);
+struct control_constants get_control_constants(void);
+void set_control_constants(struct control_constants value);
+float get_linear_speed_limit(void);
+void set_linear_speed_limit(float value);
+
 #endif /* _CONFIG_H */
