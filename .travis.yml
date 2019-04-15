@@ -39,8 +39,8 @@ script:
   - doc8 README.rst
   - doc8 docs/source/
   - rm -rf docs/build
-  - sphinx-build -E -W --color -b html -d docs/build/doctrees docs/source docs/build/html
-  - sphinx-build -E -W --color -b linkcheck -d docs/build/doctrees docs/source docs/build/html
+  - make -C docs html SPHINXOPTS="-W -E"
+  - make -C docs linkcheck
 
 notifications:
   email: false
