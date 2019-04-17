@@ -32,9 +32,9 @@ before_script:
 script:
   - ./scripts/checkformat_clang.sh
   - ./scripts/checkformat_checkpatch.sh
-  - cd src/ && make
+  - make -C src
   - source activate bulebule
-  - cd ../ && pytest -sv
+  - pytest -sv
   - flake8
   - doc8 README.rst
   - doc8 docs/source/
