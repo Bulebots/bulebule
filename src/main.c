@@ -14,8 +14,7 @@
 #include "eeprom.h"
 #include "motor.h"
 #include "setup.h"
-
-static void competition(void);
+#include "voltage.h"
 
 /**
  * @brief Handle the SysTick interruptions.
@@ -29,24 +28,6 @@ void sys_tick_handler(void)
 	update_encoder_readings();
 	motor_control();
 	log_data();
-}
-
-/**
- * @brief Let the user configure the mouse before exploring or running.
- *
- * The user selects the force to apply to the tires while exploring or running.
- *
- * @param[in] run Whether the user is configuring for the run phase or not.
- *
- * @return The selected force.
- */
-static float user_configuration(bool run)
-{
-	float force;
-
-	force = hmi_configure_force(0.2, 0.05);
-	set_linear_speed_variables(force, run);
-	return force;
 }
 
 /**
@@ -90,7 +71,7 @@ static void before_moving(void)
 }
 
 /**
- * @brief Functions to be executed when the solve phase is finished.
+ * @brief Functions to be executed after moving (running or exploring).
  */
 static void after_moving(void)
 {
@@ -103,69 +84,85 @@ static void after_moving(void)
 }
 
 /**
- * @brief Includes the functions to be executed during exploration phase.
+ * @brief Let the user configure the mouse forces before exploring or running.
+ *
+ * The user selects the force to apply to the tires while exploring or running.
+ *
+ * Data logging is always active during movement phase.
+ *
+ * @param[in] run Whether the robot should be running.
+ */
+static void movement_phase(bool do_run)
+{
+	float force;
+
+	force = hmi_configure_force(0.2, 0.05);
+	set_linear_speed_variables(force, do_run);
+
+	start_data_logging(log_data_control);
+	before_moving();
+	if (!do_run) {
+		explore(force);
+	} else {
+		run(force);
+		run_back(force);
+	}
+	after_moving();
+	stop_data_logging();
+}
+
+/**
+ * @brief Configure the goal for the search phase.
+ */
+static void configure_goal(void)
+{
+	switch (button_user_wait_action()) {
+	case BUTTON_SHORT:
+		add_goal(1, 0);
+		break;
+	case BUTTON_LONG:
+		set_goal_classic();
+		speaker_play_competition();
+		break;
+	}
+}
+
+/**
+ * @brief Execute the exploration phase.
  */
 static void exploration_phase(void)
 {
-	float force;
+	set_search_initial_direction(NORTH);
+	configure_goal();
+	set_target_goal();
 
-	force = user_configuration(false);
-	before_moving();
-	explore(force);
-	after_moving();
+	movement_phase(false);
+
+	set_run_sequence();
+	save_maze();
 }
 
 /**
- * @brief Includes the functions to be executed during the running phase.
+ * @brief Configure the robot and execute the search/run.
  */
-static void running_phase(void)
+static void configure_and_move(void)
 {
-	float force;
-
-	force = user_configuration(true);
-	before_moving();
-	run(force);
-	run_back(force);
-	after_moving();
-}
-
-/**
- * @brief Competition routine.
- */
-static void competition(void)
-{
-	speaker_play_competition();
-	if (!reuse_maze()) {
-		initialize_solver_direction();
-		set_goal_classic();
-		set_target_goal();
+	if (!maze_is_saved())
 		exploration_phase();
-		set_run_sequence();
-		save_maze();
+	led_bluepill_on();
+	switch (button_user_wait_action()) {
+	case BUTTON_SHORT:
+		load_maze();
+		break;
+	case BUTTON_LONG:
+		reset_maze();
+		led_bluepill_off();
+		exploration_phase();
 		led_bluepill_on();
+		break;
 	}
 	while (1)
-		running_phase();
-}
-
-/**
- * @brief Training routine.
- */
-static void training(void)
-{
-	if (!reuse_maze()) {
-		initialize_solver_direction();
-		add_goal(1, 0);
-		set_target_goal();
-		start_data_logging(log_data_control);
-		exploration_phase();
-		stop_data_logging();
-		set_run_sequence();
-		save_maze();
-		led_bluepill_on();
-	}
-	while (1)
-		running_phase();
+		movement_phase(true);
 }
 
 /**
@@ -177,10 +174,13 @@ int main(void)
 	set_linear_speed_variables(0.25, false);
 	systick_interrupt_enable();
 	while (1) {
-		if (button_left_read_consecutive(500))
-			training();
-		if (button_right_read_consecutive(500))
-			competition();
+		switch (button_user_response()) {
+		case BUTTON_NONE:
+			break;
+		default:
+			configure_and_move();
+			break;
+		}
 		execute_command();
 	}
 

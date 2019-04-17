@@ -3,7 +3,6 @@
 
 #include <libopencm3/stm32/gpio.h>
 
-bool button_left_read(void);
-bool button_right_read(void);
+bool button_read_user(void);
 
 #endif /* __BUTTONS_H */
