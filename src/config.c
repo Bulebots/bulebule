@@ -10,7 +10,10 @@ static volatile struct control_constants control = {
     .kp_angular_front = KP_ANGULAR_FRONT,
     .ki_angular_front = KI_ANGULAR_FRONT,
     .kp_angular_side = KP_ANGULAR_SIDE,
-    .ki_angular_side = KI_ANGULAR_SIDE};
+    .ki_angular_side = KI_ANGULAR_SIDE,
+    .kp_angular_diagonal = KP_ANGULAR_DIAGONAL,
+    .ki_angular_diagonal = KI_ANGULAR_DIAGONAL};
+
 static volatile float linear_speed_limit = LINEAR_SPEED_LIMIT;
 
 float get_micrometers_per_count(void)

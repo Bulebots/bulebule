@@ -28,6 +28,8 @@
 #define KI_ANGULAR_FRONT 200.
 #define KP_ANGULAR_SIDE 200.
 #define KI_ANGULAR_SIDE 400.
+#define KP_ANGULAR_DIAGONAL 200.
+#define KI_ANGULAR_DIAGONAL 400.
 
 struct control_constants {
 	float kp_linear;
@@ -38,6 +40,8 @@ struct control_constants {
 	float ki_angular_front;
 	float kp_angular_side;
 	float ki_angular_side;
+	float kp_angular_diagonal;
+	float ki_angular_diagonal;
 };
 
 /*Speed constants*/
