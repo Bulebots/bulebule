@@ -67,6 +67,11 @@
  */
 #define MAX_PWM_SATURATION_PERIOD 0.01
 
+/**
+ * Maximum number of movements in a smoothed path.
+ */
+#define MAX_SMOOTH_PATH_LEN (MAZE_AREA + 3)
+
 /** Tolerance when trying to keep a defined distance from the front wall */
 #define KEEP_FRONT_DISTANCE_TOLERANCE 0.001
 
