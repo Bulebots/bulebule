@@ -241,7 +241,7 @@ class Bulebule(cmd.Cmd):
         self.interrupted = False
         self.ns = run_nameserver()
         self.proxy = run_agent('proxy', base=Proxy)
-        self.proxy.after(0, 'setup', address='00:21:13:01:CC:C3', port=1)
+        self.proxy.after(0, 'setup', address='00:21:13:01:D1:59', port=1)
 
     def postloop(self):
         if not self.interrupted:
