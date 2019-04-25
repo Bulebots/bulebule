@@ -19,7 +19,7 @@
 #define SENSOR_FRONT_RIGHT_A 2.713
 #define SENSOR_FRONT_RIGHT_B 0.258
 
-/*Control constants*/
+/** Control constants */
 #define KP_LINEAR 800.
 #define KD_LINEAR 1600.
 #define KP_ANGULAR 5.
@@ -44,7 +44,7 @@ struct control_constants {
 	float ki_angular_diagonal;
 };
 
-/*Speed constants*/
+/** Speed constants */
 #define LINEAR_SPEED_LIMIT 2.5
 
 float get_micrometers_per_count(void);
