@@ -8,8 +8,10 @@ channels:
 dependencies:
   - python=3.6
   - pythonocc-core=0.18.2
+  - pip
   - pip:
     - git+https://github.com/CadQuery/cadquery.git@master#egg=cadquery
+    - bokeh
     - cffi
     - dataclasses
     - osbrain
@@ -22,7 +24,9 @@ dependencies:
     - pyqt5
     - pyqtgraph
     - pyserial
+    - pyyaml
     - pyzmq
+    - scipy
     # Test
     - pytest
     # Lint
