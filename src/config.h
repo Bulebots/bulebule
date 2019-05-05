@@ -45,7 +45,7 @@ struct control_constants {
 };
 
 /** Speed constants */
-#define LINEAR_SPEED_LIMIT 2.5
+#define LINEAR_SPEED_LIMIT 2.
 
 float get_micrometers_per_count(void);
 void set_micrometers_per_count(float value);
