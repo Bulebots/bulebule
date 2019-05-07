@@ -59,13 +59,13 @@
 #define MAX_PWM_PERIOD 1024
 
 /**
- * Maximum time period allowed with saturated PWM output.
+ * Maximum time period allowed with saturated motor driver output.
  *
  * After reaching this period we consider there has been a collision. When a
  * collision occurs, the robot motor control stops working and the motor driver
  * is disabled.
  */
-#define MAX_PWM_SATURATION_PERIOD 0.01
+#define MAX_MOTOR_DRIVER_SATURATION_PERIOD 0.01
 
 /**
  * Maximum number of movements in a smoothed path.

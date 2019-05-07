@@ -98,9 +98,9 @@ void drive_off(void)
 }
 
 /**
- * @brief Return the maximum consecutive saturated PWM values.
+ * @brief Return the maximum consecutive motor driver saturated outputs.
  */
-uint32_t pwm_saturation(void)
+uint32_t motor_driver_saturation(void)
 {
 	if (saturated_right > saturated_left)
 		return saturated_right;
@@ -110,7 +110,7 @@ uint32_t pwm_saturation(void)
 /**
  * @brief Reset the PWM saturation counters.
  */
-void reset_pwm_saturation(void)
+void reset_motor_driver_saturation(void)
 {
 	saturated_left = 0;
 	saturated_right = 0;
