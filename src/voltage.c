@@ -21,3 +21,15 @@ float get_battery_voltage(void)
 	battery_bits = adc_read_regular(ADC2);
 	return battery_bits * ADC_LSB * VOLT_DIV_FACTOR;
 }
+
+/**
+ * @brief Function to get motor driver input voltage.
+ *
+ * In Bulebule, we assume the motor driver input voltage is constant.
+ *
+ *@return The motor driver input voltage in volts.
+ */
+float get_motor_driver_input_voltage(void)
+{
+	return MOTOR_DRIVER_INPUT_VOLTAGE;
+}

@@ -28,6 +28,9 @@
 #define WALL_WIDTH 0.012
 #define MIDDLE_MAZE_DISTANCE ((CELL_DIMENSION - WALL_WIDTH) / 2.)
 
+/** Motor driver input voltage */
+#define MOTOR_DRIVER_INPUT_VOLTAGE 9.
+
 /** Mouse dimensions */
 #define MOUSE_MOTOR_TAIL 0.037
 #define MOUSE_MOTOR_HEAD 0.057

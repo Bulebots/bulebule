@@ -6,5 +6,6 @@
 #include "setup.h"
 
 float get_battery_voltage(void);
+float get_motor_driver_input_voltage(void);
 
 #endif /* __VOLTAGE_H */

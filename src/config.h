@@ -20,16 +20,16 @@
 #define SENSOR_FRONT_RIGHT_B 0.258
 
 /** Control constants */
-#define KP_LINEAR 800.
-#define KD_LINEAR 1600.
-#define KP_ANGULAR 5.
-#define KD_ANGULAR 100.
-#define KP_ANGULAR_FRONT 50.
-#define KI_ANGULAR_FRONT 200.
-#define KP_ANGULAR_SIDE 200.
-#define KI_ANGULAR_SIDE 400.
-#define KP_ANGULAR_DIAGONAL 200.
-#define KI_ANGULAR_DIAGONAL 400.
+#define KP_LINEAR 8.
+#define KD_LINEAR 16.
+#define KP_ANGULAR .05
+#define KD_ANGULAR 1.
+#define KP_ANGULAR_FRONT .5
+#define KI_ANGULAR_FRONT 2.
+#define KP_ANGULAR_SIDE 2.
+#define KI_ANGULAR_SIDE 4.
+#define KP_ANGULAR_DIAGONAL 2.
+#define KI_ANGULAR_DIAGONAL 4.
 
 struct control_constants {
 	float kp_linear;
