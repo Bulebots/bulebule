@@ -22,7 +22,6 @@
 void sys_tick_handler(void)
 {
 	clock_tick();
-	update_ideal_linear_speed();
 	update_distance_readings();
 	update_gyro_readings();
 	update_encoder_readings();
