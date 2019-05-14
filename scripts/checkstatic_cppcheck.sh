@@ -1,6 +1,6 @@
 #!/bin/bash
 
-root=$(dirname $0)/../
+root=$PWD/../ 
 
 cd $root
 
