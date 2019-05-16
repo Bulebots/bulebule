@@ -96,7 +96,7 @@ static void movement_phase(bool do_run)
 	float force;
 
 	force = hmi_configure_force(0.1, 0.05);
-	set_linear_speed_variables(force, do_run);
+	kinematic_configuration(force, do_run);
 
 	start_data_logging(log_data_control);
 	before_moving();
@@ -170,7 +170,7 @@ static void configure_and_move(void)
 int main(void)
 {
 	setup();
-	set_linear_speed_variables(0.25, false);
+	kinematic_configuration(0.25, false);
 	systick_interrupt_enable();
 	while (1) {
 		switch (button_user_response()) {
