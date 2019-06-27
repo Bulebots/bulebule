@@ -2,6 +2,7 @@
 output=$(mktemp)
 errors=$(mktemp)
 find src/ -type f -regex ".*\.\(c\|h\)$" \
+	-not -path "src/opencm3/*" \
 	-not -path "src/printf/*" | while read fname
 do
 	clang-format "$fname" > "$output"

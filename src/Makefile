@@ -4,7 +4,7 @@ OBJS += $(patsubst mmlib/%.c,mmlib/%.o,$(wildcard mmlib/*.c))
 
 BINARY = main
 
-OPENCM3_DIR	= ../.opencm3/libopencm3
+OPENCM3_DIR	= opencm3/libopencm3
 LDSCRIPT	= stm32f103x8.ld
 LDLIBS		+= -lm
 LDFLAGS		+= -L./
@@ -21,4 +21,4 @@ OOCD		?= openocd
 OOCD_INTERFACE	?= stlink-v2
 OOCD_TARGET	?= stm32f1x
 
-include ../.opencm3/libopencm3.rules.mk
+include opencm3/libopencm3.rules.mk
