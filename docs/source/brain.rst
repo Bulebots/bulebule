@@ -1,11 +1,7 @@
-.. index:: brain
-
 *****
 Brain
 *****
 
-
-.. index:: microcontroller
 
 Microcontroller
 ===============
@@ -33,56 +29,59 @@ T
 6
   Temperature range, -40 to 85 ºC
 
-.. index:: dependencies
 
-Dependencies
-============
+Compiling
+=========
 
-In order to work with this project we need to install some dependencies first:
+This project requires some tools and dependencies:
 
 - The GCC ARM compiler and debugger.
 - A C standard library implementation.
-- OpenOCD for programing and debugging.
+- `OpenOCD`_ for programing and debugging.
 
-In Fedora we can easily install those dependencies with:
-
-.. code-block:: bash
-
-   dnf install arm-none-eabi-gcc arm-none-eabi-gdb arm-none-eabi-newlib openocd
-
-
-.. index:: workspace
-
-Workspace
-=========
-
-We will be using the `libopencm3`_ firmware library. Our workspace is based on
-the `simple template
+We will also be using the `libopencm3`_ firmware library. Our workspace is
+based on the `simple template
 <https://github.com/libopencm3/libopencm3-template>`_ from that project.
 
-#. Clone the project including submodules to get libopencm3:
+We can manually install all those tools and dependencies in our system or we
+can use Docker, which is a much more convenient approach.
+
+#. Clone the project including submodules to get `libopencm3`_:
 
    .. code-block:: bash
 
-      git clone --recursive git@github.com:Theseus/bulebule.git
+      git clone --recursive git@github.com:Bulebots/bulebule.git
+      cd bulebule
 
-#. Setup libopencm3:
-
-   .. code-block:: bash
-
-      cd bulebule/
-      ./scripts/setup_libopencm3.sh
-
-#. Compile Bulebule
+#. Create the Docker image:
 
    .. code-block:: bash
 
-      cd src/
+      make docker
+
+#. Setup and compile `libopencm3`_:
+
+   .. code-block:: bash
+
+      make libopencm3
+
+#. Compile the source code with:
+
+   .. code-block:: bash
+
       make
+
+#. We can clean the compilation files with:
+
+   .. code-block:: bash
+
+      make clean
+
 
 .. note:: The makefile on the :code:`src` folder combines the
    :code:`libopencm3.target.mk` file, the board STM32F1 makefile and the
    Bulebule project relative paths.
+
 
 .. index:: programmer
 
@@ -92,14 +91,19 @@ Programmer
 The programmer is a generic ST-Link V2. Connecting this programmer to the
 board is very simple, just make sure to connect these pins together:
 
-===========  ===========
-Board        Programmer
-===========  ===========
-3V3          3.3V
-SWIO         SWDIO
-SWCLK        SWCLK
-GND          GND
-===========  ===========
+===================  ===================
+Board                Programmer
+===================  ===================
+3V3                  **<unconnected>**
+**<unconnected>**    3.3V
+SWIO                 SWDIO
+SWCLK                SWCLK
+GND                  GND
+===================  ===================
+
+.. warning:: Note that the 3V3 line is not connected. We will be using the
+   battery to power the mouse while flashing it. This way we avoid having two
+   power sources on the microcontroller board while programming.
 
 .. note:: The programmer uses an USB interface, which means we might need to
    set the proper permissions for our user:
@@ -121,8 +125,20 @@ GND          GND
 
       udevadm control --reload-rules
 
-To program the microcontroller we are using `OpenOCD`_. We need to specify
-the interface and target configuration files:
+
+Flashing
+========
+
+Having the programmer connected, we can flash the microcontroller with::
+
+   make -C src/ flash
+
+
+OpenOCD
+=======
+
+To program the microcontroller we can also directly use `OpenOCD`_. We need to
+specify the interface and target configuration files:
 
 .. code-block:: bash
 
@@ -146,13 +162,7 @@ Or halt and re-run::
    > reset halt
    > reset run
 
-
-.. index:: flashing
-
-Flashing
-========
-
-We can flash the microcontroller using OpenOCD (assuming we are already
+We can flash the microcontroller using OpenOCD as well (assuming we are already
 connected with `telnet`)::
 
    > program filename.elf verify reset
@@ -173,8 +183,6 @@ Binary files need the flash address to be specified::
 
    > program filename.bin verify reset 0x08000000
 
-
-.. index:: debugging
 
 Debugging
 =========
