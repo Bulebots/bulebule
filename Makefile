@@ -1,18 +1,25 @@
-DOCKER_RUN = sudo docker run -v $$(pwd):/bulebule:Z -u $$(id -u):$$(id -g) bulebule
+ENGINE = podman
+RUN = ${ENGINE} run -v $$(pwd):/bulebule:Z bulebule
+
+ifeq (, $(shell command -v ${ENGINE}))
+	$(warning "Command `${ENGINE}` not found, falling back to Docker...")
+	ENGINE = sudo docker
+	RUN = ${ENGINE} run -v $$(pwd):/bulebule:Z -u $$(id -u):$$(id -g) bulebule
+endif
 
 default: src/main.elf
 
 src/main.elf:
-	${DOCKER_RUN} make -s -C src/
+	${RUN} make -s -C src/
 
 .PHONY: libopencm3
 libopencm3:
-	${DOCKER_RUN} scripts/setup_libopencm3.sh
+	${RUN} scripts/setup_libopencm3.sh
 
 .PHONY: clean
 clean:
-	${DOCKER_RUN} make -s -C src/ clean
+	${RUN} make -s -C src/ clean
 
-.PHONY: docker
-docker:
-	sudo docker build -t bulebule .
+.PHONY: image
+image:
+	${ENGINE} build -t bulebule .

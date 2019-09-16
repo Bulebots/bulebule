@@ -44,7 +44,8 @@ based on the `simple template
 <https://github.com/libopencm3/libopencm3-template>`_ from that project.
 
 We can manually install all those tools and dependencies in our system or we
-can use Docker, which is a much more convenient approach.
+can use containers, which is a much more convenient approach. Just make sure
+you have `Podman`_ or `Docker`_ installed in your system.
 
 #. Clone the project including submodules to get `libopencm3`_:
 
@@ -53,11 +54,11 @@ can use Docker, which is a much more convenient approach.
       git clone --recursive git@github.com:Bulebots/bulebule.git
       cd bulebule
 
-#. Create the Docker image:
+#. Create the container image:
 
    .. code-block:: bash
 
-      make docker
+      make image
 
 #. Setup and compile `libopencm3`_:
 
@@ -219,3 +220,7 @@ References
   https://www.gnu.org/software/gdb/
 .. _`libopencm3`:
   https://github.com/libopencm3/libopencm3
+.. _`Podman`:
+  https://podman.io/
+.. _`Docker`:
+  https://www.docker.com/
