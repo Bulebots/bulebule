@@ -28,7 +28,7 @@ MEMORY
 {
 	rom (rx) : ORIGIN = 0x08000000, LENGTH = 63K
 	ram (rwx) : ORIGIN = 0x20000000, LENGTH = 20K
-	eeprom (rx) : ORIGIN = ORIGIN(rom) + LENGTH(rom), LENGTH = 1K
+	eeprom (rx) : ORIGIN = 0x08000000 + 63K, LENGTH = 1K
 }
 
 /* Include the common ld script. */
