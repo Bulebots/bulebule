@@ -316,4 +316,4 @@ References
 .. _`Bulebule 3D designs`:
    https://github.com/Bulebots/bulebule/tree/master/3d
 .. _`Blue Pill`:
-   https://wiki.stm32duino.com/index.php?title=Blue_Pill
+   https://web.archive.org/web/20190524151648/https://wiki.stm32duino.com/index.php?title=Blue_Pill
