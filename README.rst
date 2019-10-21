@@ -19,7 +19,7 @@ much faster to develop and enjoyable thanks to:
 
 **Peter Harrison**
   Who posts many useful and detailed resources in `micromouseonline.com
-  <http://micromouseonline.com>`__ and on ` micromouseonline GitHub
+  <http://micromouseonline.com>`__ and on his `micromouseonline GitHub
   <https://github.com/micromouseonline>`__ and who is always willing to help.
 **Green Ye**
   Who shares details about his `micromouse <http://www.greenye.net/>`__ and
