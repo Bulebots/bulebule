@@ -7,10 +7,11 @@ ifeq (, $(shell command -v ${ENGINE}))
 	RUN = ${ENGINE} run -v $$(pwd):/bulebule:Z -u $$(id -u):$$(id -g) bulebule
 endif
 
-default: src/main.elf
+default: src
 
-src/main.elf:
-	${RUN} make -s -C src/
+.PHONY: src
+src:
+	${RUN} make -C src/
 
 .PHONY: libopencm3
 libopencm3:
