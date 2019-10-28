@@ -1,5 +1,5 @@
 ENGINE = podman
-RUN = ${ENGINE} run -v $$(pwd):/bulebule:Z bulebule
+RUN = ${ENGINE} run -v $$(pwd):/bulebule:Z --privileged bulebule
 
 ifeq (, $(shell command -v ${ENGINE}))
 	$(warning "Command `${ENGINE}` not found, falling back to Docker...")
@@ -12,6 +12,10 @@ default: src
 .PHONY: src
 src:
 	${RUN} make -C src/
+
+.PHONY: flash
+flash:
+	${RUN} make -C src/ flash
 
 .PHONY: libopencm3
 libopencm3:
