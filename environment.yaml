@@ -13,6 +13,7 @@ dependencies:
     - git+https://github.com/CadQuery/cadquery.git@master#egg=cadquery
     - bokeh
     - cffi
+    - cufflinks
     - dataclasses
     - osbrain
     - matplotlib
