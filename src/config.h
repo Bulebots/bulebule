@@ -3,7 +3,6 @@
 
 /** Locomotion-related constants */
 #define MICROMETERS_PER_COUNT 8.32
-#define WHEELS_SEPARATION 0.0785
 #define SHIFT_AFTER_180_DEG_TURN 0.010
 
 /** Time it takes for the robot to decide where to go next while searching */
@@ -49,8 +48,6 @@ struct control_constants {
 
 float get_micrometers_per_count(void);
 void set_micrometers_per_count(float value);
-float get_wheels_separation(void);
-void set_wheels_separation(float value);
 struct control_constants get_control_constants(void);
 void set_control_constants(struct control_constants value);
 float get_linear_speed_limit(void);

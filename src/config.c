@@ -1,7 +1,6 @@
 #include "config.h"
 
 static volatile float micrometers_per_count = MICROMETERS_PER_COUNT;
-static volatile float wheels_separation = WHEELS_SEPARATION;
 static volatile struct control_constants control = {
     .kp_linear = KP_LINEAR,
     .kd_linear = KD_LINEAR,
@@ -24,16 +23,6 @@ float get_micrometers_per_count(void)
 void set_micrometers_per_count(float value)
 {
 	micrometers_per_count = value;
-}
-
-float get_wheels_separation(void)
-{
-	return wheels_separation;
-}
-
-void set_wheels_separation(float value)
-{
-	wheels_separation = value;
 }
 
 struct control_constants get_control_constants(void)
