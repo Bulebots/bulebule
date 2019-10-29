@@ -296,7 +296,7 @@ References
 .. target-notes::
 
 .. _`Bulebule Upverter project page`:
-   https://upverter.com/Bulebots/fe25b467d88d5afe/Bulebule/
+   https://upverter.com/design/bulebots/bulebule/
 .. _`Creative Commons Attribution-ShareAlike license`:
    https://creativecommons.org/licenses/by-sa/4.0/
 .. _`CadQuery`:
