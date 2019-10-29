@@ -21,7 +21,7 @@ from osbrain import (
     run_nameserver,
 )
 
-from analysis import explode_csv_series
+from analysis import explode_yaml_series
 from analysis import filter_dataframe
 from analysis import log_as_dataframe
 
@@ -329,12 +329,12 @@ class Bulebule(cmd.Cmd):
         """Exit shell."""
         return True
 
-    def plot_function_top_bottom(self, function, top, bottom):
+    def plot_function_top_bottom(self, top, bottom):
         """Plot a linear profile out of the current log data."""
         df = log_as_dataframe(self.proxy.get_attr('log'))
-        match = dict(level='INFO', function=function)
+        match = dict(level='DATA')
         df = filter_dataframe(df, match)
-        df = explode_csv_series(df['data'])
+        df = explode_yaml_series(df['data'])
         if not len(df):
             print('Empty dataframe...')
             return
@@ -348,13 +348,13 @@ class Bulebule(cmd.Cmd):
         """Plot a linear profile out of the current log data."""
         top = ['target_speed', 'ideal_speed', 'left_speed', 'right_speed']
         bottom = ['pwm_left', 'pwm_right']
-        self.plot_function_top_bottom('log_linear_speed', top, bottom)
+        self.plot_function_top_bottom(top, bottom)
 
     def plot_angular_speed_profile(self):
         """Plot the angular speed profile with the current log data."""
-        top = ['target_speed', 'ideal_speed', 'angular_speed']
-        bottom = ['pwm_left', 'pwm_right']
-        self.plot_function_top_bottom('log_angular_speed', top, bottom)
+        top = ['ideal_speed', 'angular_speed']
+        bottom = ['pwm_left', 'pwm_right', 'voltage_left', 'voltage_right']
+        self.plot_function_top_bottom(top, bottom)
 
 
 if __name__ == '__main__':

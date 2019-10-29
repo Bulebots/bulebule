@@ -1,7 +1,7 @@
 from pandas import DataFrame
 from pandas import Series
 
-from analysis import explode_csv_series
+from analysis import explode_yaml_series
 from analysis import filter_dataframe
 from analysis import log_as_dataframe
 from analysis import LOG_COLUMNS
@@ -19,23 +19,23 @@ def test_log_as_dataframe_empty():
     assert list(df.columns) == columns
 
 
-def test_explode_csv_series():
+def test_explode_yaml_series():
     """
-    Test `explode_csv_series()` function.
+    Test `explode_yaml_series()` function.
     """
-    series = Series(['1,0,-1', '2,0,-2'])
-    df = explode_csv_series(series)
+    series = Series(['[1,0,-1]', '[2,0,-2]'])
+    df = explode_yaml_series(series)
     assert df.shape == (2, 3)
     assert list(df.iloc[0]) == [1, 0, -1]
     assert list(df.iloc[1]) == [2, 0, -2]
 
 
-def test_explode_csv_series_empty():
+def test_explode_yaml_series_empty():
     """
-    Test `explode_csv_series()` function when passing an empty Series.
+    Test `explode_yaml_series()` function when passing an empty Series.
     """
     series = Series()
-    df = explode_csv_series(series)
+    df = explode_yaml_series(series)
     assert isinstance(df, DataFrame)
 
 
