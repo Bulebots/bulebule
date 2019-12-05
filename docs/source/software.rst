@@ -1,33 +1,6 @@
-*****
-Brain
-*****
-
-
-Microcontroller
-===============
-
-The microcontroller reference is STM32F103C8T6, that means:
-
-STM32
-  ARM-based 32-bit ST microcontroller
-
-F
-  General purpose
-
-103
-  Performance line
-
-C
-  Pin count, 48 pins
-
-8
-  Medium-density, 64 Kbytes of Flash memory
-
-T
-  Package type, LQFP
-
-6
-  Temperature range, -40 to 85 ºC
+********
+Software
+********
 
 
 Compiling

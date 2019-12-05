@@ -21,8 +21,8 @@ How can I build it?
    :maxdepth: 2
 
    building.rst
-   brain.rst
-   configuration.rst
+   software.rst
+   electronics.rst
    utils.rst
 
 Sponsors
