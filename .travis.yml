@@ -13,6 +13,7 @@ addons:
     packages:
       - clang-format-6.0
       - gcc-arm-embedded
+      - graphviz
       - libbluetooth-dev
       - libglu1-mesa
 

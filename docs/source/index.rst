@@ -23,6 +23,7 @@ How can I build it?
    building.rst
    software.rst
    electronics.rst
+   setup.rst
    utils.rst
 
 Sponsors

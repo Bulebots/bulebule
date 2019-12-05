@@ -1,4 +1,4 @@
-.. index:: building
+.. _building:
 
 ********
 Building
