@@ -61,6 +61,7 @@ static void before_moving(void)
 	led_right_on();
 	wait_front_sensor_close_signal(0.12);
 	srand(read_cycle_counter());
+	led_bluepill_off();
 	led_left_off();
 	led_right_off();
 	sleep_us(2000000);
@@ -91,7 +92,7 @@ static void after_moving(void)
  *
  * @param[in] run Whether the robot should be running.
  */
-static void movement_phase(bool do_run)
+static void configure_speed(bool do_run)
 {
 	float force;
 
@@ -102,6 +103,8 @@ static void movement_phase(bool do_run)
 	before_moving();
 	if (!do_run) {
 		explore(force);
+		set_run_sequence();
+		save_maze();
 	} else {
 		run(force);
 		run_back(force);
@@ -111,10 +114,11 @@ static void movement_phase(bool do_run)
 }
 
 /**
- * @brief Configure the goal for the search phase.
+ * @brief Let the user configure the goal for the search phase.
  */
 static void configure_goal(void)
 {
+	set_search_initial_direction(NORTH);
 	switch (button_user_wait_action()) {
 	case BUTTON_SHORT:
 		add_goal(1, 0);
@@ -124,44 +128,40 @@ static void configure_goal(void)
 		speaker_play_competition();
 		break;
 	}
-}
-
-/**
- * @brief Execute the exploration phase.
- */
-static void exploration_phase(void)
-{
-	set_search_initial_direction(NORTH);
-	configure_goal();
 	set_target_goal();
-
-	movement_phase(false);
-
-	set_run_sequence();
-	save_maze();
+	configure_speed(false);
 }
 
 /**
- * @brief Configure the robot and execute the search/run.
+ * @brief Let the user reuse the saved maze for a run or discard it.
  */
-static void configure_and_move(void)
+static void configure_reuse(void)
 {
-	if (!maze_is_saved())
-		exploration_phase();
-	led_bluepill_on();
 	switch (button_user_wait_action()) {
 	case BUTTON_SHORT:
 		load_maze();
+		configure_speed(true);
 		break;
 	case BUTTON_LONG:
 		reset_maze();
 		led_bluepill_off();
-		exploration_phase();
-		led_bluepill_on();
+		configure_goal();
 		break;
 	}
-	while (1)
-		movement_phase(true);
+}
+
+/**
+ * @brief Start the robot configuration process for an exploration/run.
+ */
+static void configure_start(void)
+{
+	if (maze_is_saved()) {
+		led_bluepill_on();
+		configure_reuse();
+	} else {
+		led_bluepill_off();
+		configure_goal();
+	}
 }
 
 /**
@@ -177,7 +177,7 @@ int main(void)
 		case BUTTON_NONE:
 			break;
 		default:
-			configure_and_move();
+			configure_start();
 			break;
 		}
 		execute_command();

@@ -24,11 +24,11 @@ perform different tasks following the diagram bellow:
 
    digraph finite_state_machine {
        size="8,14"; ratio = fill;
-       node [shape = doublecircle,style=filled,fillcolor=lightblue]; Iddle "Go!";
+       node [shape = doublecircle,style=filled,fillcolor=lightblue]; Idle "Go!";
        node [shape = diamond,style=filled,fillcolor=white]; "Saved\nmaze?";
        node [shape = ellipse,style=filled,fillcolor=lightgrey]; "Start?" "Reuse?" "Goal?" "Speed?" "Ready?";
        node [shape = box,style=filled,fillcolor=white];
-       Iddle -> "Start?";
+       Idle -> "Start?";
        "Start?" -> "Start?" [ label = "No input" ];
        "Start?" -> "Saved\nmaze?" [ label = "Press" ];
        "Saved\nmaze?" -> "Green LED on" [ label = "Yes" ];
@@ -55,6 +55,9 @@ perform different tasks following the diagram bellow:
        "Ready?" -> "Ready?" [ label = "No input" ];
        "Ready?" -> "Go!" [ label = "Front sensor close reading" ];
    }
+
+.. note:: After ``Go!`` (run/explore), the robot will end up in the ``Idle``
+   state back again.
 
 
 Encoders calibration
