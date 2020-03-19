@@ -1,7 +1,7 @@
 ENGINE = podman
 RUN = ${ENGINE} run -v $$(pwd):/bulebule:Z --privileged bulebule
 
-ifeq (, $(shell command -v ${ENGINE}))
+ifeq (, $(shell ${ENGINE} --version 2> /dev/null))
 	$(warning "Command `${ENGINE}` not found, falling back to Docker...")
 	ENGINE = sudo docker
 	RUN = ${ENGINE} run -v $$(pwd):/bulebule:Z -u $$(id -u):$$(id -g) bulebule
