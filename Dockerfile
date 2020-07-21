@@ -4,9 +4,10 @@ ENV LANG C.UTF-8
 
 RUN dnf update -y \
     && dnf install -y \
-	arm-none-eabi-gcc \
-	arm-none-eabi-newlib \
+	arm-none-eabi-gcc-cs-7.4.0 \
+	arm-none-eabi-newlib-3.1.0-2.fc30 \
         curl \
+        findutils \
         git \
 	make \
 	openocd \

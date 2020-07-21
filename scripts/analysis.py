@@ -1,3 +1,4 @@
+import yaml
 from pandas import DataFrame
 from pandas import Series
 
@@ -14,15 +15,12 @@ def log_as_dataframe(log):
     return df.set_index('timestamp').sort_index()
 
 
-def explode_csv_series(series):
+def explode_yaml_series(series):
     """
-    Convert a Series with CSV strings into a DataFrame.
-
-    It assumes all CSV in the strings are floating point numbers. If an
-    integer is found instead, it will be converted to a float.
+    Convert a Series with YAML strings into a DataFrame.
     """
     def x(row):
-        return [float(x) for x in row.split(',')]
+        return yaml.safe_load(row)
 
     result = series.apply(x).apply(Series)
     if isinstance(result, Series):

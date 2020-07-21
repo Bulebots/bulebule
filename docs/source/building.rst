@@ -1,4 +1,4 @@
-.. index:: building
+.. _building:
 
 ********
 Building
@@ -296,7 +296,7 @@ References
 .. target-notes::
 
 .. _`Bulebule Upverter project page`:
-   https://upverter.com/Bulebots/fe25b467d88d5afe/Bulebule/
+   https://upverter.com/design/bulebots/bulebule/
 .. _`Creative Commons Attribution-ShareAlike license`:
    https://creativecommons.org/licenses/by-sa/4.0/
 .. _`CadQuery`:
@@ -316,4 +316,4 @@ References
 .. _`Bulebule 3D designs`:
    https://github.com/Bulebots/bulebule/tree/master/3d
 .. _`Blue Pill`:
-   https://wiki.stm32duino.com/index.php?title=Blue_Pill
+   https://web.archive.org/web/20190524151648/https://wiki.stm32duino.com/index.php?title=Blue_Pill

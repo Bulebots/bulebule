@@ -129,9 +129,35 @@ static void setup_gpio(void)
 		      GPIO13);
 	gpio_set(GPIOC, GPIO13);
 
-	/*Buttons*/
+	/* Speaker */
+	gpio_set_mode(GPIOA, GPIO_MODE_OUTPUT_50_MHZ,
+		      GPIO_CNF_OUTPUT_ALTFN_PUSHPULL, GPIO_TIM1_CH3);
+
+	/* Motor driver */
+	gpio_set_mode(GPIOA, GPIO_MODE_OUTPUT_50_MHZ,
+		      GPIO_CNF_OUTPUT_ALTFN_PUSHPULL,
+		      GPIO_TIM3_CH1 | GPIO_TIM3_CH2);
+	gpio_set_mode(GPIOB, GPIO_MODE_OUTPUT_50_MHZ,
+		      GPIO_CNF_OUTPUT_ALTFN_PUSHPULL,
+		      GPIO_TIM3_CH3 | GPIO_TIM3_CH4);
+
+	/* Bluetooth */
+	gpio_set_mode(GPIOB, GPIO_MODE_OUTPUT_50_MHZ,
+		      GPIO_CNF_OUTPUT_ALTFN_PUSHPULL, GPIO_USART3_TX);
+	gpio_set_mode(GPIOB, GPIO_MODE_INPUT, GPIO_CNF_INPUT_PULL_UPDOWN,
+		      GPIO_USART3_RX);
+	gpio_set(GPIOB, GPIO_USART3_RX);
+
+	/* Buttons */
 	gpio_set_mode(GPIOA, GPIO_MODE_INPUT, GPIO_CNF_INPUT_PULL_UPDOWN,
 		      GPIO11 | GPIO12);
+
+	/* MPU */
+	gpio_set_mode(GPIOB, GPIO_MODE_OUTPUT_50_MHZ,
+		      GPIO_CNF_OUTPUT_ALTFN_PUSHPULL, GPIO13 | GPIO15);
+	gpio_set_mode(GPIOB, GPIO_MODE_OUTPUT_50_MHZ, GPIO_CNF_OUTPUT_PUSHPULL,
+		      GPIO12);
+	gpio_set_mode(GPIOB, GPIO_MODE_INPUT, GPIO_CNF_INPUT_FLOAT, GPIO14);
 }
 
 /**
@@ -142,12 +168,6 @@ static void setup_gpio(void)
  */
 static void setup_usart(void)
 {
-	gpio_set_mode(GPIOB, GPIO_MODE_OUTPUT_50_MHZ,
-		      GPIO_CNF_OUTPUT_ALTFN_PUSHPULL, GPIO_USART3_TX);
-	gpio_set_mode(GPIOB, GPIO_MODE_INPUT, GPIO_CNF_INPUT_PULL_UPDOWN,
-		      GPIO_USART3_RX);
-	gpio_set(GPIOB, GPIO_USART3_RX);
-
 	usart_set_baudrate(USART3, 921600);
 	usart_set_databits(USART3, 8);
 	usart_set_stopbits(USART3, USART_STOPBITS_1);
@@ -177,12 +197,6 @@ static void setup_usart(void)
  */
 static void setup_spi(uint8_t speed_div)
 {
-	gpio_set_mode(GPIOB, GPIO_MODE_OUTPUT_50_MHZ,
-		      GPIO_CNF_OUTPUT_ALTFN_PUSHPULL, GPIO13 | GPIO15);
-	gpio_set_mode(GPIOB, GPIO_MODE_OUTPUT_50_MHZ, GPIO_CNF_OUTPUT_PUSHPULL,
-		      GPIO12);
-	gpio_set_mode(GPIOB, GPIO_MODE_INPUT, GPIO_CNF_INPUT_FLOAT, GPIO14);
-
 	spi_reset(SPI2);
 
 	spi_init_master(SPI2, speed_div, SPI_CR1_CPOL_CLK_TO_0_WHEN_IDLE,
@@ -244,13 +258,6 @@ static void setup_motor_driver(void)
 	timer_continuous_mode(TIM3);
 	timer_set_period(TIM3, DRIVER_PWM_PERIOD);
 
-	gpio_set_mode(GPIOA, GPIO_MODE_OUTPUT_50_MHZ,
-		      GPIO_CNF_OUTPUT_ALTFN_PUSHPULL,
-		      GPIO_TIM3_CH1 | GPIO_TIM3_CH2);
-	gpio_set_mode(GPIOB, GPIO_MODE_OUTPUT_50_MHZ,
-		      GPIO_CNF_OUTPUT_ALTFN_PUSHPULL,
-		      GPIO_TIM3_CH3 | GPIO_TIM3_CH4);
-
 	timer_set_oc_mode(TIM3, TIM_OC1, TIM_OCM_PWM1);
 	timer_set_oc_mode(TIM3, TIM_OC2, TIM_OCM_PWM1);
 	timer_set_oc_mode(TIM3, TIM_OC3, TIM_OCM_PWM1);
@@ -286,9 +293,6 @@ static void setup_motor_driver(void)
 void setup_speaker(void)
 {
 	rcc_periph_reset_pulse(RST_TIM1);
-
-	gpio_set_mode(GPIOA, GPIO_MODE_OUTPUT_50_MHZ,
-		      GPIO_CNF_OUTPUT_ALTFN_PUSHPULL, GPIO_TIM1_CH3);
 
 	/* Make sure to turn emitters off */
 	gpio_clear(GPIOA, GPIO8 | GPIO9);

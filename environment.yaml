@@ -1,18 +1,15 @@
 name: bulebule
 channels:
   - conda-forge
-  - dlr-sc
-  - oce
-  - pythonocc
-  - tpaviot
+  - cadquery
 dependencies:
   - python=3.6
-  - pythonocc-core=0.18.2
+  - cadquery=2
   - pip
   - pip:
-    - git+https://github.com/CadQuery/cadquery.git@master#egg=cadquery
     - bokeh
     - cffi
+    - cufflinks
     - dataclasses
     - osbrain
     - matplotlib

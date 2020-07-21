@@ -186,18 +186,10 @@ static void set_emitter_off(uint8_t emitter)
  * off. Besides, to avoid undesired interactions between different emitters and
  * phototranistors, the reads will be done one by one.
  *
- * The battery voltage is also read on the state 1.
- *
- * - State 1 (first because the emitter is OFF on start):
- *         -# Save phototranistors sensors (ADC1) from emitter OFF and
- *            power ON the emitter.
- * - State 2:
- *         -# Start the phototranistors sensors (ADC1) read.
- * - State 3:
- *         -# Save phototranistors sensors (ADC1) from emitter ON and
- *            power OFF the emitter.
- * - State 4:
- *         -# Start the phototranistors sensors (ADC1) read.
+ * 1. Start phototransistor ADC reading (emitter is off)
+ * 2. Save phototransistor reading and turn emitter on
+ * 3. Start phototransistor ADC reading (emitter is on)
+ * 4. Save phototransistor reading and turn emitter off
  */
 static void sm_emitter_adc(void)
 {
@@ -206,23 +198,23 @@ static void sm_emitter_adc(void)
 
 	switch (emitter_status) {
 	case 1:
-		sensors_off[sensor_index] =
-		    adc_read_injected(ADC1, (sensor_index + 1));
-		set_emitter_on(sensor_index);
+		adc_start_conversion_injected(ADC1);
 		emitter_status = 2;
 		break;
 	case 2:
-		adc_start_conversion_injected(ADC1);
+		sensors_off[sensor_index] =
+		    adc_read_injected(ADC1, (sensor_index + 1));
+		set_emitter_on(sensor_index);
 		emitter_status = 3;
 		break;
 	case 3:
-		sensors_on[sensor_index] =
-		    adc_read_injected(ADC1, (sensor_index + 1));
-		set_emitter_off(sensor_index);
+		adc_start_conversion_injected(ADC1);
 		emitter_status = 4;
 		break;
 	case 4:
-		adc_start_conversion_injected(ADC1);
+		sensors_on[sensor_index] =
+		    adc_read_injected(ADC1, (sensor_index + 1));
+		set_emitter_off(sensor_index);
 		emitter_status = 1;
 		if (sensor_index == (NUM_SENSOR - 1))
 			sensor_index = 0;
