@@ -10,11 +10,15 @@ import cadquery
 
 
 def circle_points(number, circle, shift=0):
-    radius = circle / 2.
+    radius = circle / 2.0
     step = 360 / number
-    points = [(radius * sin(radians(i * step + shift)),
-               radius * cos(radians(i * step + shift)))
-              for i in range(number)]
+    points = [
+        (
+            radius * sin(radians(i * step + shift)),
+            radius * cos(radians(i * step + shift)),
+        )
+        for i in range(number)
+    ]
     return points
 
 
@@ -44,29 +48,43 @@ AXIS_DIAMETER = 3
 
 
 # Basic mount structure
-mount = cadquery.Workplane('XY').box(MOUNT_WIDTH, MOUNT_HEIGHT, MOUNT_THICK)
+mount = cadquery.Workplane("XY").box(MOUNT_WIDTH, MOUNT_HEIGHT, MOUNT_THICK)
 
 # Base screws
-mount = mount.faces('<Y').workplane()\
-    .pushPoints([(-SCREW_SPACE / 2., 0), (SCREW_SPACE / 2., 0)])\
+mount = (
+    mount.faces("<Y")
+    .workplane()
+    .pushPoints([(-SCREW_SPACE / 2.0, 0), (SCREW_SPACE / 2.0, 0)])
     .hole(SCREW_DIAMETER)
+)
 
 # Motor holes
 miniholes = circle_points(number=6, circle=MOUNT_MINIHOLES_CIRCLE)
-mount = mount.faces('<Z').workplane()\
-    .pushPoints(miniholes)\
+mount = (
+    mount.faces("<Z")
+    .workplane(centerOption="CenterOfMass")
+    .pushPoints(miniholes)
     .hole(diameter=MOUNT_MINIHOLES_DIAMETER)
-mount = mount.faces('>Z').workplane().cboreHole(
-    MOTOR_HOLE_DIAMETER,
-    MOTOR_DIAMETER + 1,
-    MOUNT_THICK - MOTOR_MOUNT_THICK)
+)
+mount = (
+    mount.faces(">Z")
+    .workplane()
+    .cboreHole(
+        MOTOR_HOLE_DIAMETER,
+        MOTOR_DIAMETER + 1,
+        MOUNT_THICK - MOTOR_MOUNT_THICK,
+    )
+)
 
 # Axis
-axis_shift = (MODULE * (Z_PINION + Z_GEAR)) / 2.
+axis_shift = (MODULE * (Z_PINION + Z_GEAR)) / 2.0
 axis_shift *= cos(asin(MOTOR_SHIFT / axis_shift))
-mount = mount.faces('<Z').workplane()\
-    .pushPoints([(axis_shift, -MOTOR_SHIFT), (-axis_shift, -MOTOR_SHIFT)])\
+mount = (
+    mount.faces("<Z")
+    .workplane()
+    .pushPoints([(axis_shift, -MOTOR_SHIFT), (-axis_shift, -MOTOR_SHIFT)])
     .hole(AXIS_DIAMETER)
+)
 
 # Fillet
-mount = mount.edges('|Z').fillet(MOUNT_FILLET)
+mount = mount.edges("|Z").fillet(MOUNT_FILLET)
