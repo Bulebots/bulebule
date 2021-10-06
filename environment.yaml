@@ -3,7 +3,7 @@ channels:
   - conda-forge
   - cadquery
 dependencies:
-  - python=3.6
+  - python=3.8
   - cadquery=2.1
   - pip
   - pip:
