@@ -10,7 +10,17 @@ What is Bulebule?
 
 Bulebule is a maze-solving robot.
 
-.. peertube:: da2e6b0c-d2ed-4799-8bca-bf24ff2abe45
+.. youtube:: ceD7tOjduGw
+   :width: 100%
+
+Here you can see it run in the 2019 Portuguese MicroMouse contest:
+
+.. youtube:: uScJlBdToGk
+   :width: 100%
+
+And at OSHWDem 2019:
+
+.. youtube:: XSxetEiTUFM
    :width: 100%
 
 

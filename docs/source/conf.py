@@ -35,6 +35,7 @@ extensions = [
     'sphinx.ext.ifconfig',
     'sphinx.ext.graphviz',
     'sphinxembeddedvideos.peertube',
+    'sphinxembeddedvideos.youtube',
     'sphinxemoji.sphinxemoji',
     'sphinxcadquery.sphinxcadquery',
 ]
